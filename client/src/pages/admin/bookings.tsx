@@ -244,6 +244,7 @@ export default function AdminBookings() {
   const pendingBookings = (bookings as Booking[])?.filter((b: Booking) => b.status === 'pending').length || 0;
   const confirmedBookings = (bookings as Booking[])?.filter((b: Booking) => b.status === 'confirmed').length || 0;
   const completedBookings = (bookings as Booking[])?.filter((b: Booking) => b.status === 'completed').length || 0;
+  const cancelledBookings = (bookings as Booking[])?.filter((b: Booking) => b.status === 'cancelled').length || 0;
   const totalRevenue = (bookings as Booking[])?.reduce((sum: number, booking: Booking) =>
     sum + parseFloat(booking.totalAmount || '0'), 0) || 0;
 
@@ -285,7 +286,7 @@ export default function AdminBookings() {
         </div>
 
         {/* Stats */}
-        <div className="grid md:grid-cols-5 gap-6 mb-8">
+        <div className="grid md:grid-cols-6 gap-6 mb-8">
           <GlassCard className="p-6 text-center">
             <div className="w-12 h-12 bg-gradient-to-r from-primary to-accent rounded-xl flex items-center justify-center mb-4 mx-auto">
               <Calendar className="text-white" />
@@ -324,6 +325,16 @@ export default function AdminBookings() {
               {completedBookings}
             </div>
             <div className="text-sm text-muted-foreground">Completed</div>
+          </GlassCard>
+
+          <GlassCard className="p-6 text-center">
+            <div className="w-12 h-12 bg-gradient-to-r from-red-500 to-red-600 rounded-xl flex items-center justify-center mb-4 mx-auto animate-pulse">
+              <XCircle className="text-white" />
+            </div>
+            <div className="text-2xl font-bold text-gradient" data-testid="cancelled-bookings-stat">
+              {cancelledBookings}
+            </div>
+            <div className="text-sm text-muted-foreground">Cancelled</div>
           </GlassCard>
 
           <GlassCard className="p-6 text-center">
@@ -443,10 +454,15 @@ export default function AdminBookings() {
                         <h3 className="font-semibold text-lg" data-testid={`booking-service-${booking.id}`}>
                           {booking.service?.name || 'Service'}
                         </h3>
-                        <Badge className={getStatusColor(booking.status)}>
+                        <Badge className={`${getStatusColor(booking.status)} ${
+                          booking.status === 'cancelled' ? 'animate-pulse border-red-500' : ''
+                        }`}>
                           <div className="flex items-center space-x-1">
                             {getStatusIcon(booking.status)}
                             <span className="capitalize">{booking.status}</span>
+                            {booking.status === 'cancelled' && (
+                              <span className="inline-block w-2 h-2 bg-red-500 rounded-full animate-ping ml-1"></span>
+                            )}
                           </div>
                         </Badge>
                       </div>
@@ -548,18 +564,42 @@ export default function AdminBookings() {
                         )}
                       </div>
 
-                      {/* Payment Confirmation Button */}
-                      {booking.paymentMethod === 'cash' && booking.paymentStatus === 'pending' && (
-                        <Button
-                          size="sm"
-                          onClick={() => handlePaymentConfirmation(booking.id)}
-                          disabled={confirmPaymentMutation.isPending}
-                          className="ripple-effect bg-gradient-to-r from-green-500 to-emerald-600 text-white"
-                          data-testid={`button-confirm-payment-${booking.id}`}
-                        >
-                          <Banknote className="w-4 h-4 mr-1" />
-                          Confirm Cash Payment
-                        </Button>
+                      {/* Payment Confirmation Buttons */}
+                      {booking.paymentStatus === 'pending' && booking.status !== 'cancelled' && (
+                        <div className="flex space-x-2">
+                          {booking.paymentMethod === 'cash' && (
+                            <Button
+                              size="sm"
+                              onClick={() => handlePaymentConfirmation(booking.id)}
+                              disabled={confirmPaymentMutation.isPending}
+                              className="ripple-effect bg-gradient-to-r from-green-500 to-emerald-600 text-white"
+                              data-testid={`button-confirm-cash-payment-${booking.id}`}
+                            >
+                              <Banknote className="w-4 h-4 mr-1" />
+                              Confirm Cash Payment
+                            </Button>
+                          )}
+                          {booking.paymentMethod === 'card' && (
+                            <Button
+                              size="sm"
+                              onClick={() => handlePaymentConfirmation(booking.id)}
+                              disabled={confirmPaymentMutation.isPending}
+                              className="ripple-effect bg-gradient-to-r from-blue-500 to-blue-600 text-white"
+                              data-testid={`button-confirm-card-payment-${booking.id}`}
+                            >
+                              <CreditCard className="w-4 h-4 mr-1" />
+                              Confirm Card Payment
+                            </Button>
+                          )}
+                        </div>
+                      )}
+
+                      {/* Show payment confirmation status */}
+                      {booking.paymentStatus === 'completed' && (
+                        <div className="flex items-center space-x-2 text-green-400">
+                          <CheckCircle className="w-4 h-4" />
+                          <span className="text-sm">Payment Confirmed</span>
+                        </div>
                       )}
                     </div>
                   </div>

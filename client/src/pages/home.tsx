@@ -8,12 +8,15 @@ import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { isUnauthorizedError } from "@/lib/authUtils";
-import { Calendar, Star, TrendingUp, Clock, X } from "lucide-react";
+import { Calendar, Star, TrendingUp, Clock, X, AlertTriangle } from "lucide-react";
+import { format, differenceInMinutes, parseISO, addMinutes } from "date-fns";
+import { useEffect, useState } from "react";
 
 export default function Home() {
   const { user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const [cancelledBookingIds, setCancelledBookingIds] = useState<string[]>([]);
 
   const { data: services, isLoading: servicesLoading } = useQuery({
     queryKey: ["/api/services"],
@@ -27,12 +30,17 @@ export default function Home() {
     mutationFn: async (bookingId: string) => {
       return apiRequest("PUT", `/api/bookings/${bookingId}/cancel`, {});
     },
-    onSuccess: () => {
+    onSuccess: async (data, variables) => {
+      // Immediately remove from UI
+      setCancelledBookingIds(prev => [...prev, variables]);
+
       toast({
         title: "Booking Cancelled",
         description: "Your booking has been cancelled successfully.",
       });
-      queryClient.invalidateQueries({ queryKey: ["/api/bookings"] });
+      // Force refetch the bookings data immediately
+      await queryClient.invalidateQueries({ queryKey: ["/api/bookings"] });
+      await queryClient.refetchQueries({ queryKey: ["/api/bookings"] });
     },
     onError: (error: Error) => {
       if (isUnauthorizedError(error)) {
@@ -58,7 +66,40 @@ export default function Home() {
     cancelBookingMutation.mutate(bookingId);
   };
 
-  const recentBookings = userBookings?.slice(0, 3) || [];
+  // Time-based logic for bookings
+  const [currentTime, setCurrentTime] = useState(new Date());
+
+  useEffect(() => {
+    const timer = setInterval(() => setCurrentTime(new Date()), 60000); // Update every minute
+    return () => clearInterval(timer);
+  }, []);
+
+  const getBookingTimeStatus = (booking: any) => {
+    if (!booking.slot?.date || !booking.slot?.startTime) return null;
+
+    const serviceDateTime = new Date(`${booking.slot.date}T${booking.slot.startTime}`);
+    const minutesDiff = differenceInMinutes(serviceDateTime, currentTime);
+
+    // 30 minutes before service - show countdown
+    if (minutesDiff > 0 && minutesDiff <= 30) {
+      return { type: 'countdown', minutes: minutesDiff, message: `Service starts in ${minutesDiff} minutes` };
+    }
+
+    // Service has started but within 15 minutes - show late warning
+    if (minutesDiff < 0 && minutesDiff >= -15) {
+      const minutesLate = Math.abs(minutesDiff);
+      return { type: 'late', minutes: minutesLate, message: `You are ${minutesLate} minutes late!` };
+    }
+
+    // More than 15 minutes late - should be auto-cancelled
+    if (minutesDiff < -15) {
+      return { type: 'auto-cancel', minutes: Math.abs(minutesDiff), message: 'Service auto-cancelled due to no-show' };
+    }
+
+    return null;
+  };
+
+  const recentBookings = userBookings?.filter((booking: any) => booking.status !== 'cancelled' && !cancelledBookingIds.includes(booking.id)).slice(0, 3) || [];
 
   return (
     <div className="min-h-screen">
@@ -172,6 +213,15 @@ export default function Home() {
                         <p className="text-muted-foreground text-sm">
                           {booking.vehicleBrand} {booking.vehicleModel} • {booking.slot?.date}
                         </p>
+                        <p className="text-muted-foreground text-xs">
+                          Booked {new Date(booking.createdAt).toLocaleString('en-US', {
+                            year: 'numeric',
+                            month: 'short',
+                            day: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                          })}
+                        </p>
                         <div className="flex items-center space-x-2 mt-2">
                           <span className={`px-3 py-1 rounded-full text-xs font-medium ${
                             booking.status === 'completed' ? 'bg-green-500/20 text-green-400' :
@@ -198,8 +248,26 @@ export default function Home() {
                         <div className="text-sm text-muted-foreground">
                           {booking.slot?.startTime} - {booking.slot?.endTime}
                         </div>
+                        {/* Time-based status alerts */}
+                        {(() => {
+                          const timeStatus = getBookingTimeStatus(booking);
+                          if (!timeStatus) return null;
+
+                          return (
+                            <div className={`flex items-center space-x-1 text-xs font-medium mt-1 px-2 py-1 rounded-full ${
+                              timeStatus.type === 'countdown' ? 'bg-blue-500/20 text-blue-400' :
+                              timeStatus.type === 'late' ? 'bg-red-500/20 text-red-400 animate-pulse' :
+                              'bg-red-600/30 text-red-300'
+                            }`}>
+                              {timeStatus.type === 'late' && <AlertTriangle className="w-3 h-3" />}
+                              {timeStatus.type === 'countdown' && <Clock className="w-3 h-3" />}
+                              <span>{timeStatus.message}</span>
+                            </div>
+                          );
+                        })()}
                         {/* Cancel Button - Only show for pending or confirmed bookings */}
-                        {(booking.status === 'pending' || booking.status === 'confirmed') && (
+                        {(booking.status === 'pending' || booking.status === 'confirmed') &&
+                         !getBookingTimeStatus(booking) || getBookingTimeStatus(booking)?.type === 'countdown' && (
                           <Button
                             size="sm"
                             variant="outline"

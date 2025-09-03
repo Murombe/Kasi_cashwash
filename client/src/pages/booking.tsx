@@ -14,7 +14,9 @@ import { useAuth } from "@/hooks/useAuth";
 import { apiRequest } from "@/lib/queryClient";
 import { isUnauthorizedError } from "@/lib/authUtils";
 import { useLocation } from "wouter";
-import { Calendar, Clock, Car, ChevronLeft, ChevronRight, Check } from "lucide-react";
+import { Calendar, Clock, Car, ChevronLeft, ChevronRight, Check, X, CreditCard, Banknote, AlertTriangle } from "lucide-react";
+import { format, differenceInMinutes, parseISO, addMinutes } from "date-fns";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useEffect } from "react";
 
 interface Service {
@@ -40,16 +42,18 @@ export default function Booking() {
   const [selectedDate, setSelectedDate] = useState("");
   const [selectedSlot, setSelectedSlot] = useState<Slot | null>(null);
   const [currentMonth, setCurrentMonth] = useState(new Date());
+  const [cancelledBookingIds, setCancelledBookingIds] = useState<string[]>([]);
   const [bookingData, setBookingData] = useState({
     vehicleType: "",
     vehicleBrand: "",
     vehicleModel: "",
     manufacturingYear: "",
     registrationPlate: "",
+    paymentMethod: "cash",
   });
 
   const { toast } = useToast();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const queryClient = useQueryClient();
   const [, setLocation] = useLocation();
 
@@ -125,6 +129,85 @@ export default function Booking() {
     },
   });
 
+  const cancelBookingMutation = useMutation({
+    mutationFn: async (bookingId: string) => {
+      return apiRequest("PUT", `/api/bookings/${bookingId}/cancel`, {});
+    },
+    onSuccess: async (data, variables) => {
+      // Immediately remove from UI
+      setCancelledBookingIds(prev => {
+        const updated = [...prev, variables];
+        console.log('Adding cancelled booking ID:', variables, 'Updated list:', updated);
+        return updated;
+      });
+
+      toast({
+        title: "Booking Cancelled",
+        description: "Your booking has been cancelled successfully.",
+      });
+
+      // Force immediate refresh of bookings data
+      await queryClient.invalidateQueries({ queryKey: ["/api/bookings"] });
+      await queryClient.refetchQueries({ queryKey: ["/api/bookings"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/slots/availability"] });
+    },
+    onError: (error: Error) => {
+      if (isUnauthorizedError(error)) {
+        toast({
+          title: "Unauthorized",
+          description: "You are logged out. Logging in again...",
+          variant: "destructive",
+        });
+        setTimeout(() => {
+          window.location.href = "/api/login";
+        }, 500);
+        return;
+      }
+      toast({
+        title: "Error",
+        description: error.message || "Failed to cancel booking.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleCancelBooking = (bookingId: string) => {
+    cancelBookingMutation.mutate(bookingId);
+  };
+
+  // Time-based logic for bookings
+  const [currentTime, setCurrentTime] = useState(new Date());
+
+  useEffect(() => {
+    const timer = setInterval(() => setCurrentTime(new Date()), 60000); // Update every minute
+    return () => clearInterval(timer);
+  }, []);
+
+  const getBookingTimeStatus = (booking: any) => {
+    if (!booking.slot?.date || !booking.slot?.startTime) return null;
+
+    const serviceDateTime = new Date(`${booking.slot.date}T${booking.slot.startTime}`);
+    const minutesDiff = differenceInMinutes(serviceDateTime, currentTime);
+
+    // 30 minutes before service - show countdown
+    if (minutesDiff > 0 && minutesDiff <= 30) {
+      return { type: 'countdown', minutes: minutesDiff, message: `Service starts in ${minutesDiff} minutes` };
+    }
+
+    // Service has started but within 15 minutes - show late warning
+    if (minutesDiff < 0 && minutesDiff >= -15) {
+      const minutesLate = Math.abs(minutesDiff);
+      return { type: 'late', minutes: minutesLate, message: `You are ${minutesLate} minutes late!` };
+    }
+
+    // More than 15 minutes late - should be auto-cancelled
+    if (minutesDiff < -15) {
+      return { type: 'auto-cancel', minutes: Math.abs(minutesDiff), message: 'Service auto-cancelled due to no-show' };
+    }
+
+    return null;
+  };
+
   const resetBooking = () => {
     setSelectedService(null);
     setSelectedDate("");
@@ -135,6 +218,7 @@ export default function Booking() {
       vehicleModel: "",
       manufacturingYear: "",
       registrationPlate: "",
+      paymentMethod: "cash",
     });
   };
 
@@ -243,32 +327,98 @@ export default function Booking() {
             </p>
           </div>
 
-          {/* Recent Bookings */}
-          {userBookings?.length > 0 && (
-            <GlassCard className="p-6 mb-12">
-              <h3 className="text-xl font-bold mb-4">Your Recent Bookings</h3>
-              <div className="space-y-3">
-                {userBookings.slice(0, 3).map((booking: any) => (
+          {/* Recent Bookings - Hide for admin users */}
+          {(() => {
+            // Don't show recent bookings for admin users
+            if (user?.role === 'admin') return null;
+
+            // Filter out cancelled bookings from both server data and local state
+            const filteredBookings = userBookings?.filter((booking: any) => {
+              const isNotCancelled = booking.status !== 'cancelled';
+              const isNotInCancelledList = !cancelledBookingIds.includes(booking.id);
+              console.log('Filtering booking:', booking.id, 'status:', booking.status, 'isNotCancelled:', isNotCancelled, 'isNotInCancelledList:', isNotInCancelledList, 'cancelledIds:', cancelledBookingIds);
+              return isNotCancelled && isNotInCancelledList;
+            }) || [];
+
+            console.log('Total bookings from API:', userBookings?.length, 'Filtered bookings:', filteredBookings.length);
+
+            if (filteredBookings.length === 0) return null;
+
+            return (
+              <GlassCard className="p-6 mb-12">
+                <h3 className="text-xl font-bold mb-4">Your Recent Bookings</h3>
+                <div className="space-y-3">
+                  {filteredBookings.slice(0, 3).map((booking: any) => (
                   <div key={booking.id} className="flex items-center justify-between p-4 glass-effect rounded-xl">
-                    <div>
+                    <div className="flex-1">
                       <div className="font-semibold">{booking.service?.name}</div>
                       <div className="text-sm text-muted-foreground">
                         {booking.vehicleBrand} {booking.vehicleModel} • {booking.slot?.date}
                       </div>
+                      <div className="flex items-center space-x-2 mt-1">
+                        <Badge className={
+                          booking.status === 'completed' ? 'bg-green-500/20 text-green-400' :
+                          booking.status === 'confirmed' ? 'bg-blue-500/20 text-blue-400' :
+                          booking.status === 'in-progress' ? 'bg-yellow-500/20 text-yellow-400' :
+                          booking.status === 'cancelled' ? 'bg-red-500/20 text-red-400' :
+                          'bg-gray-500/20 text-gray-400'
+                        }>
+                          {booking.status}
+                        </Badge>
+                        {booking.paymentMethod && (
+                          <Badge className={
+                            booking.paymentMethod === 'card' ? 'bg-blue-500/20 text-blue-400' : 'bg-green-500/20 text-green-400'
+                          }>
+                            {booking.paymentMethod} payment
+                          </Badge>
+                        )}
+                      </div>
                     </div>
-                    <Badge className={
-                      booking.status === 'completed' ? 'bg-green-500/20 text-green-400' :
-                      booking.status === 'confirmed' ? 'bg-blue-500/20 text-blue-400' :
-                      booking.status === 'in-progress' ? 'bg-yellow-500/20 text-yellow-400' :
-                      'bg-gray-500/20 text-gray-400'
-                    }>
-                      {booking.status}
-                    </Badge>
+                    <div className="flex items-center space-x-2">
+                      <div className="text-right mr-4">
+                        <div className="text-lg font-bold text-gradient">R{booking.totalAmount}</div>
+                        <div className="text-xs text-muted-foreground">
+                          {booking.slot?.startTime} - {booking.slot?.endTime}
+                        </div>
+                        {/* Time-based status alerts */}
+                        {(() => {
+                          const timeStatus = getBookingTimeStatus(booking);
+                          if (!timeStatus) return null;
+
+                          return (
+                            <div className={`flex items-center space-x-1 text-xs font-medium mt-1 px-2 py-1 rounded-full ${
+                              timeStatus.type === 'countdown' ? 'bg-blue-500/20 text-blue-400' :
+                              timeStatus.type === 'late' ? 'bg-red-500/20 text-red-400 animate-pulse' :
+                              'bg-red-600/30 text-red-300'
+                            }`}>
+                              {timeStatus.type === 'late' && <AlertTriangle className="w-3 h-3" />}
+                              {timeStatus.type === 'countdown' && <Clock className="w-3 h-3" />}
+                              <span>{timeStatus.message}</span>
+                            </div>
+                          );
+                        })()}
+                      </div>
+                      {/* Cancel Button - Only show for pending or confirmed bookings */}
+                      {(booking.status === 'pending' || booking.status === 'confirmed') && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handleCancelBooking(booking.id)}
+                          disabled={cancelBookingMutation.isPending}
+                          className="glass-effect border-destructive text-destructive hover:bg-destructive/20"
+                          data-testid={`button-cancel-booking-${booking.id}`}
+                        >
+                          <X className="w-4 h-4 mr-1" />
+                          Cancel
+                        </Button>
+                      )}
+                    </div>
                   </div>
-                ))}
-              </div>
-            </GlassCard>
-          )}
+                  ))}
+                </div>
+              </GlassCard>
+            );
+          })()}
 
           {/* Step 1: Service Selection */}
           <div className="mb-12">
@@ -560,6 +710,50 @@ export default function Booking() {
                   </div>
                 </div>
 
+                {/* Payment Method Selection */}
+                <div className="mt-8 p-6 glass-effect rounded-xl">
+                  <h4 className="text-lg font-semibold mb-4">Payment Method</h4>
+                  <RadioGroup
+                    value={bookingData.paymentMethod}
+                    onValueChange={(value: 'cash' | 'card') => handleInputChange('paymentMethod', value)}
+                    className="space-y-4"
+                  >
+                    {/* Cash Payment Option */}
+                    <div className="flex items-center space-x-3 p-3 rounded-lg border border-border hover:bg-white/5 transition-colors">
+                      <RadioGroupItem value="cash" id="cash" data-testid="radio-payment-cash" />
+                      <Label htmlFor="cash" className="flex-1 cursor-pointer">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center space-x-3">
+                            <Banknote className="w-5 h-5 text-green-500" />
+                            <div>
+                              <div className="font-semibold">Cash Payment</div>
+                              <div className="text-sm text-muted-foreground">Pay on-site with South African Rand</div>
+                            </div>
+                          </div>
+                          <Badge className="bg-green-500/20 text-green-400">Popular</Badge>
+                        </div>
+                      </Label>
+                    </div>
+
+                    {/* Card Payment Option */}
+                    <div className="flex items-center space-x-3 p-3 rounded-lg border border-border hover:bg-white/5 transition-colors">
+                      <RadioGroupItem value="card" id="card" data-testid="radio-payment-card" />
+                      <Label htmlFor="card" className="flex-1 cursor-pointer">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center space-x-3">
+                            <CreditCard className="w-5 h-5 text-blue-500" />
+                            <div>
+                              <div className="font-semibold">Card Payment</div>
+                              <div className="text-sm text-muted-foreground">Visa, MasterCard - Secure online payment</div>
+                            </div>
+                          </div>
+                          <Badge className="bg-blue-500/20 text-blue-400">Secure</Badge>
+                        </div>
+                      </Label>
+                    </div>
+                  </RadioGroup>
+                </div>
+
                 {/* Booking Summary */}
                 <div className="mt-8 pt-8 border-t border-border">
                   <h4 className="text-lg font-semibold mb-4">Booking Summary</h4>
@@ -580,7 +774,7 @@ export default function Booking() {
                     </div>
                     <div className="flex justify-between text-lg font-bold">
                       <span>Total Amount:</span>
-                      <span className="text-gradient">${selectedService.price}</span>
+                      <span className="text-gradient">R{selectedService.price}</span>
                     </div>
                   </div>
                 </div>

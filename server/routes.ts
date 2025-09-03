@@ -436,6 +436,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Admin route to update booking status
   app.put('/api/bookings/:id/status', authenticateToken, requireAdmin, async (req, res) => {
     try {
       const { status } = req.body;
@@ -447,6 +448,39 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // User route to cancel their own booking
+  app.put('/api/bookings/:id/cancel', authenticateToken, async (req, res) => {
+    try {
+      const bookingId = req.params.id;
+      const userId = req.user!.id;
+
+      // Check if the booking belongs to the user
+      const booking = await storage.getBooking(bookingId);
+      if (!booking) {
+        return res.status(404).json({ message: "Booking not found" });
+      }
+
+      if (booking.userId !== userId) {
+        return res.status(403).json({ message: "You can only cancel your own bookings" });
+      }
+
+      // Only allow cancellation of pending or confirmed bookings
+      if (booking.status !== 'pending' && booking.status !== 'confirmed') {
+        return res.status(400).json({ message: "Cannot cancel this booking" });
+      }
+
+      const updatedBooking = await storage.updateBookingStatus(bookingId, 'cancelled');
+
+      // Free up the slot
+      await storage.updateSlotBookingStatus(booking.slotId, false);
+
+      res.json(updatedBooking);
+    } catch (error) {
+      console.error("Error cancelling booking:", error);
+      res.status(500).json({ message: "Failed to cancel booking" });
+    }
+  });
+
   app.put('/api/bookings/:id/payment-status', authenticateToken, requireAdmin, async (req, res) => {
     try {
       const { paymentStatus } = req.body;
@@ -455,6 +489,43 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error updating payment status:", error);
       res.status(500).json({ message: "Failed to update payment status" });
+    }
+  });
+
+  // Auto-cancellation endpoint for no-shows
+  app.post('/api/bookings/auto-cancel-late', async (req, res) => {
+    try {
+      const currentTime = new Date();
+
+      // Get all confirmed bookings
+      const bookings = await storage.getAllBookings();
+      const autoCancelledBookings = [];
+
+      for (const booking of bookings) {
+        if (booking.status !== 'confirmed' && booking.status !== 'pending') continue;
+
+        // Get the slot information for this booking
+        const slot = await storage.getSlot(booking.slotId);
+        if (!slot?.date || !slot?.startTime) continue;
+
+        const serviceDateTime = new Date(`${slot.date}T${slot.startTime}`);
+        const minutesDiff = Math.floor((currentTime.getTime() - serviceDateTime.getTime()) / (1000 * 60));
+
+        // Auto-cancel if more than 15 minutes late
+        if (minutesDiff > 15) {
+          await storage.updateBookingStatus(booking.id, 'cancelled');
+          await storage.updateSlotBookingStatus(booking.slotId, false);
+          autoCancelledBookings.push(booking.id);
+        }
+      }
+
+      res.json({
+        message: `Auto-cancelled ${autoCancelledBookings.length} late bookings`,
+        cancelledBookings: autoCancelledBookings
+      });
+    } catch (error) {
+      console.error("Error auto-cancelling late bookings:", error);
+      res.status(500).json({ message: "Failed to auto-cancel late bookings" });
     }
   });
 

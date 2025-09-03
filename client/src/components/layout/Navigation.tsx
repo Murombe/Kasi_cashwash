@@ -39,8 +39,8 @@ export default function Navigation() {
           <div className="hidden md:flex items-center space-x-8">
             {navLinks.map((link) => {
               if (!link.public && !isAuthenticated) return null;
-              // Hide "Book Now" for admin users
-              if (link.href === "/booking" && user?.role === 'admin') return null;
+              // Hide "Book Now", "Services", "Reviews", and "Compare" for admin users
+              if ((link.href === "/booking" || link.href === "/services" || link.href === "/reviews" || link.href === "/comparison") && user?.role === 'admin') return null;
               return (
                 <Link
                   key={link.href}
@@ -152,8 +152,8 @@ export default function Navigation() {
           <div className="md:hidden mt-4 glass-effect rounded-2xl p-6 space-y-4">
             {navLinks.map((link) => {
               if (!link.public && !isAuthenticated) return null;
-              // Hide "Book Now" for admin users
-              if (link.href === "/booking" && user?.role === 'admin') return null;
+              // Hide "Book Now" and "Services" for admin users
+              if ((link.href === "/booking" || link.href === "/services") && user?.role === 'admin') return null;
               return (
                 <Link
                   key={link.href}
@@ -170,7 +170,7 @@ export default function Navigation() {
                 </Link>
               );
             })}
-            
+
             {user?.role === 'admin' && (
               <div className="border-t border-border pt-4 space-y-4">
                 {adminLinks.map((link) => (
@@ -190,7 +190,7 @@ export default function Navigation() {
                 ))}
               </div>
             )}
-            
+
             <div className="border-t border-border pt-4">
               {isAuthenticated ? (
                 <Button

@@ -272,6 +272,10 @@ export class DatabaseStorage implements IStorage {
     return booking;
   }
 
+  async getAllBookings(): Promise<Booking[]> {
+    return await db.select().from(bookings).orderBy(desc(bookings.createdAt));
+  }
+
   // Review operations
   async getServiceReviews(serviceId: string): Promise<Review[]> {
     return await db
