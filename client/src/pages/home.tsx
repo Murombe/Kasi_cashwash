@@ -109,25 +109,31 @@ export default function Home() {
       <section className="pt-24 pb-16">
         <div className="container mx-auto px-4">
           <div className="glass-effect p-8 rounded-3xl mb-8">
-            <div className="flex items-center justify-between">
-              <div>
+            <div className={user?.role === 'admin' ? 'text-center' : 'flex items-center justify-between'}>
+              <div className={user?.role === 'admin' ? 'mx-auto' : ''}>
                 <h1 className="text-3xl md:text-5xl font-bold mb-4">
                   Welcome back, <span className="text-gradient">{user?.firstName || user?.email?.split('@')[0] || 'Car Enthusiast'}</span>!
                 </h1>
                 <p className="text-xl text-muted-foreground">
-                  Ready to give your car the premium treatment it deserves?
+                  {user?.role === 'admin'
+                    ? 'Manage your car wash business and track performance.'
+                    : 'Ready to give your car the premium treatment it deserves?'
+                  }
                 </p>
               </div>
-              <div className="hidden md:block">
-                <Link href="/booking">
-                  <Button
-                    className="ripple-effect bg-gradient-to-r from-primary to-accent text-primary-foreground px-8 py-4 rounded-xl font-semibold text-lg hover:shadow-2xl transition-all duration-300"
-                    data-testid="button-book-now"
-                  >
-                    Book Now
-                  </Button>
-                </Link>
-              </div>
+              {/* Hide Book Now button for admin users */}
+              {user?.role !== 'admin' && (
+                <div className="hidden md:block">
+                  <Link href="/booking">
+                    <Button
+                      className="ripple-effect bg-gradient-to-r from-primary to-accent text-primary-foreground px-8 py-4 rounded-xl font-semibold text-lg hover:shadow-2xl transition-all duration-300"
+                      data-testid="button-book-now"
+                    >
+                      Book Now
+                    </Button>
+                  </Link>
+                </div>
+              )}
             </div>
           </div>
 

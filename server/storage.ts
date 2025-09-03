@@ -36,10 +36,13 @@ export interface IStorage {
   deleteService(id: string): Promise<void>;
 
   // Slot operations
+  getSlot(id: string): Promise<Slot | undefined>;
   getSlotsByService(serviceId: string, date?: string): Promise<Slot[]>;
   getAvailableSlots(serviceId?: string, date?: string): Promise<Slot[]>;
   createSlot(slot: InsertSlot): Promise<Slot>;
   updateSlotBookingStatus(slotId: string, isBooked: boolean): Promise<Slot>;
+  getAllSlots(): Promise<Slot[]>;
+  deleteSlot(id: string): Promise<void>;
 
   // Booking operations
   getAllBookings(): Promise<Booking[]>;
@@ -135,6 +138,11 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Slot operations
+  async getSlot(id: string): Promise<Slot | undefined> {
+    const [slot] = await db.select().from(slots).where(eq(slots.id, id));
+    return slot;
+  }
+
   async getSlotsByService(serviceId: string, date?: string): Promise<Slot[]> {
     if (date) {
       return await db.select().from(slots).where(and(
@@ -191,13 +199,86 @@ export class DatabaseStorage implements IStorage {
 
   // Booking operations
   async getAllBookings(): Promise<Booking[]> {
-    return await db.select().from(bookings).orderBy(desc(bookings.createdAt));
+    const result = await db
+      .select({
+        id: bookings.id,
+        userId: bookings.userId,
+        serviceId: bookings.serviceId,
+        slotId: bookings.slotId,
+        vehicleType: bookings.vehicleType,
+        vehicleBrand: bookings.vehicleBrand,
+        vehicleModel: bookings.vehicleModel,
+        manufacturingYear: bookings.manufacturingYear,
+        registrationPlate: bookings.registrationPlate,
+        status: bookings.status,
+        totalAmount: bookings.totalAmount,
+        paymentMethod: sql<string>`bookings.payment_method`,
+        paymentStatus: sql<string>`bookings.payment_status`,
+        createdAt: bookings.createdAt,
+        updatedAt: bookings.updatedAt,
+        service: {
+          name: services.name,
+          price: services.price,
+          duration: services.duration,
+        },
+        slot: {
+          date: slots.date,
+          startTime: slots.startTime,
+          endTime: slots.endTime,
+        },
+        user: {
+          firstName: users.firstName,
+          lastName: users.lastName,
+          email: users.email,
+        },
+      })
+      .from(bookings)
+      .leftJoin(services, eq(bookings.serviceId, services.id))
+      .leftJoin(slots, eq(bookings.slotId, slots.id))
+      .leftJoin(users, eq(bookings.userId, users.id))
+      .orderBy(desc(bookings.createdAt));
+
+    return result;
   }
 
   async getUserBookings(userId: string): Promise<Booking[]> {
     return await db
-      .select()
+      .select({
+        id: bookings.id,
+        userId: bookings.userId,
+        serviceId: bookings.serviceId,
+        slotId: bookings.slotId,
+        vehicleType: bookings.vehicleType,
+        vehicleBrand: bookings.vehicleBrand,
+        vehicleModel: bookings.vehicleModel,
+        manufacturingYear: bookings.manufacturingYear,
+        registrationPlate: bookings.registrationPlate,
+        status: bookings.status,
+        totalAmount: bookings.totalAmount,
+        paymentMethod: sql<string>`bookings.payment_method`,
+        paymentStatus: sql<string>`bookings.payment_status`,
+        createdAt: bookings.createdAt,
+        updatedAt: bookings.updatedAt,
+        service: {
+          name: services.name,
+          price: services.price,
+          duration: services.duration,
+        },
+        slot: {
+          date: slots.date,
+          startTime: slots.startTime,
+          endTime: slots.endTime,
+        },
+        user: {
+          firstName: users.firstName,
+          lastName: users.lastName,
+          email: users.email,
+        },
+      })
       .from(bookings)
+      .leftJoin(services, eq(bookings.serviceId, services.id))
+      .leftJoin(slots, eq(bookings.slotId, slots.id))
+      .leftJoin(users, eq(bookings.userId, users.id))
       .where(eq(bookings.userId, userId))
       .orderBy(desc(bookings.createdAt));
   }
@@ -216,7 +297,8 @@ export class DatabaseStorage implements IStorage {
         registrationPlate: bookings.registrationPlate,
         status: bookings.status,
         totalAmount: bookings.totalAmount,
-        paymentStatus: bookings.paymentStatus,
+        paymentMethod: sql<string>`bookings.payment_method`,
+        paymentStatus: sql<string>`bookings.payment_status`,
         createdAt: bookings.createdAt,
         updatedAt: bookings.updatedAt,
         service: {
@@ -272,10 +354,6 @@ export class DatabaseStorage implements IStorage {
     return booking;
   }
 
-  async getAllBookings(): Promise<Booking[]> {
-    return await db.select().from(bookings).orderBy(desc(bookings.createdAt));
-  }
-
   // Review operations
   async getServiceReviews(serviceId: string): Promise<Review[]> {
     return await db
@@ -320,96 +398,59 @@ export class DatabaseStorage implements IStorage {
     const totalUsers = await db.select({ count: sql<number>`count(*)` }).from(users);
     const totalBookings = await db.select({ count: sql<number>`count(*)` }).from(bookings);
     const totalServices = await db.select({ count: sql<number>`count(*)` }).from(services);
-    const totalReviews = await db.select({ count: sql<number>`count(*)` }).from(reviews);
+    const totalRevenue = await db.select({
+      total: sql<number>`coalesce(sum(cast(total_amount as decimal)), 0)`
+    }).from(bookings).where(eq(bookings.status, 'completed'));
 
-    // Get revenue (sum of service prices for completed bookings)
-    const revenueResult = await db
-      .select({
-        total: sql<number>`COALESCE(SUM(CAST(${bookings.totalAmount} AS numeric)), 0)`
-      })
+    // Get booking status counts
+    const pendingBookings = await db.select({ count: sql<number>`count(*)` })
       .from(bookings)
-      .where(eq(bookings.paymentStatus, 'completed'));
-
-    // Get recent bookings
-    const recentBookings = await db
-      .select()
+      .where(eq(bookings.status, 'pending'));
+    const confirmedBookings = await db.select({ count: sql<number>`count(*)` })
       .from(bookings)
-      .orderBy(desc(bookings.createdAt))
-      .limit(5);
-
-    // Get booking status distribution
-    const bookingsByStatus = await db
-      .select({
-        status: bookings.status,
-        count: sql<number>`count(*)`
-      })
+      .where(eq(bookings.status, 'confirmed'));
+    const completedBookings = await db.select({ count: sql<number>`count(*)` })
       .from(bookings)
-      .groupBy(bookings.status);
+      .where(eq(bookings.status, 'completed'));
+    const cancelledBookings = await db.select({ count: sql<number>`count(*)` })
+      .from(bookings)
+      .where(eq(bookings.status, 'cancelled'));
 
     return {
       totalUsers: totalUsers[0]?.count || 0,
       totalBookings: totalBookings[0]?.count || 0,
       totalServices: totalServices[0]?.count || 0,
-      totalReviews: totalReviews[0]?.count || 0,
-      totalRevenue: revenueResult[0]?.total || 0,
-      recentBookings,
-      bookingsByStatus
+      totalRevenue: totalRevenue[0]?.total || 0,
+      pendingBookings: pendingBookings[0]?.count || 0,
+      confirmedBookings: confirmedBookings[0]?.count || 0,
+      completedBookings: completedBookings[0]?.count || 0,
+      cancelledBookings: cancelledBookings[0]?.count || 0,
     };
   }
 
   async getSalesData(startDate?: string, endDate?: string): Promise<any> {
-    let conditions: any[] = [];
+    let conditions = [eq(bookings.status, 'completed')];
 
-    if (startDate && endDate) {
-      conditions.push(sql`DATE(${bookings.createdAt}) BETWEEN ${startDate} AND ${endDate}`);
-    } else if (startDate) {
-      conditions.push(sql`DATE(${bookings.createdAt}) >= ${startDate}`);
-    } else if (endDate) {
-      conditions.push(sql`DATE(${bookings.createdAt}) <= ${endDate}`);
+    if (startDate) {
+      conditions.push(sql`${bookings.createdAt} >= ${startDate}`);
+    }
+
+    if (endDate) {
+      conditions.push(sql`${bookings.createdAt} <= ${endDate}`);
     }
 
     const salesData = await db
       .select({
-        id: bookings.id,
-        date: bookings.createdAt,
-        customerEmail: users.email,
-        customerName: sql<string>`CONCAT(${users.firstName}, ' ', ${users.lastName})`,
-        serviceName: services.name,
-        servicePrice: services.price,
-        totalAmount: bookings.totalAmount,
-        status: bookings.status,
-        paymentStatus: bookings.paymentStatus,
-        vehicleInfo: sql<string>`CONCAT(${bookings.vehicleBrand}, ' ', ${bookings.vehicleModel}, ' ', ${bookings.manufacturingYear})`,
+        date: sql<string>`date(${bookings.createdAt})`,
+        revenue: sql<number>`sum(cast(${bookings.totalAmount} as decimal))`,
+        count: sql<number>`count(*)`,
       })
       .from(bookings)
-      .innerJoin(users, eq(bookings.userId, users.id))
-      .innerJoin(services, eq(bookings.serviceId, services.id))
-      .where(conditions.length > 0 ? and(...conditions) : sql`1=1`)
-      .orderBy(desc(bookings.createdAt));
+      .where(and(...conditions))
+      .groupBy(sql`date(${bookings.createdAt})`)
+      .orderBy(sql`date(${bookings.createdAt})`);
 
-    // Calculate summary statistics
-    const totalSales = salesData.reduce((sum, booking) =>
-      sum + (parseFloat(booking.totalAmount) || 0), 0
-    );
-
-    const completedSales = salesData.filter(booking =>
-      booking.paymentStatus === 'completed'
-    );
-
-    const completedRevenue = completedSales.reduce((sum, booking) =>
-      sum + (parseFloat(booking.totalAmount) || 0), 0
-    );
-
-    return {
-      salesData,
-      summary: {
-        totalBookings: salesData.length,
-        completedBookings: completedSales.length,
-        totalRevenue: totalSales,
-        completedRevenue: completedRevenue,
-        averageOrderValue: salesData.length > 0 ? totalSales / salesData.length : 0
-      }
-    };
+    return salesData;
   }
 
   // Admin setup operations
@@ -430,8 +471,6 @@ export class DatabaseStorage implements IStorage {
     const setup = await this.getAdminSetup();
     return setup?.isInitialized || false;
   }
-
-
 }
 
 export const storage = new DatabaseStorage();

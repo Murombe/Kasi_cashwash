@@ -13,9 +13,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
 import { apiRequest } from "@/lib/queryClient";
 import { isUnauthorizedError } from "@/lib/authUtils";
-import { Plus, Edit, Trash2, Car, Clock, DollarSign, Tag } from "lucide-react";
+import { Plus, Edit, Trash2, Car, Clock, DollarSign, Tag, Calendar, X } from "lucide-react";
 
 interface Service {
   id: string;
@@ -26,6 +27,13 @@ interface Service {
   category: string;
   features?: string[];
   isActive: boolean;
+}
+
+interface TimeSlot {
+  id?: string;
+  date: string;
+  startTime: string;
+  endTime: string;
 }
 
 export default function AdminServices() {
@@ -44,6 +52,13 @@ export default function AdminServices() {
     features: "",
   });
 
+  const [slots, setSlots] = useState<TimeSlot[]>([]);
+  const [newSlot, setNewSlot] = useState<TimeSlot>({
+    date: "",
+    startTime: "",
+    endTime: "",
+  });
+
   useEffect(() => {
     if (!isLoading && (!isAuthenticated || user?.role !== 'admin')) {
       toast({
@@ -57,7 +72,7 @@ export default function AdminServices() {
     }
   }, [isAuthenticated, user, isLoading, toast]);
 
-  const { data: services, isLoading: servicesLoading } = useQuery({
+  const { data: services = [], isLoading: servicesLoading } = useQuery<Service[]>({
     queryKey: ["/api/services"],
     enabled: isAuthenticated && user?.role === 'admin',
   });
@@ -193,11 +208,60 @@ export default function AdminServices() {
       category: "basic",
       features: "",
     });
+    setSlots([]);
+    setNewSlot({ date: "", startTime: "", endTime: "" });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const addSlot = () => {
+    if (!newSlot.date || !newSlot.startTime || !newSlot.endTime) {
+      toast({
+        title: "Invalid Slot",
+        description: "Please fill in all slot fields.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (newSlot.startTime >= newSlot.endTime) {
+      toast({
+        title: "Invalid Time Range",
+        description: "Start time must be before end time.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const slotExists = slots.some(slot =>
+      slot.date === newSlot.date &&
+      ((newSlot.startTime >= slot.startTime && newSlot.startTime < slot.endTime) ||
+       (newSlot.endTime > slot.startTime && newSlot.endTime <= slot.endTime) ||
+       (newSlot.startTime <= slot.startTime && newSlot.endTime >= slot.endTime))
+    );
+
+    if (slotExists) {
+      toast({
+        title: "Time Conflict",
+        description: "This slot overlaps with an existing slot.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setSlots([...slots, { ...newSlot }]);
+    setNewSlot({ date: "", startTime: "", endTime: "" });
+    toast({
+      title: "Slot Added",
+      description: "Time slot added successfully.",
+    });
+  };
+
+  const removeSlot = (index: number) => {
+    setSlots(slots.filter((_, i) => i !== index));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     const serviceData = {
       name: formData.name,
       description: formData.description,
@@ -206,6 +270,7 @@ export default function AdminServices() {
       category: formData.category,
       features: formData.features ? formData.features.split(",").map(f => f.trim()).filter(f => f) : [],
       isActive: true,
+      slots: slots.length > 0 ? slots : undefined,
     };
 
     if (editingService) {
@@ -268,7 +333,7 @@ export default function AdminServices() {
   return (
     <div className="min-h-screen">
       <Sidebar />
-      
+
       <div className="ml-64 p-8">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
@@ -535,6 +600,102 @@ export default function AdminServices() {
                   placeholder="Exterior wash, Wax protection, Tire shine"
                   data-testid="input-service-features"
                 />
+              </div>
+
+              <Separator className="my-6" />
+
+              {/* Time Slots Section */}
+              <div>
+                <div className="flex items-center space-x-2 mb-4">
+                  <Calendar className="w-5 h-5 text-primary" />
+                  <Label className="text-lg font-semibold">Available Time Slots (Optional)</Label>
+                </div>
+                <p className="text-sm text-muted-foreground mb-4">
+                  Add available time slots for this service. You can also add slots later from the slot management page.
+                </p>
+
+                {/* Add New Slot Form */}
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-3 mb-4">
+                  <div>
+                    <Label htmlFor="slot-date" className="text-sm">Date</Label>
+                    <Input
+                      id="slot-date"
+                      type="date"
+                      value={newSlot.date}
+                      onChange={(e) => setNewSlot(prev => ({ ...prev, date: e.target.value }))}
+                      className="glass-effect border-border text-sm"
+                      data-testid="input-slot-date"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="slot-start" className="text-sm">Start Time</Label>
+                    <Input
+                      id="slot-start"
+                      type="time"
+                      value={newSlot.startTime}
+                      onChange={(e) => setNewSlot(prev => ({ ...prev, startTime: e.target.value }))}
+                      className="glass-effect border-border text-sm"
+                      data-testid="input-slot-start"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="slot-end" className="text-sm">End Time</Label>
+                    <Input
+                      id="slot-end"
+                      type="time"
+                      value={newSlot.endTime}
+                      onChange={(e) => setNewSlot(prev => ({ ...prev, endTime: e.target.value }))}
+                      className="glass-effect border-border text-sm"
+                      data-testid="input-slot-end"
+                    />
+                  </div>
+                  <div className="flex items-end">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={addSlot}
+                      className="w-full glass-effect border-border hover:bg-primary/20"
+                      data-testid="button-add-slot"
+                    >
+                      <Plus className="w-4 h-4 mr-1" />
+                      Add Slot
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Existing Slots List */}
+                {slots.length > 0 && (
+                  <div className="space-y-2">
+                    <Label className="text-sm font-medium">Added Slots:</Label>
+                    <div className="grid gap-2 max-h-48 overflow-y-auto">
+                      {slots.map((slot, index) => (
+                        <div
+                          key={index}
+                          className="flex items-center justify-between p-3 glass-effect border border-border rounded-lg"
+                          data-testid={`slot-item-${index}`}
+                        >
+                          <div className="flex items-center space-x-3">
+                            <Calendar className="w-4 h-4 text-primary" />
+                            <span className="text-sm">
+                              {new Date(slot.date).toLocaleDateString()} • {slot.startTime} - {slot.endTime}
+                            </span>
+                          </div>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => removeSlot(index)}
+                            className="h-8 w-8 p-0 text-destructive hover:bg-destructive/20"
+                            data-testid={`button-remove-slot-${index}`}
+                          >
+                            <X className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div className="flex justify-end space-x-4">

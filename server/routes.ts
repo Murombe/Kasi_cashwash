@@ -232,6 +232,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json({ message: "Logged out successfully" });
   });
 
+  // Add logout route at /api/logout for consistency with common patterns
+  app.get('/api/logout', (req, res) => {
+    // For JWT-based auth, logout is handled client-side by removing the token
+    // This endpoint redirects to home page after clearing client-side state
+    res.redirect('/');
+  });
+
   app.get('/api/auth/user', authenticateToken, async (req, res) => {
     try {
       const user = await storage.getUser(req.user!.id);
@@ -273,8 +280,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post('/api/services', authenticateToken, requireAdmin, async (req, res) => {
     try {
-      const validatedData = insertServiceSchema.parse(req.body);
+      const { slots, ...serviceData } = req.body;
+      const validatedData = insertServiceSchema.parse(serviceData);
       const service = await storage.createService(validatedData);
+
+      // Create associated slots if provided
+      if (slots && slots.length > 0) {
+        for (const slot of slots) {
+          try {
+            await storage.createSlot({
+              serviceId: service.id,
+              date: slot.date,
+              startTime: slot.startTime,
+              endTime: slot.endTime,
+              isBooked: false,
+            });
+          } catch (slotError) {
+            console.error("Error creating slot:", slotError);
+            // Continue with other slots even if one fails
+          }
+        }
+      }
+
       res.status(201).json(service);
     } catch (error) {
       console.error("Error creating service:", error);

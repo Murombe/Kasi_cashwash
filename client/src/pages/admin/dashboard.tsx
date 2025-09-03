@@ -145,21 +145,21 @@ export default function AdminDashboard() {
             </div>
           </FloatingCard>
 
-          <FloatingCard className="p-6" data-testid="stat-active-services">
+          <FloatingCard className="p-6" data-testid="stat-pending-bookings">
             <div className="flex items-center justify-between">
               <div>
-                <div className="text-3xl font-bold text-gradient">{activeServices}</div>
-                <div className="text-sm text-muted-foreground">Active Services</div>
+                <div className="text-3xl font-bold text-gradient">{pendingBookings}</div>
+                <div className="text-sm text-muted-foreground">Pending Bookings</div>
               </div>
-              <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-primary rounded-xl flex items-center justify-center">
-                <Car className="text-white" />
+              <div className="w-12 h-12 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-xl flex items-center justify-center">
+                <Clock className="text-white" />
               </div>
             </div>
             <div className="mt-4">
               <div className="progress-bar bg-muted rounded-full h-2">
-                <div className="bg-gradient-to-r from-green-500 to-primary h-2 rounded-full w-4/5 transition-all duration-1000"></div>
+                <div className="bg-gradient-to-r from-yellow-500 to-orange-500 h-2 rounded-full w-2/3 transition-all duration-1000"></div>
               </div>
-              <div className="text-xs text-muted-foreground mt-1">All services active</div>
+              <div className="text-xs text-muted-foreground mt-1">Needs attention</div>
             </div>
           </FloatingCard>
         </div>

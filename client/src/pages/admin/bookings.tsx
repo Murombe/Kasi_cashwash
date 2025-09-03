@@ -72,6 +72,7 @@ export default function AdminBookings() {
     enabled: isAuthenticated && user?.role === 'admin',
   }) as { data: Booking[]; isLoading: boolean };
 
+
   const updateBookingStatusMutation = useMutation({
     mutationFn: async ({ id, status }: { id: string; status: string }) => {
       return apiRequest("PUT", `/api/bookings/${id}/status`, { status });
@@ -142,7 +143,7 @@ export default function AdminBookings() {
     confirmPaymentMutation.mutate({ id: bookingId });
   };
 
-  const getPaymentMethodIcon = (method: string) => {
+  const getPaymentMethodIcon = (method: string | null | undefined) => {
     return method === 'card' ? <CreditCard className="w-4 h-4" /> : <Banknote className="w-4 h-4" />;
   };
 
@@ -495,8 +496,8 @@ export default function AdminBookings() {
                         </div>
                         <div className="flex items-center space-x-4">
                           <div className="flex items-center space-x-1">
-                            {getPaymentMethodIcon(booking.paymentMethod || 'cash')}
-                            <span className="capitalize">{booking.paymentMethod || 'cash'} Payment</span>
+                            {getPaymentMethodIcon(booking.paymentMethod)}
+                            <span className="capitalize">{booking.paymentMethod} Payment</span>
                           </div>
                           <Badge className={getPaymentStatusColor(booking.paymentStatus)}>
                             <span className="capitalize">{booking.paymentStatus}</span>
@@ -567,6 +568,10 @@ export default function AdminBookings() {
                       {/* Payment Confirmation Buttons */}
                       {booking.paymentStatus === 'pending' && booking.status !== 'cancelled' && (
                         <div className="flex space-x-2">
+                          {/* Debug info - temporary */}
+                          <div className="text-xs text-gray-400">
+                            Method: {booking.paymentMethod || 'undefined'} | Status: {booking.paymentStatus}
+                          </div>
                           {booking.paymentMethod === 'cash' && (
                             <Button
                               size="sm"

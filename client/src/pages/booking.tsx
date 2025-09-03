@@ -283,6 +283,7 @@ export default function Booking() {
       manufacturingYear: parseInt(bookingData.manufacturingYear),
       registrationPlate: bookingData.registrationPlate,
       totalAmount: selectedService.price,
+      paymentMethod: bookingData.paymentMethod, // Include the selected payment method
     };
 
     bookingMutation.mutate(bookingPayload);

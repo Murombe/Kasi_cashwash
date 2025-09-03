@@ -64,7 +64,7 @@ export const bookings = pgTable("bookings", {
   manufacturingYear: integer("manufacturing_year").notNull(),
   registrationPlate: varchar("registration_plate", { length: 20 }).notNull(),
   totalAmount: decimal("total_amount", { precision: 10, scale: 2 }).notNull(),
-  paymentMethod: varchar("payment_method", { length: 10 }).default('cash'),
+  ppaymentMethod: varchar("payment_method", { length: 10 }),
   status: varchar("status", { length: 20 }).default('pending'),
   paymentStatus: varchar("payment_status", { length: 20 }).default('pending'),
   createdAt: timestamp("created_at").defaultNow(),
