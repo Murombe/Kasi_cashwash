@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # AquaShine Car Wash Booking System
 
 A modern, full-stack car wash booking platform built with React, Node.js, PostgreSQL, and Stripe payment integration.
@@ -177,3 +178,7 @@ MIT License - See LICENSE file for details
 ---
 
 Built with ❤️ for modern car wash businesses
+=======
+# Kasi_cashwash
+carwash booking system
+>>>>>>> 479105a1654f338d5e947de9ad02af30bb8b8a12
