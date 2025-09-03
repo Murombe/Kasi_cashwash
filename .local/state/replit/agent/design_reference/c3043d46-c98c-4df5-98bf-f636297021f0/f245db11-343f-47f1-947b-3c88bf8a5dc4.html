@@ -1,0 +1,976 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CarWash Pro - Professional Car Wash Services | South Africa</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+    tailwind.config = {
+        theme: {
+            extend: {
+                borderRadius: {
+                    lg: "var(--radius)",
+                    md: "calc(var(--radius) - 2px)",
+                    sm: "calc(var(--radius) - 4px)",
+                },
+                colors: {
+                    background: "var(--background)",
+                    foreground: "var(--foreground)",
+                    card: {
+                        DEFAULT: "var(--card)",
+                        foreground: "var(--card-foreground)",
+                    },
+                    popover: {
+                        DEFAULT: "var(--popover)",
+                        foreground: "var(--popover-foreground)",
+                    },
+                    primary: {
+                        DEFAULT: "var(--primary)",
+                        foreground: "var(--primary-foreground)",
+                    },
+                    secondary: {
+                        DEFAULT: "var(--secondary)",
+                        foreground: "var(--secondary-foreground)",
+                    },
+                    muted: {
+                        DEFAULT: "var(--muted)",
+                        foreground: "var(--muted-foreground)",
+                    },
+                    accent: {
+                        DEFAULT: "var(--accent)",
+                        foreground: "var(--accent-foreground)",
+                    },
+                    destructive: {
+                        DEFAULT: "var(--destructive)",
+                        foreground: "var(--destructive-foreground)",
+                    },
+                    border: "var(--border)",
+                    input: "var(--input)",
+                    ring: "var(--ring)",
+                    chart: {
+                        "1": "var(--chart-1)",
+                        "2": "var(--chart-2)",
+                        "3": "var(--chart-3)",
+                        "4": "var(--chart-4)",
+                        "5": "var(--chart-5)",
+                    }
+                },
+                fontFamily: {
+                    sans: ["var(--font-sans)"],
+                }
+            },
+        }
+    };
+    </script>
+    <style>
+        :root {
+            --background: hsl(0 0% 100%);
+            --foreground: hsl(222 84% 4.9%);
+            --card: hsl(0 0% 100%);
+            --card-foreground: hsl(222 84% 4.9%);
+            --popover: hsl(0 0% 100%);
+            --popover-foreground: hsl(222 84% 4.9%);
+            --primary: hsl(221 83% 53%);
+            --primary-foreground: hsl(210 40% 98%);
+            --secondary: hsl(210 40% 96%);
+            --secondary-foreground: hsl(222 47% 11%);
+            --muted: hsl(210 40% 96%);
+            --muted-foreground: hsl(215 16% 47%);
+            --accent: hsl(158 64% 52%);
+            --accent-foreground: hsl(222 84% 4.9%);
+            --destructive: hsl(0 84% 60%);
+            --destructive-foreground: hsl(210 40% 98%);
+            --border: hsl(214 32% 91%);
+            --input: hsl(214 32% 91%);
+            --ring: hsl(221 83% 53%);
+            --radius: 0.75rem;
+            --chart-1: hsl(221 83% 53%);
+            --chart-2: hsl(158 64% 52%);
+            --chart-3: hsl(197 37% 24%);
+            --chart-4: hsl(43 74% 66%);
+            --chart-5: hsl(27 87% 67%);
+            --font-sans: 'Inter', system-ui, sans-serif;
+        }
+        
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, hsl(221 83% 53%) 0%, hsl(158 64% 52%) 100%);
+        }
+        
+        .service-card:hover {
+            transform: translateY(-4px);
+            transition: all 0.3s ease;
+        }
+        
+        .dashboard-card {
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.95);
+        }
+        
+        .chart-container {
+            height: 300px;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-background text-foreground font-sans">
+
+    <!-- @COMPONENT: NavigationHeader -->
+    <header class="bg-card border-b border-border sticky top-0 z-50 backdrop-blur-sm bg-white/95">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                    <i class="fas fa-car text-primary text-2xl"></i>
+                    <span class="text-2xl font-bold text-primary">CarWash Pro</span>
+                    <span class="bg-accent text-accent-foreground px-2 py-1 rounded-full text-xs font-medium">SA</span>
+                </div>
+                
+                <nav class="hidden md:flex items-center space-x-8">
+                    <a href="#services" class="text-foreground hover:text-primary transition-colors">Services</a>
+                    <a href="#booking" class="text-foreground hover:text-primary transition-colors">Book Now</a>
+                    <a href="#about" class="text-foreground hover:text-primary transition-colors">About</a>
+                    <a href="#contact" class="text-foreground hover:text-primary transition-colors">Contact</a>
+                </nav>
+                
+                <div class="flex items-center space-x-4">
+                    <div class="hidden sm:flex items-center space-x-2 text-sm text-muted-foreground">
+                        <i class="fas fa-map-marker-alt text-primary"></i>
+                        <span>Cape Town, SA</span>
+                    </div>
+                    <button class="bg-primary text-primary-foreground px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors">
+                        <i class="fas fa-user mr-2"></i>Login
+                    </button>
+                    <button class="md:hidden">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+    <!-- @END_COMPONENT: NavigationHeader -->
+
+    <!-- @COMPONENT: HeroSection -->
+    <section class="gradient-bg text-white py-20 relative overflow-hidden">
+        <div class="absolute inset-0 bg-black/20"></div>
+        <!-- Professional car wash service with clean modern equipment -->
+        <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&h=1080'); mix-blend-mode: overlay;"></div>
+        
+        <div class="container mx-auto px-4 relative z-10">
+            <div class="max-w-4xl mx-auto text-center">
+                <h1 class="text-5xl md:text-6xl font-bold mb-6 leading-tight">
+                    Professional Car Wash
+                    <span class="block text-accent">Services in South Africa</span>
+                </h1>
+                <p class="text-xl md:text-2xl mb-8 opacity-90 leading-relaxed">
+                    Premium car cleaning services with eco-friendly products. Book online, pay securely, and experience the difference.
+                </p>
+                
+                <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12">
+                    <button class="bg-accent text-accent-foreground px-8 py-4 rounded-lg text-lg font-semibold hover:bg-accent/90 transition-all transform hover:scale-105">
+                        <i class="fas fa-calendar-alt mr-2"></i>Book Service Now
+                    </button>
+                    <button class="bg-white/20 backdrop-blur-sm text-white px-8 py-4 rounded-lg text-lg font-semibold border border-white/30 hover:bg-white/30 transition-colors">
+                        <i class="fas fa-play mr-2"></i>View Services
+                    </button>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-3xl mx-auto">
+                    <div class="bg-white/10 backdrop-blur-sm rounded-lg p-6 border border-white/20">
+                        <i class="fas fa-clock text-accent text-3xl mb-3"></i>
+                        <h3 class="text-lg font-semibold mb-2">Quick Service</h3>
+                        <p class="text-sm opacity-80">30-90 minute service times</p>
+                    </div>
+                    <div class="bg-white/10 backdrop-blur-sm rounded-lg p-6 border border-white/20">
+                        <i class="fas fa-shield-alt text-accent text-3xl mb-3"></i>
+                        <h3 class="text-lg font-semibold mb-2">Eco-Friendly</h3>
+                        <p class="text-sm opacity-80">Biodegradable cleaning products</p>
+                    </div>
+                    <div class="bg-white/10 backdrop-blur-sm rounded-lg p-6 border border-white/20">
+                        <i class="fas fa-credit-card text-accent text-3xl mb-3"></i>
+                        <h3 class="text-lg font-semibold mb-2">Secure Payment</h3>
+                        <p class="text-sm opacity-80">Card & Cash in ZAR accepted</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- @END_COMPONENT: HeroSection -->
+
+    <!-- @COMPONENT: ServicesSection -->
+    <section id="services" class="py-20 bg-muted/30">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl md:text-5xl font-bold text-foreground mb-6">Our Services</h2>
+                <p class="text-xl text-muted-foreground max-w-2xl mx-auto">
+                    Choose from our range of professional car wash services designed to keep your vehicle looking pristine.
+                </p>
+            </div>
+            
+            <!-- @MAP: services.map(service => ( -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="service-card bg-card rounded-xl shadow-lg p-6 border border-border hover:shadow-xl transition-all">
+                    <!-- Car getting basic exterior wash treatment -->
+                    <div class="h-48 bg-cover bg-center rounded-lg mb-6" style="background-image: url('https://pixabay.com/get/g6cba1d0f002e50a89f1ef74c4f70d2c1e5a9ec81b27f9a4417a0143b59927aca796a04f58e16733df198b96e2185619748f7c9a8bceaf6e6dd3904cef302be8f_1280.jpg');"></div>
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-xl font-semibold text-foreground">Basic Wash</h3>
+                            <span class="bg-primary/10 text-primary px-3 py-1 rounded-full text-sm font-medium">R 150</span>
+                        </div>
+                        <p class="text-muted-foreground">Exterior wash, wheel cleaning, and tire shine. Perfect for regular maintenance.</p>
+                        <ul class="space-y-2 text-sm text-muted-foreground">
+                            <li class="flex items-center"><i class="fas fa-check text-accent mr-2"></i>Exterior pressure wash</li>
+                            <li class="flex items-center"><i class="fas fa-check text-accent mr-2"></i>Wheel & tire cleaning</li>
+                            <li class="flex items-center"><i class="fas fa-check text-accent mr-2"></i>Basic interior vacuum</li>
+                        </ul>
+                        <div class="flex items-center justify-between pt-4 border-t border-border">
+                            <span class="text-sm text-muted-foreground"><i class="fas fa-clock mr-1"></i>30 minutes</span>
+                            <button class="bg-primary text-primary-foreground px-6 py-2 rounded-lg hover:bg-primary/90 transition-colors">
+                                Book Now
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="service-card bg-card rounded-xl shadow-lg p-6 border border-border hover:shadow-xl transition-all">
+                    <!-- Professional interior car detailing service -->
+                    <div class="h-48 bg-cover bg-center rounded-lg mb-6" style="background-image: url('https://images.unsplash.com/photo-1607860108855-64acf2078ed9?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600');"></div>
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-xl font-semibold text-foreground">Premium Detail</h3>
+                            <span class="bg-accent/10 text-accent px-3 py-1 rounded-full text-sm font-medium">R 350</span>
+                        </div>
+                        <p class="text-muted-foreground">Complete interior and exterior detailing with wax protection and leather conditioning.</p>
+                        <ul class="space-y-2 text-sm text-muted-foreground">
+                            <li class="flex items-center"><i class="fas fa-check text-accent mr-2"></i>Full exterior wash & wax</li>
+                            <li class="flex items-center"><i class="fas fa-check text-accent mr-2"></i>Interior deep clean</li>
+                            <li class="flex items-center"><i class="fas fa-check text-accent mr-2"></i>Leather conditioning</li>
+                        </ul>
+                        <div class="flex items-center justify-between pt-4 border-t border-border">
+                            <span class="text-sm text-muted-foreground"><i class="fas fa-clock mr-1"></i>90 minutes</span>
+                            <button class="bg-primary text-primary-foreground px-6 py-2 rounded-lg hover:bg-primary/90 transition-colors">
+                                Book Now
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="service-card bg-card rounded-xl shadow-lg p-6 border border-border hover:shadow-xl transition-all">
+                    <!-- Luxury car receiving VIP wash treatment -->
+                    <div class="h-48 bg-cover bg-center rounded-lg mb-6" style="background-image: url('https://pixabay.com/get/g037fbe1ac0061863f6688d6c73c6617e1c01023c8814e208d2f32cd7b854b10a7630482c23239e4920b38847b00bfcdfffa12203159abdc9207c2fbce20f7465_1280.png');"></div>
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-xl font-semibold text-foreground">VIP Treatment</h3>
+                            <span class="bg-destructive/10 text-destructive px-3 py-1 rounded-full text-sm font-medium">R 550</span>
+                        </div>
+                        <p class="text-muted-foreground">Ultimate luxury service with ceramic coating, paint correction, and premium protection.</p>
+                        <ul class="space-y-2 text-sm text-muted-foreground">
+                            <li class="flex items-center"><i class="fas fa-check text-accent mr-2"></i>Paint correction & polish</li>
+                            <li class="flex items-center"><i class="fas fa-check text-accent mr-2"></i>Ceramic coating application</li>
+                            <li class="flex items-center"><i class="fas fa-check text-accent mr-2"></i>Engine bay cleaning</li>
+                        </ul>
+                        <div class="flex items-center justify-between pt-4 border-t border-border">
+                            <span class="text-sm text-muted-foreground"><i class="fas fa-clock mr-1"></i>2 hours</span>
+                            <button class="bg-primary text-primary-foreground px-6 py-2 rounded-lg hover:bg-primary/90 transition-colors">
+                                Book Now
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- @END_MAP -->
+        </div>
+    </section>
+    <!-- @END_COMPONENT: ServicesSection -->
+
+    <!-- @COMPONENT: BookingSection -->
+    <section id="booking" class="py-20 bg-background">
+        <div class="container mx-auto px-4">
+            <div class="max-w-4xl mx-auto">
+                <div class="text-center mb-12">
+                    <h2 class="text-4xl md:text-5xl font-bold text-foreground mb-6">Book Your Service</h2>
+                    <p class="text-xl text-muted-foreground">
+                        Select your preferred service, choose a convenient time slot, and secure your booking with payment.
+                    </p>
+                </div>
+                
+                <div class="bg-card rounded-xl shadow-xl p-8 border border-border">
+                    <form class="space-y-8">
+                        <!-- Service Selection -->
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                            <div class="space-y-4">
+                                <label class="text-lg font-semibold text-foreground">Select Service</label>
+                                <div class="space-y-3">
+                                    <div class="border border-border rounded-lg p-4 hover:border-primary cursor-pointer transition-colors">
+                                        <div class="flex items-center justify-between">
+                                            <div class="flex items-center space-x-3">
+                                                <input type="radio" name="service" class="text-primary" checked />
+                                                <div>
+                                                    <h4 class="font-medium text-foreground">Basic Wash</h4>
+                                                    <p class="text-sm text-muted-foreground">30 minutes</p>
+                                                </div>
+                                            </div>
+                                            <span class="font-semibold text-primary">R 150</span>
+                                        </div>
+                                    </div>
+                                    <div class="border border-border rounded-lg p-4 hover:border-primary cursor-pointer transition-colors">
+                                        <div class="flex items-center justify-between">
+                                            <div class="flex items-center space-x-3">
+                                                <input type="radio" name="service" class="text-primary" />
+                                                <div>
+                                                    <h4 class="font-medium text-foreground">Premium Detail</h4>
+                                                    <p class="text-sm text-muted-foreground">90 minutes</p>
+                                                </div>
+                                            </div>
+                                            <span class="font-semibold text-accent">R 350</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Vehicle Information -->
+                            <div class="space-y-4">
+                                <label class="text-lg font-semibold text-foreground">Vehicle Information</label>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <select class="bg-input border border-border rounded-lg px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-ring">
+                                        <option>Vehicle Type</option>
+                                        <option>Car</option>
+                                        <option>SUV</option>
+                                        <option>Truck</option>
+                                        <option>Van</option>
+                                    </select>
+                                    <select class="bg-input border border-border rounded-lg px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-ring">
+                                        <option>Brand</option>
+                                        <option>Toyota</option>
+                                        <option>BMW</option>
+                                        <option>Mercedes</option>
+                                        <option>Volkswagen</option>
+                                    </select>
+                                    <input type="text" placeholder="Model" class="bg-input border border-border rounded-lg px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-ring" />
+                                    <input type="text" placeholder="License Plate" class="bg-input border border-border rounded-lg px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-ring" />
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Date and Time Selection -->
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                            <div class="space-y-4">
+                                <label class="text-lg font-semibold text-foreground">Select Date</label>
+                                <input type="date" class="w-full bg-input border border-border rounded-lg px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-ring" />
+                            </div>
+                            
+                            <div class="space-y-4">
+                                <label class="text-lg font-semibold text-foreground">Available Time Slots</label>
+                                <div class="grid grid-cols-3 gap-2">
+                                    <button type="button" class="bg-primary text-primary-foreground px-3 py-2 rounded-lg text-sm hover:bg-primary/90 transition-colors">09:00</button>
+                                    <button type="button" class="bg-muted text-muted-foreground px-3 py-2 rounded-lg text-sm border border-border hover:bg-muted/80 transition-colors">10:30</button>
+                                    <button type="button" class="bg-muted text-muted-foreground px-3 py-2 rounded-lg text-sm border border-border hover:bg-muted/80 transition-colors">12:00</button>
+                                    <button type="button" class="bg-muted text-muted-foreground px-3 py-2 rounded-lg text-sm border border-border hover:bg-muted/80 transition-colors">13:30</button>
+                                    <button type="button" class="bg-muted text-muted-foreground px-3 py-2 rounded-lg text-sm border border-border hover:bg-muted/80 transition-colors">15:00</button>
+                                    <button type="button" class="bg-destructive/20 text-destructive px-3 py-2 rounded-lg text-sm cursor-not-allowed">16:30</button>
+                                </div>
+                                <p class="text-xs text-muted-foreground">
+                                    <span class="inline-block w-3 h-3 bg-primary rounded mr-2"></span>Selected
+                                    <span class="inline-block w-3 h-3 bg-muted border border-border rounded mr-2 ml-4"></span>Available
+                                    <span class="inline-block w-3 h-3 bg-destructive/20 rounded mr-2 ml-4"></span>Unavailable
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <!-- Payment Method -->
+                        <div class="space-y-4">
+                            <label class="text-lg font-semibold text-foreground">Payment Method</label>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="border border-border rounded-lg p-4 hover:border-primary cursor-pointer transition-colors">
+                                    <div class="flex items-center space-x-3">
+                                        <input type="radio" name="payment" class="text-primary" />
+                                        <i class="fas fa-credit-card text-xl text-primary"></i>
+                                        <div>
+                                            <h4 class="font-medium text-foreground">Card Payment</h4>
+                                            <p class="text-sm text-muted-foreground">Visa, MasterCard (ZAR)</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="border border-border rounded-lg p-4 hover:border-primary cursor-pointer transition-colors">
+                                    <div class="flex items-center space-x-3">
+                                        <input type="radio" name="payment" class="text-primary" checked />
+                                        <i class="fas fa-money-bill-wave text-xl text-accent"></i>
+                                        <div>
+                                            <h4 class="font-medium text-foreground">Cash Payment</h4>
+                                            <p class="text-sm text-muted-foreground">Pay on arrival</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Booking Summary -->
+                        <div class="bg-muted/50 rounded-lg p-6 space-y-4">
+                            <h3 class="text-lg font-semibold text-foreground">Booking Summary</h3>
+                            <div class="space-y-2">
+                                <div class="flex justify-between">
+                                    <span class="text-muted-foreground">Service:</span>
+                                    <span class="text-foreground font-medium">Basic Wash</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-muted-foreground">Date & Time:</span>
+                                    <span class="text-foreground font-medium">2024-01-15, 09:00 AM</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-muted-foreground">Duration:</span>
+                                    <span class="text-foreground font-medium">30 minutes</span>
+                                </div>
+                                <div class="border-t border-border pt-2 mt-4">
+                                    <div class="flex justify-between text-lg">
+                                        <span class="font-semibold text-foreground">Total:</span>
+                                        <span class="font-bold text-primary">R 150.00</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="w-full bg-accent text-accent-foreground py-4 rounded-lg text-lg font-semibold hover:bg-accent/90 transition-colors">
+                            <i class="fas fa-lock mr-2"></i>Secure Booking
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- @END_COMPONENT: BookingSection -->
+
+    <!-- @COMPONENT: AdminDashboard -->
+    <section class="py-20 bg-muted/30" style="display: none;" id="admin-dashboard">
+        <div class="container mx-auto px-4">
+            <div class="flex items-center justify-between mb-8">
+                <div>
+                    <h1 class="text-3xl font-bold text-foreground">Admin Dashboard</h1>
+                    <p class="text-muted-foreground">Manage your car wash business operations</p>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button class="bg-accent text-accent-foreground px-4 py-2 rounded-lg hover:bg-accent/90 transition-colors">
+                        <i class="fas fa-download mr-2"></i>Export Data
+                    </button>
+                    <div class="bg-card rounded-lg px-4 py-2 border border-border">
+                        <span class="text-sm text-muted-foreground">Last updated: </span>
+                        <span class="text-sm font-medium text-foreground">2 minutes ago</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Analytics Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div class="bg-card rounded-xl p-6 border border-border">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-muted-foreground mb-1">Total Bookings</p>
+                            <p class="text-2xl font-bold text-foreground">1,247</p>
+                            <p class="text-sm text-accent">+12% from last month</p>
+                        </div>
+                        <div class="bg-primary/10 rounded-lg p-3">
+                            <i class="fas fa-calendar-check text-primary text-xl"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-card rounded-xl p-6 border border-border">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-muted-foreground mb-1">Revenue (ZAR)</p>
+                            <p class="text-2xl font-bold text-foreground">R 87,450</p>
+                            <p class="text-sm text-accent">+8% from last month</p>
+                        </div>
+                        <div class="bg-accent/10 rounded-lg p-3">
+                            <i class="fas fa-chart-line text-accent text-xl"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-card rounded-xl p-6 border border-border">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-muted-foreground mb-1">Active Users</p>
+                            <p class="text-2xl font-bold text-foreground">893</p>
+                            <p class="text-sm text-destructive">-3% from last month</p>
+                        </div>
+                        <div class="bg-chart-3/10 rounded-lg p-3">
+                            <i class="fas fa-users text-chart-3 text-xl"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-card rounded-xl p-6 border border-border">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-muted-foreground mb-1">Avg Rating</p>
+                            <p class="text-2xl font-bold text-foreground">4.8</p>
+                            <p class="text-sm text-accent">+0.2 from last month</p>
+                        </div>
+                        <div class="bg-chart-4/10 rounded-lg p-3">
+                            <i class="fas fa-star text-chart-4 text-xl"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Charts and Tables -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                <!-- Revenue Chart -->
+                <div class="bg-card rounded-xl p-6 border border-border">
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="text-lg font-semibold text-foreground">Revenue Analytics</h3>
+                        <select class="bg-input border border-border rounded-lg px-3 py-2 text-sm text-foreground">
+                            <option>Last 7 days</option>
+                            <option>Last 30 days</option>
+                            <option>Last 3 months</option>
+                        </select>
+                    </div>
+                    <!-- Interactive chart showing daily revenue trends -->
+                    <div class="chart-container bg-muted/20 rounded-lg flex items-center justify-center">
+                        <div class="text-center text-muted-foreground">
+                            <i class="fas fa-chart-area text-4xl mb-4 text-primary"></i>
+                            <p>Interactive Revenue Chart</p>
+                            <p class="text-sm">(Chart.js integration)</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Service Performance -->
+                <div class="bg-card rounded-xl p-6 border border-border">
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="text-lg font-semibold text-foreground">Service Performance</h3>
+                        <button class="text-primary hover:text-primary/80 text-sm">View All</button>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="font-medium text-foreground">Basic Wash</p>
+                                <p class="text-sm text-muted-foreground">456 bookings</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-sm font-medium text-foreground">R 68,400</p>
+                                <div class="w-20 bg-muted rounded-full h-2">
+                                    <div class="bg-primary h-2 rounded-full" style="width: 75%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="font-medium text-foreground">Premium Detail</p>
+                                <p class="text-sm text-muted-foreground">234 bookings</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-sm font-medium text-foreground">R 81,900</p>
+                                <div class="w-20 bg-muted rounded-full h-2">
+                                    <div class="bg-accent h-2 rounded-full" style="width: 65%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="font-medium text-foreground">VIP Treatment</p>
+                                <p class="text-sm text-muted-foreground">89 bookings</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-sm font-medium text-foreground">R 48,950</p>
+                                <div class="w-20 bg-muted rounded-full h-2">
+                                    <div class="bg-chart-4 h-2 rounded-full" style="width: 45%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Recent Bookings Table -->
+            <div class="bg-card rounded-xl border border-border overflow-hidden">
+                <div class="flex items-center justify-between p-6 border-b border-border">
+                    <h3 class="text-lg font-semibold text-foreground">Recent Bookings</h3>
+                    <div class="flex items-center space-x-4">
+                        <div class="relative">
+                            <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground"></i>
+                            <input type="text" placeholder="Search bookings..." class="bg-input border border-border rounded-lg pl-10 pr-4 py-2 text-sm">
+                        </div>
+                        <button class="bg-primary text-primary-foreground px-4 py-2 rounded-lg text-sm hover:bg-primary/90">
+                            <i class="fas fa-filter mr-2"></i>Filter
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="bg-muted/50">
+                            <tr>
+                                <th class="text-left p-4 text-sm font-medium text-muted-foreground">Customer</th>
+                                <th class="text-left p-4 text-sm font-medium text-muted-foreground">Service</th>
+                                <th class="text-left p-4 text-sm font-medium text-muted-foreground">Date & Time</th>
+                                <th class="text-left p-4 text-sm font-medium text-muted-foreground">Vehicle</th>
+                                <th class="text-left p-4 text-sm font-medium text-muted-foreground">Status</th>
+                                <th class="text-left p-4 text-sm font-medium text-muted-foreground">Amount</th>
+                                <th class="text-left p-4 text-sm font-medium text-muted-foreground">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-border">
+                            <tr class="hover:bg-muted/30">
+                                <td class="p-4">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-8 h-8 bg-primary rounded-full flex items-center justify-center text-primary-foreground text-sm font-medium">JD</div>
+                                        <div>
+                                            <p class="font-medium text-foreground">John Doe</p>
+                                            <p class="text-sm text-muted-foreground">john@example.com</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="p-4 text-sm text-foreground">Basic Wash</td>
+                                <td class="p-4 text-sm text-foreground">Jan 15, 2024 09:00</td>
+                                <td class="p-4 text-sm text-foreground">Toyota Camry</td>
+                                <td class="p-4">
+                                    <span class="bg-accent/10 text-accent px-2 py-1 rounded-full text-xs font-medium">Completed</span>
+                                </td>
+                                <td class="p-4 text-sm font-medium text-foreground">R 150</td>
+                                <td class="p-4">
+                                    <button class="text-primary hover:text-primary/80 text-sm mr-3">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="text-muted-foreground hover:text-foreground text-sm">
+                                        <i class="fas fa-ellipsis-h"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr class="hover:bg-muted/30">
+                                <td class="p-4">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-8 h-8 bg-accent rounded-full flex items-center justify-center text-accent-foreground text-sm font-medium">SM</div>
+                                        <div>
+                                            <p class="font-medium text-foreground">Sarah Mitchell</p>
+                                            <p class="text-sm text-muted-foreground">sarah@example.com</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="p-4 text-sm text-foreground">Premium Detail</td>
+                                <td class="p-4 text-sm text-foreground">Jan 15, 2024 10:30</td>
+                                <td class="p-4 text-sm text-foreground">BMW X5</td>
+                                <td class="p-4">
+                                    <span class="bg-primary/10 text-primary px-2 py-1 rounded-full text-xs font-medium">In Progress</span>
+                                </td>
+                                <td class="p-4 text-sm font-medium text-foreground">R 350</td>
+                                <td class="p-4">
+                                    <button class="text-primary hover:text-primary/80 text-sm mr-3">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="text-muted-foreground hover:text-foreground text-sm">
+                                        <i class="fas fa-ellipsis-h"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="flex items-center justify-between p-4 border-t border-border">
+                    <p class="text-sm text-muted-foreground">Showing 1-10 of 247 bookings</p>
+                    <div class="flex items-center space-x-2">
+                        <button class="bg-muted text-muted-foreground px-3 py-1 rounded text-sm hover:bg-muted/80">Previous</button>
+                        <button class="bg-primary text-primary-foreground px-3 py-1 rounded text-sm">1</button>
+                        <button class="bg-muted text-muted-foreground px-3 py-1 rounded text-sm hover:bg-muted/80">2</button>
+                        <button class="bg-muted text-muted-foreground px-3 py-1 rounded text-sm hover:bg-muted/80">3</button>
+                        <button class="bg-muted text-muted-foreground px-3 py-1 rounded text-sm hover:bg-muted/80">Next</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- @END_COMPONENT: AdminDashboard -->
+
+    <!-- @COMPONENT: TestimonialsSection -->
+    <section class="py-20 bg-background">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl md:text-5xl font-bold text-foreground mb-6">What Our Customers Say</h2>
+                <p class="text-xl text-muted-foreground max-w-2xl mx-auto">
+                    Don't just take our word for it. Here's what our satisfied customers have to say about our services.
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="bg-card rounded-xl p-6 border border-border shadow-lg">
+                    <div class="flex items-center mb-4">
+                        <div class="flex text-chart-4">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <span class="ml-2 text-sm text-muted-foreground">5.0</span>
+                    </div>
+                    <p class="text-foreground mb-6">"Exceptional service! My car has never looked better. The team was professional and efficient. Highly recommend!"</p>
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 bg-primary rounded-full flex items-center justify-center text-primary-foreground font-semibold">MJ</div>
+                        <div class="ml-3">
+                            <p class="font-medium text-foreground">Michael Johnson</p>
+                            <p class="text-sm text-muted-foreground">Cape Town</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-card rounded-xl p-6 border border-border shadow-lg">
+                    <div class="flex items-center mb-4">
+                        <div class="flex text-chart-4">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <span class="ml-2 text-sm text-muted-foreground">5.0</span>
+                    </div>
+                    <p class="text-foreground mb-6">"Quick, convenient, and thorough. The online booking system made it so easy to schedule my appointment."</p>
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 bg-accent rounded-full flex items-center justify-center text-accent-foreground font-semibold">AL</div>
+                        <div class="ml-3">
+                            <p class="font-medium text-foreground">Amanda Lee</p>
+                            <p class="text-sm text-muted-foreground">Johannesburg</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-card rounded-xl p-6 border border-border shadow-lg">
+                    <div class="flex items-center mb-4">
+                        <div class="flex text-chart-4">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="far fa-star"></i>
+                        </div>
+                        <span class="ml-2 text-sm text-muted-foreground">4.8</span>
+                    </div>
+                    <p class="text-foreground mb-6">"Great value for money. The VIP treatment was worth every rand. Will definitely be returning!"</p>
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 bg-chart-3 rounded-full flex items-center justify-center text-white font-semibold">DW</div>
+                        <div class="ml-3">
+                            <p class="font-medium text-foreground">David Wilson</p>
+                            <p class="text-sm text-muted-foreground">Durban</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- @END_COMPONENT: TestimonialsSection -->
+
+    <!-- @COMPONENT: Footer -->
+    <footer class="bg-foreground text-white py-16">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
+                <div class="space-y-4">
+                    <div class="flex items-center space-x-2">
+                        <i class="fas fa-car text-primary text-2xl"></i>
+                        <span class="text-2xl font-bold">CarWash Pro</span>
+                    </div>
+                    <p class="text-gray-300 leading-relaxed">
+                        Professional car wash services across South Africa. We bring convenience and quality to your vehicle care needs.
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-300 hover:text-primary transition-colors">
+                            <i class="fab fa-facebook-f text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-300 hover:text-primary transition-colors">
+                            <i class="fab fa-twitter text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-300 hover:text-primary transition-colors">
+                            <i class="fab fa-instagram text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-300 hover:text-primary transition-colors">
+                            <i class="fab fa-linkedin-in text-xl"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="space-y-4">
+                    <h3 class="text-lg font-semibold text-white">Services</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors">Basic Wash</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors">Premium Detail</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors">VIP Treatment</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors">Interior Cleaning</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors">Wax & Polish</a></li>
+                    </ul>
+                </div>
+                
+                <div class="space-y-4">
+                    <h3 class="text-lg font-semibold text-white">Company</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors">About Us</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors">Locations</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors">Careers</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors">Press</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors">Contact</a></li>
+                    </ul>
+                </div>
+                
+                <div class="space-y-4">
+                    <h3 class="text-lg font-semibold text-white">Contact Info</h3>
+                    <div class="space-y-3">
+                        <div class="flex items-center space-x-3">
+                            <i class="fas fa-map-marker-alt text-primary"></i>
+                            <span class="text-gray-300">123 Main Street, Cape Town, SA</span>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <i class="fas fa-phone text-primary"></i>
+                            <span class="text-gray-300">+27 21 123 4567</span>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <i class="fas fa-envelope text-primary"></i>
+                            <span class="text-gray-300">info@carwashpro.co.za</span>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <i class="fas fa-clock text-primary"></i>
+                            <span class="text-gray-300">Mon-Sat: 8AM-6PM</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-700 pt-8 mt-8">
+                <div class="flex flex-col md:flex-row items-center justify-between">
+                    <p class="text-gray-300 text-sm mb-4 md:mb-0">
+                        © 2024 CarWash Pro. All rights reserved.
+                    </p>
+                    <div class="flex items-center space-x-6">
+                        <a href="#" class="text-gray-300 hover:text-white text-sm transition-colors">Privacy Policy</a>
+                        <a href="#" class="text-gray-300 hover:text-white text-sm transition-colors">Terms of Service</a>
+                        <a href="#" class="text-gray-300 hover:text-white text-sm transition-colors">Cookie Policy</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <!-- @END_COMPONENT: Footer -->
+
+    <!-- @COMPONENT: MobileMenu (Hidden by default) -->
+    <div id="mobile-menu" class="fixed inset-0 bg-black/50 z-50 hidden">
+        <div class="bg-card w-64 h-full shadow-xl">
+            <div class="p-6 border-b border-border">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-2">
+                        <i class="fas fa-car text-primary text-xl"></i>
+                        <span class="text-xl font-bold text-foreground">CarWash Pro</span>
+                    </div>
+                    <button class="text-muted-foreground hover:text-foreground">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+            </div>
+            <nav class="p-6 space-y-4">
+                <a href="#services" class="block text-foreground hover:text-primary transition-colors py-2">Services</a>
+                <a href="#booking" class="block text-foreground hover:text-primary transition-colors py-2">Book Now</a>
+                <a href="#about" class="block text-foreground hover:text-primary transition-colors py-2">About</a>
+                <a href="#contact" class="block text-foreground hover:text-primary transition-colors py-2">Contact</a>
+                <div class="pt-4 border-t border-border">
+                    <button class="w-full bg-primary text-primary-foreground px-4 py-3 rounded-lg hover:bg-primary/90 transition-colors">
+                        <i class="fas fa-user mr-2"></i>Login / Register
+                    </button>
+                </div>
+            </nav>
+        </div>
+    </div>
+    <!-- @END_COMPONENT: MobileMenu -->
+
+    <script>
+        // TODO: Implement business logic, API calls, or state management
+        
+        // Simple demo functionality - DO NOT IMPLEMENT FULL BUSINESS LOGIC
+        (function() {
+            // Mobile menu toggle
+            const mobileMenuButton = document.querySelector('.md\\:hidden button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            
+            if (mobileMenuButton && mobileMenu) {
+                mobileMenuButton.addEventListener('click', () => {
+                    mobileMenu.classList.remove('hidden');
+                });
+                
+                mobileMenu.addEventListener('click', (e) => {
+                    if (e.target === mobileMenu || e.target.closest('.fas.fa-times')) {
+                        mobileMenu.classList.add('hidden');
+                    }
+                });
+            }
+            
+            // Admin dashboard toggle (demo)
+            const loginButton = document.querySelector('header button');
+            const adminDashboard = document.getElementById('admin-dashboard');
+            
+            if (loginButton && adminDashboard) {
+                loginButton.addEventListener('click', () => {
+                    // Toggle admin dashboard visibility (demo only)
+                    if (adminDashboard.style.display === 'none') {
+                        adminDashboard.style.display = 'block';
+                        adminDashboard.scrollIntoView({ behavior: 'smooth' });
+                        loginButton.innerHTML = '<i class="fas fa-sign-out-alt mr-2"></i>Logout';
+                    } else {
+                        adminDashboard.style.display = 'none';
+                        loginButton.innerHTML = '<i class="fas fa-user mr-2"></i>Login';
+                    }
+                });
+            }
+            
+            // Smooth scrolling for navigation links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                });
+            });
+            
+            // Service card interactions
+            document.querySelectorAll('.service-card').forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-8px)';
+                });
+                
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                });
+            });
+            
+            // Time slot selection
+            document.querySelectorAll('button[type="button"]').forEach(button => {
+                if (button.textContent.match(/^\d{2}:\d{2}$/)) {
+                    button.addEventListener('click', function() {
+                        // Remove selection from other time slots
+                        document.querySelectorAll('button[type="button"]').forEach(btn => {
+                            if (btn.textContent.match(/^\d{2}:\d{2}$/)) {
+                                btn.classList.remove('bg-primary', 'text-primary-foreground');
+                                btn.classList.add('bg-muted', 'text-muted-foreground', 'border', 'border-border');
+                            }
+                        });
+                        
+                        // Select this time slot
+                        this.classList.remove('bg-muted', 'text-muted-foreground', 'border', 'border-border');
+                        this.classList.add('bg-primary', 'text-primary-foreground');
+                    });
+                }
+            });
+            
+            // Form validation demo
+            const bookingForm = document.querySelector('#booking form');
+            if (bookingForm) {
+                bookingForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    // Show success message (demo only)
+                    alert('Booking successful! (Demo - no actual booking created)');
+                });
+            }
+        })();
+    </script>
+</body>
+</html>

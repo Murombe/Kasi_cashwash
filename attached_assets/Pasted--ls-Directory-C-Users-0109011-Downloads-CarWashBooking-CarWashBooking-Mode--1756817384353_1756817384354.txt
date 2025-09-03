@@ -1,0 +1,51 @@
+ ls
+
+
+    Directory: C:\Users\0109011\Downloads\CarWashBooking\CarWashBooking
+
+
+Mode                 LastWriteTime         Length Name                                                                                                          
+----                 -------------         ------ ----
+d-----        2025/09/02     13:10                .config
+d-----        2025/09/02     13:10                .git
+d-----        2025/09/02     13:10                .local
+d-----        2025/09/02     13:10                attached_assets                                                                                               
+d-----        2025/09/02     13:10                client
+d-----        2025/09/02     14:41                node_modules
+d-----        2025/09/02     14:36                server
+d-----        2025/09/02     13:10                shared
+-a----        2025/09/02     14:23            527 .env                                                                                                          
+-a----        2025/09/02     13:10             67 .gitignore
+-a----        2025/09/02     13:10            820 .replit
+-a----        2025/09/02     13:10            459 components.json
+-a----        2025/09/02     14:32            256 drizzle.config.ts
+-a----        2025/09/02     13:10           5083 MongoDB-Setup-Instructions.md
+-a----        2025/09/02     14:41         312810 package-lock.json
+-a----        2025/09/02     14:41           4020 package.json
+-a----        2025/09/02     13:10             80 postcss.config.js
+-a----        2025/09/02     13:10           5341 replit.md
+-a----        2025/09/02     13:10           3904 tailwind.config.ts
+-a----        2025/09/02     13:10            657 tsconfig.json
+-a----        2025/09/02     13:10            971 vite.config.ts
+
+
+PS C:\Users\0109011\Downloads\CarWashBooking\CarWashBooking> node test-db.js
+node:internal/modules/cjs/loader:1386
+  throw err;
+  ^
+
+Error: Cannot find module 'C:\Users\0109011\Downloads\CarWashBooking\CarWashBooking\test-db.js'
+    at Function._resolveFilename (node:internal/modules/cjs/loader:1383:15)
+    at defaultResolveImpl (node:internal/modules/cjs/loader:1025:19)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1030:22)
+    at Function._load (node:internal/modules/cjs/loader:1192:37)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:237:24)
+    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:171:5)
+    at node:internal/main/run_main_module:36:49 {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: []
+}
+
+Node.js v22.19.0
+PS C:\Users\0109011\Downloads\CarWashBooking\CarWashBooking>

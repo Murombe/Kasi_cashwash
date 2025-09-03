@@ -1,0 +1,1178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SparkClean Car Wash - Professional Car Wash Services in South Africa</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+    tailwind.config = {
+        theme: {
+            extend: {
+                borderRadius: {
+                    lg: "var(--radius)",
+                    md: "calc(var(--radius) - 2px)",
+                    sm: "calc(var(--radius) - 4px)",
+                },
+                colors: {
+                    background: "var(--background)",
+                    foreground: "var(--foreground)",
+                    card: {
+                        DEFAULT: "var(--card)",
+                        foreground: "var(--card-foreground)",
+                    },
+                    popover: {
+                        DEFAULT: "var(--popover)",
+                        foreground: "var(--popover-foreground)",
+                    },
+                    primary: {
+                        DEFAULT: "var(--primary)",
+                        foreground: "var(--primary-foreground)",
+                    },
+                    secondary: {
+                        DEFAULT: "var(--secondary)",
+                        foreground: "var(--secondary-foreground)",
+                    },
+                    muted: {
+                        DEFAULT: "var(--muted)",
+                        foreground: "var(--muted-foreground)",
+                    },
+                    accent: {
+                        DEFAULT: "var(--accent)",
+                        foreground: "var(--accent-foreground)",
+                    },
+                    destructive: {
+                        DEFAULT: "var(--destructive)",
+                        foreground: "var(--destructive-foreground)",
+                    },
+                    border: "var(--border)",
+                    input: "var(--input)",
+                    ring: "var(--ring)",
+                }
+            },
+        }
+    };
+    </script>
+    <style>
+        :root {
+            --background: hsl(210 40% 96%);
+            --foreground: hsl(210 20% 15%);
+            --card: hsl(0 0% 100%);
+            --card-foreground: hsl(210 20% 15%);
+            --popover: hsl(0 0% 100%);
+            --popover-foreground: hsl(210 20% 15%);
+            --primary: hsl(210 100% 50%);
+            --primary-foreground: hsl(0 0% 100%);
+            --secondary: hsl(210 40% 94%);
+            --secondary-foreground: hsl(210 40% 20%);
+            --muted: hsl(210 40% 94%);
+            --muted-foreground: hsl(210 20% 45%);
+            --accent: hsl(180 50% 45%);
+            --accent-foreground: hsl(0 0% 100%);
+            --destructive: hsl(0 84% 60%);
+            --destructive-foreground: hsl(0 0% 100%);
+            --border: hsl(210 40% 85%);
+            --input: hsl(210 40% 85%);
+            --ring: hsl(210 100% 50%);
+            --radius: 0.5rem;
+        }
+        
+        .dark {
+            --background: hsl(210 40% 8%);
+            --foreground: hsl(210 40% 95%);
+            --card: hsl(210 40% 12%);
+            --card-foreground: hsl(210 40% 95%);
+            --popover: hsl(210 40% 12%);
+            --popover-foreground: hsl(210 40% 95%);
+            --primary: hsl(210 100% 60%);
+            --primary-foreground: hsl(210 40% 8%);
+            --secondary: hsl(210 40% 16%);
+            --secondary-foreground: hsl(210 40% 85%);
+            --muted: hsl(210 40% 16%);
+            --muted-foreground: hsl(210 40% 60%);
+            --accent: hsl(180 50% 55%);
+            --accent-foreground: hsl(210 40% 8%);
+            --destructive: hsl(0 62% 50%);
+            --destructive-foreground: hsl(0 0% 100%);
+            --border: hsl(210 40% 20%);
+            --input: hsl(210 40% 20%);
+            --ring: hsl(210 100% 60%);
+        }
+        
+        .hero-gradient {
+            background: linear-gradient(135deg, hsl(210 100% 50%) 0%, hsl(180 50% 45%) 100%);
+        }
+        
+        .service-card:hover {
+            transform: translateY(-2px);
+            transition: transform 0.2s ease-in-out;
+        }
+        
+        .booking-step {
+            opacity: 0.6;
+        }
+        
+        .booking-step.active {
+            opacity: 1;
+        }
+        
+        .admin-sidebar {
+            transition: width 0.3s ease-in-out;
+        }
+        
+        @media (max-width: 768px) {
+            .admin-sidebar.collapsed {
+                width: 4rem;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-background text-foreground">
+    <!-- @COMPONENT: Navigation [main navigation with auth states] -->
+    <nav class="bg-card border-b border-border sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <h1 class="text-2xl font-bold text-primary">
+                            <i class="fas fa-car mr-2"></i>SparkClean
+                        </h1>
+                    </div>
+                    <div class="hidden md:block ml-8">
+                        <div class="flex items-baseline space-x-4">
+                            <a href="#" class="text-foreground hover:text-primary px-3 py-2 rounded-md text-sm font-medium">Home</a>
+                            <a href="#services" class="text-muted-foreground hover:text-primary px-3 py-2 rounded-md text-sm font-medium">Services</a>
+                            <a href="#booking" class="text-muted-foreground hover:text-primary px-3 py-2 rounded-md text-sm font-medium">Book Now</a>
+                            <a href="#contact" class="text-muted-foreground hover:text-primary px-3 py-2 rounded-md text-sm font-medium">Contact</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <!-- User not logged in state -->
+                    <div id="auth-buttons" class="hidden md:flex items-center space-x-2">
+                        <button onclick="showLoginModal()" class="text-muted-foreground hover:text-primary px-3 py-2 rounded-md text-sm font-medium">
+                            Sign In
+                        </button>
+                        <button onclick="showSignupModal()" class="bg-primary text-primary-foreground px-4 py-2 rounded-md text-sm font-medium hover:bg-primary/90">
+                            Sign Up
+                        </button>
+                    </div>
+                    
+                    <!-- User logged in state (hidden by default) -->
+                    <div id="user-menu" class="hidden relative">
+                        <button onclick="toggleUserDropdown()" class="flex items-center space-x-2 text-foreground hover:text-primary">
+                            <img class="h-8 w-8 rounded-full" src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=32&h=32" alt="User avatar">
+                            <span data-bind="user.name">John Doe</span>
+                            <i class="fas fa-chevron-down text-xs"></i>
+                        </button>
+                        <div id="user-dropdown" class="hidden absolute right-0 mt-2 w-48 bg-popover rounded-md shadow-lg py-1 z-50">
+                            <a href="#profile" class="block px-4 py-2 text-sm text-popover-foreground hover:bg-muted">My Profile</a>
+                            <a href="#bookings" class="block px-4 py-2 text-sm text-popover-foreground hover:bg-muted">My Bookings</a>
+                            <button onclick="showAdminDashboard()" class="w-full text-left px-4 py-2 text-sm text-popover-foreground hover:bg-muted admin-only hidden">
+                                Admin Dashboard
+                            </button>
+                            <hr class="my-1">
+                            <button onclick="logout()" class="w-full text-left px-4 py-2 text-sm text-destructive hover:bg-muted">
+                                Sign Out
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <button class="md:hidden text-foreground hover:text-primary">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+    <!-- @END_COMPONENT: Navigation -->
+
+    <!-- @COMPONENT: HeroSection [main landing hero with booking CTA] -->
+    <section class="hero-gradient text-white py-16 md:py-24">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                <div>
+                    <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-6">
+                        Professional Car Wash Services in 
+                        <span class="text-accent">South Africa</span>
+                    </h1>
+                    <p class="text-xl md:text-2xl mb-8 text-white/90">
+                        Experience premium car wash services with convenient online booking. We bring the shine back to your vehicle with eco-friendly products and expert care.
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <button onclick="scrollToBooking()" class="bg-white text-primary font-semibold px-8 py-4 rounded-lg hover:bg-white/90 transition-colors">
+                            Book Service Now
+                        </button>
+                        <button onclick="scrollToServices()" class="border-2 border-white text-white font-semibold px-8 py-4 rounded-lg hover:bg-white/10 transition-colors">
+                            View Services
+                        </button>
+                    </div>
+                    <div class="mt-8 flex items-center space-x-6 text-white/80">
+                        <div class="flex items-center">
+                            <i class="fas fa-shield-alt mr-2"></i>
+                            <span>Insured Service</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="fas fa-leaf mr-2"></i>
+                            <span>Eco-Friendly</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="relative">
+                    <!-- Professional car wash service image -->
+                    <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&h=600" 
+                         alt="Professional car wash service in action" 
+                         class="rounded-2xl shadow-2xl w-full h-auto">
+                    <div class="absolute -bottom-6 -left-6 bg-card text-foreground p-6 rounded-xl shadow-lg">
+                        <div class="flex items-center space-x-4">
+                            <div class="bg-primary/10 p-3 rounded-full">
+                                <i class="fas fa-clock text-primary"></i>
+                            </div>
+                            <div>
+                                <p class="text-sm text-muted-foreground">Service Time</p>
+                                <p class="font-semibold">30-90 mins</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- @END_COMPONENT: HeroSection -->
+
+    <!-- @COMPONENT: ServicesSection [service cards with pricing] -->
+    <section id="services" class="py-16 md:py-24 bg-card">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-foreground mb-4">
+                    Our Premium Services
+                </h2>
+                <p class="text-xl text-muted-foreground">
+                    Choose from our range of professional car wash packages
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- @MAP: services.map(service => ( -->
+                <div class="service-card bg-card border border-border rounded-xl p-6 shadow-sm hover:shadow-md transition-all">
+                    <!-- Basic wash service image -->
+                    <img src="https://images.unsplash.com/photo-1607860108855-64acf2078ed9?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&h=250" 
+                         alt="Basic car wash service" 
+                         class="w-full h-48 object-cover rounded-lg mb-4">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-xl font-semibold text-foreground" data-bind="service.name">Basic Wash</h3>
+                        <span class="bg-primary/10 text-primary px-3 py-1 rounded-full text-sm font-medium">
+                            R<span data-bind="service.price">150</span>
+                        </span>
+                    </div>
+                    <p class="text-muted-foreground mb-4" data-bind="service.description">
+                        External wash, tire cleaning, and interior vacuum. Perfect for regular maintenance.
+                    </p>
+                    <div class="flex items-center text-sm text-muted-foreground mb-4">
+                        <i class="fas fa-clock mr-2"></i>
+                        <span data-bind="service.duration">30 minutes</span>
+                    </div>
+                    <ul class="space-y-2 mb-6">
+                        <li class="flex items-center text-sm">
+                            <i class="fas fa-check text-accent mr-2"></i>
+                            <span>Exterior wash & rinse</span>
+                        </li>
+                        <li class="flex items-center text-sm">
+                            <i class="fas fa-check text-accent mr-2"></i>
+                            <span>Tire & rim cleaning</span>
+                        </li>
+                        <li class="flex items-center text-sm">
+                            <i class="fas fa-check text-accent mr-2"></i>
+                            <span>Interior vacuum</span>
+                        </li>
+                    </ul>
+                    <button onclick="selectService('basic')" class="w-full bg-primary text-primary-foreground py-3 rounded-lg hover:bg-primary/90 transition-colors">
+                        Select Service
+                    </button>
+                </div>
+
+                <div class="service-card bg-card border border-border rounded-xl p-6 shadow-sm hover:shadow-md transition-all relative">
+                    <div class="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                        <span class="bg-accent text-accent-foreground px-4 py-1 rounded-full text-sm font-medium">
+                            Most Popular
+                        </span>
+                    </div>
+                    <!-- Premium wash service image -->
+                    <img src="https://images.unsplash.com/photo-1601362840469-51e4d8d58785?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&h=250" 
+                         alt="Premium car wash service with detailed cleaning" 
+                         class="w-full h-48 object-cover rounded-lg mb-4">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-xl font-semibold text-foreground">Premium Wash</h3>
+                        <span class="bg-primary/10 text-primary px-3 py-1 rounded-full text-sm font-medium">
+                            R<span>350</span>
+                        </span>
+                    </div>
+                    <p class="text-muted-foreground mb-4">
+                        Complete wash with wax, interior detailing, and dashboard treatment. Our premium package.
+                    </p>
+                    <div class="flex items-center text-sm text-muted-foreground mb-4">
+                        <i class="fas fa-clock mr-2"></i>
+                        <span>60 minutes</span>
+                    </div>
+                    <ul class="space-y-2 mb-6">
+                        <li class="flex items-center text-sm">
+                            <i class="fas fa-check text-accent mr-2"></i>
+                            <span>Everything in Basic</span>
+                        </li>
+                        <li class="flex items-center text-sm">
+                            <i class="fas fa-check text-accent mr-2"></i>
+                            <span>Wax & polish</span>
+                        </li>
+                        <li class="flex items-center text-sm">
+                            <i class="fas fa-check text-accent mr-2"></i>
+                            <span>Interior detailing</span>
+                        </li>
+                        <li class="flex items-center text-sm">
+                            <i class="fas fa-check text-accent mr-2"></i>
+                            <span>Dashboard treatment</span>
+                        </li>
+                    </ul>
+                    <button onclick="selectService('premium')" class="w-full bg-primary text-primary-foreground py-3 rounded-lg hover:bg-primary/90 transition-colors">
+                        Select Service
+                    </button>
+                </div>
+
+                <div class="service-card bg-card border border-border rounded-xl p-6 shadow-sm hover:shadow-md transition-all">
+                    <!-- Deluxe detailing service image -->
+                    <img src="https://images.unsplash.com/photo-1520340356584-f9917d1eea6f?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&h=250" 
+                         alt="Deluxe car detailing service with professional equipment" 
+                         class="w-full h-48 object-cover rounded-lg mb-4">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-xl font-semibold text-foreground">Deluxe Detail</h3>
+                        <span class="bg-primary/10 text-primary px-3 py-1 rounded-full text-sm font-medium">
+                            R<span>650</span>
+                        </span>
+                    </div>
+                    <p class="text-muted-foreground mb-4">
+                        Complete detailing service with paint protection, leather conditioning, and engine bay cleaning.
+                    </p>
+                    <div class="flex items-center text-sm text-muted-foreground mb-4">
+                        <i class="fas fa-clock mr-2"></i>
+                        <span>90 minutes</span>
+                    </div>
+                    <ul class="space-y-2 mb-6">
+                        <li class="flex items-center text-sm">
+                            <i class="fas fa-check text-accent mr-2"></i>
+                            <span>Everything in Premium</span>
+                        </li>
+                        <li class="flex items-center text-sm">
+                            <i class="fas fa-check text-accent mr-2"></i>
+                            <span>Paint protection</span>
+                        </li>
+                        <li class="flex items-center text-sm">
+                            <i class="fas fa-check text-accent mr-2"></i>
+                            <span>Leather conditioning</span>
+                        </li>
+                        <li class="flex items-center text-sm">
+                            <i class="fas fa-check text-accent mr-2"></i>
+                            <span>Engine bay cleaning</span>
+                        </li>
+                    </ul>
+                    <button onclick="selectService('deluxe')" class="w-full bg-primary text-primary-foreground py-3 rounded-lg hover:bg-primary/90 transition-colors">
+                        Select Service
+                    </button>
+                </div>
+                <!-- @END_MAP )) -->
+            </div>
+        </div>
+    </section>
+    <!-- @END_COMPONENT: ServicesSection -->
+
+    <!-- @COMPONENT: BookingSection [booking flow with steps] -->
+    <section id="booking" class="py-16 md:py-24 bg-muted/50">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-foreground mb-4">
+                    Book Your Service
+                </h2>
+                <p class="text-xl text-muted-foreground">
+                    Easy 3-step booking process
+                </p>
+            </div>
+
+            <!-- Booking Steps -->
+            <div class="flex items-center justify-center mb-8">
+                <div class="flex items-center space-x-4">
+                    <div class="booking-step active flex items-center">
+                        <div class="w-8 h-8 bg-primary text-primary-foreground rounded-full flex items-center justify-center font-semibold">
+                            1
+                        </div>
+                        <span class="ml-2 font-medium">Service</span>
+                    </div>
+                    <div class="w-8 h-0.5 bg-border"></div>
+                    <div class="booking-step flex items-center">
+                        <div class="w-8 h-8 bg-muted border-2 border-border text-muted-foreground rounded-full flex items-center justify-center font-semibold">
+                            2
+                        </div>
+                        <span class="ml-2 font-medium text-muted-foreground">Details</span>
+                    </div>
+                    <div class="w-8 h-0.5 bg-border"></div>
+                    <div class="booking-step flex items-center">
+                        <div class="w-8 h-8 bg-muted border-2 border-border text-muted-foreground rounded-full flex items-center justify-center font-semibold">
+                            3
+                        </div>
+                        <span class="ml-2 font-medium text-muted-foreground">Payment</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Booking Form -->
+            <div class="bg-card rounded-xl shadow-sm p-6 md:p-8">
+                <!-- @STATE: step:number = 1, selectedService:object = null -->
+                
+                <!-- Step 1: Service Selection -->
+                <div id="step-1" class="booking-step-content">
+                    <h3 class="text-xl font-semibold mb-6">Select Your Service</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                        <div class="border border-border rounded-lg p-4 cursor-pointer hover:border-primary transition-colors" onclick="selectServiceInBooking('basic')">
+                            <div class="flex items-center justify-between mb-2">
+                                <h4 class="font-medium">Basic Wash</h4>
+                                <span class="text-primary font-semibold">R150</span>
+                            </div>
+                            <p class="text-sm text-muted-foreground">30 minutes</p>
+                        </div>
+                        <div class="border-2 border-primary rounded-lg p-4 cursor-pointer bg-primary/5">
+                            <div class="flex items-center justify-between mb-2">
+                                <h4 class="font-medium">Premium Wash</h4>
+                                <span class="text-primary font-semibold">R350</span>
+                            </div>
+                            <p class="text-sm text-muted-foreground">60 minutes</p>
+                        </div>
+                        <div class="border border-border rounded-lg p-4 cursor-pointer hover:border-primary transition-colors" onclick="selectServiceInBooking('deluxe')">
+                            <div class="flex items-center justify-between mb-2">
+                                <h4 class="font-medium">Deluxe Detail</h4>
+                                <span class="text-primary font-semibold">R650</span>
+                            </div>
+                            <p class="text-sm text-muted-foreground">90 minutes</p>
+                        </div>
+                    </div>
+
+                    <!-- Date and Time Selection -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <div>
+                            <label class="block text-sm font-medium text-foreground mb-2">Select Date</label>
+                            <input type="date" 
+                                   class="w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring"
+                                   min="2024-01-15">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-foreground mb-2">Available Times</label>
+                            <select class="w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring">
+                                <option>09:00 AM</option>
+                                <option>10:30 AM</option>
+                                <option>12:00 PM</option>
+                                <option>02:00 PM</option>
+                                <option>03:30 PM</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button onclick="nextStep()" class="w-full md:w-auto bg-primary text-primary-foreground px-8 py-3 rounded-lg hover:bg-primary/90 transition-colors">
+                        Continue to Details
+                    </button>
+                </div>
+
+                <!-- Step 2: Vehicle Details (hidden by default) -->
+                <div id="step-2" class="booking-step-content hidden">
+                    <h3 class="text-xl font-semibold mb-6">Vehicle Details</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <div>
+                            <label class="block text-sm font-medium text-foreground mb-2">Vehicle Type</label>
+                            <select class="w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring">
+                                <option>Car</option>
+                                <option>SUV</option>
+                                <option>Truck</option>
+                                <option>Van</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-foreground mb-2">Vehicle Brand</label>
+                            <select class="w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring">
+                                <option>Toyota</option>
+                                <option>BMW</option>
+                                <option>Mercedes-Benz</option>
+                                <option>Volkswagen</option>
+                                <option>Ford</option>
+                                <option>Hyundai</option>
+                                <option>Other</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-foreground mb-2">Model</label>
+                            <input type="text" 
+                                   placeholder="e.g., Camry"
+                                   class="w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-foreground mb-2">Year</label>
+                            <input type="number" 
+                                   placeholder="2020"
+                                   min="1990"
+                                   max="2024"
+                                   class="w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring">
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-foreground mb-2">Registration Plate</label>
+                            <input type="text" 
+                                   placeholder="ABC123GP"
+                                   class="w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring">
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col md:flex-row gap-4">
+                        <button onclick="previousStep()" class="w-full md:w-auto border border-border text-foreground px-8 py-3 rounded-lg hover:bg-muted transition-colors">
+                            Back
+                        </button>
+                        <button onclick="nextStep()" class="w-full md:w-auto bg-primary text-primary-foreground px-8 py-3 rounded-lg hover:bg-primary/90 transition-colors">
+                            Continue to Payment
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 3: Payment (hidden by default) -->
+                <div id="step-3" class="booking-step-content hidden">
+                    <h3 class="text-xl font-semibold mb-6">Payment & Confirmation</h3>
+                    
+                    <!-- Booking Summary -->
+                    <div class="bg-muted/50 rounded-lg p-6 mb-6">
+                        <h4 class="font-semibold mb-4">Booking Summary</h4>
+                        <div class="space-y-2 text-sm">
+                            <div class="flex justify-between">
+                                <span>Service:</span>
+                                <span data-bind="booking.service">Premium Wash</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>Date & Time:</span>
+                                <span data-bind="booking.datetime">Jan 15, 2024 - 10:30 AM</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>Vehicle:</span>
+                                <span data-bind="booking.vehicle">2020 Toyota Camry</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>Duration:</span>
+                                <span data-bind="booking.duration">60 minutes</span>
+                            </div>
+                            <hr class="my-3">
+                            <div class="flex justify-between font-semibold text-base">
+                                <span>Total:</span>
+                                <span class="text-primary">R<span data-bind="booking.total">350</span></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Payment Options -->
+                    <div class="mb-6">
+                        <h4 class="font-semibold mb-4">Payment Method</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="border-2 border-primary rounded-lg p-4 bg-primary/5">
+                                <div class="flex items-center space-x-3">
+                                    <input type="radio" name="payment" value="card" checked class="text-primary">
+                                    <div>
+                                        <h5 class="font-medium">Card Payment</h5>
+                                        <p class="text-sm text-muted-foreground">Visa, MasterCard</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="border border-border rounded-lg p-4 cursor-pointer hover:border-primary">
+                                <div class="flex items-center space-x-3">
+                                    <input type="radio" name="payment" value="cash" class="text-primary">
+                                    <div>
+                                        <h5 class="font-medium">Cash Payment</h5>
+                                        <p class="text-sm text-muted-foreground">Pay on arrival</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card Details (shown when card payment selected) -->
+                    <div id="card-details" class="mb-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="md:col-span-2">
+                                <label class="block text-sm font-medium text-foreground mb-2">Card Number</label>
+                                <input type="text" 
+                                       placeholder="1234 5678 9012 3456"
+                                       class="w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-foreground mb-2">Expiry Date</label>
+                                <input type="text" 
+                                       placeholder="MM/YY"
+                                       class="w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-foreground mb-2">CVV</label>
+                                <input type="text" 
+                                       placeholder="123"
+                                       class="w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col md:flex-row gap-4">
+                        <button onclick="previousStep()" class="w-full md:w-auto border border-border text-foreground px-8 py-3 rounded-lg hover:bg-muted transition-colors">
+                            Back
+                        </button>
+                        <button onclick="confirmBooking()" class="w-full md:w-auto bg-primary text-primary-foreground px-8 py-3 rounded-lg hover:bg-primary/90 transition-colors">
+                            <i class="fas fa-lock mr-2"></i>
+                            Confirm & Pay R350
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- @END_COMPONENT: BookingSection -->
+
+    <!-- @COMPONENT: AdminDashboard [admin management interface] -->
+    <div id="admin-dashboard" class="fixed inset-0 bg-background z-50 hidden">
+        <div class="flex h-full">
+            <!-- Sidebar -->
+            <div class="admin-sidebar w-64 bg-card border-r border-border">
+                <div class="p-6">
+                    <div class="flex items-center justify-between">
+                        <h2 class="text-xl font-bold text-foreground">Admin Panel</h2>
+                        <button onclick="hideAdminDashboard()" class="text-muted-foreground hover:text-foreground">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+                <nav class="mt-6">
+                    <div class="px-6 space-y-2">
+                        <a href="#dashboard" class="flex items-center space-x-3 text-primary bg-primary/10 px-3 py-2 rounded-lg">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span>Dashboard</span>
+                        </a>
+                        <a href="#services-mgmt" class="flex items-center space-x-3 text-muted-foreground hover:text-foreground px-3 py-2 rounded-lg">
+                            <i class="fas fa-cogs"></i>
+                            <span>Services</span>
+                        </a>
+                        <a href="#slots-mgmt" class="flex items-center space-x-3 text-muted-foreground hover:text-foreground px-3 py-2 rounded-lg">
+                            <i class="fas fa-calendar"></i>
+                            <span>Time Slots</span>
+                        </a>
+                        <a href="#bookings-mgmt" class="flex items-center space-x-3 text-muted-foreground hover:text-foreground px-3 py-2 rounded-lg">
+                            <i class="fas fa-book"></i>
+                            <span>Bookings</span>
+                        </a>
+                        <a href="#users-mgmt" class="flex items-center space-x-3 text-muted-foreground hover:text-foreground px-3 py-2 rounded-lg">
+                            <i class="fas fa-users"></i>
+                            <span>Users</span>
+                        </a>
+                    </div>
+                </nav>
+            </div>
+
+            <!-- Main Content -->
+            <div class="flex-1 overflow-auto">
+                <div class="p-6">
+                    <!-- Dashboard Overview -->
+                    <div class="mb-8">
+                        <h1 class="text-2xl font-bold text-foreground mb-6">Dashboard Overview</h1>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                            <div class="bg-card border border-border rounded-lg p-6">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <p class="text-muted-foreground text-sm">Total Bookings</p>
+                                        <p class="text-2xl font-bold text-foreground" data-bind="stats.totalBookings">127</p>
+                                    </div>
+                                    <div class="bg-primary/10 p-3 rounded-full">
+                                        <i class="fas fa-calendar-check text-primary"></i>
+                                    </div>
+                                </div>
+                                <div class="mt-4 flex items-center text-sm">
+                                    <span class="text-accent">+12%</span>
+                                    <span class="text-muted-foreground ml-1">from last month</span>
+                                </div>
+                            </div>
+
+                            <div class="bg-card border border-border rounded-lg p-6">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <p class="text-muted-foreground text-sm">Revenue</p>
+                                        <p class="text-2xl font-bold text-foreground">R<span data-bind="stats.revenue">42,350</span></p>
+                                    </div>
+                                    <div class="bg-accent/10 p-3 rounded-full">
+                                        <i class="fas fa-chart-line text-accent"></i>
+                                    </div>
+                                </div>
+                                <div class="mt-4 flex items-center text-sm">
+                                    <span class="text-accent">+8%</span>
+                                    <span class="text-muted-foreground ml-1">from last month</span>
+                                </div>
+                            </div>
+
+                            <div class="bg-card border border-border rounded-lg p-6">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <p class="text-muted-foreground text-sm">Active Services</p>
+                                        <p class="text-2xl font-bold text-foreground" data-bind="stats.activeServices">8</p>
+                                    </div>
+                                    <div class="bg-secondary/50 p-3 rounded-full">
+                                        <i class="fas fa-cogs text-secondary-foreground"></i>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bg-card border border-border rounded-lg p-6">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <p class="text-muted-foreground text-sm">Today's Slots</p>
+                                        <p class="text-2xl font-bold text-foreground" data-bind="stats.todaySlots">15</p>
+                                    </div>
+                                    <div class="bg-muted p-3 rounded-full">
+                                        <i class="fas fa-clock text-muted-foreground"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Bookings Table -->
+                    <div class="bg-card border border-border rounded-lg p-6">
+                        <div class="flex items-center justify-between mb-6">
+                            <h2 class="text-xl font-semibold text-foreground">Recent Bookings</h2>
+                            <button onclick="showCreateBookingModal()" class="bg-primary text-primary-foreground px-4 py-2 rounded-lg hover:bg-primary/90">
+                                <i class="fas fa-plus mr-2"></i>New Booking
+                            </button>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full">
+                                <thead>
+                                    <tr class="border-b border-border">
+                                        <th class="text-left py-3 px-4 text-muted-foreground">Customer</th>
+                                        <th class="text-left py-3 px-4 text-muted-foreground">Service</th>
+                                        <th class="text-left py-3 px-4 text-muted-foreground">Date & Time</th>
+                                        <th class="text-left py-3 px-4 text-muted-foreground">Vehicle</th>
+                                        <th class="text-left py-3 px-4 text-muted-foreground">Amount</th>
+                                        <th class="text-left py-3 px-4 text-muted-foreground">Status</th>
+                                        <th class="text-left py-3 px-4 text-muted-foreground">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- @MAP: bookings.map(booking => ( -->
+                                    <tr class="border-b border-border hover:bg-muted/50">
+                                        <td class="py-3 px-4">
+                                            <div class="flex items-center space-x-3">
+                                                <img class="h-8 w-8 rounded-full" src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=32&h=32" alt="Customer avatar">
+                                                <div>
+                                                    <p class="font-medium text-foreground" data-bind="booking.customer.name">John Doe</p>
+                                                    <p class="text-sm text-muted-foreground" data-bind="booking.customer.email">john@example.com</p>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="py-3 px-4 text-foreground" data-bind="booking.service.name">Premium Wash</td>
+                                        <td class="py-3 px-4 text-foreground" data-bind="booking.datetime">Jan 15, 10:30 AM</td>
+                                        <td class="py-3 px-4 text-foreground" data-bind="booking.vehicle">Toyota Camry</td>
+                                        <td class="py-3 px-4 text-foreground">R<span data-bind="booking.amount">350</span></td>
+                                        <td class="py-3 px-4">
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-accent/10 text-accent">
+                                                Confirmed
+                                            </span>
+                                        </td>
+                                        <td class="py-3 px-4">
+                                            <div class="flex items-center space-x-2">
+                                                <button class="text-primary hover:text-primary/80">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                                <button class="text-destructive hover:text-destructive/80">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr class="border-b border-border hover:bg-muted/50">
+                                        <td class="py-3 px-4">
+                                            <div class="flex items-center space-x-3">
+                                                <img class="h-8 w-8 rounded-full" src="https://pixabay.com/get/g92b44bf774a75f6d3a5c7f941fb9e312e7b083f4dbef966ec8f757d4a6eecd459f7598b083400c8f40a41c2f38404ada101fd65a2a36f9471843405266103860_1280.jpg" alt="Customer avatar">
+                                                <div>
+                                                    <p class="font-medium text-foreground">Sarah Wilson</p>
+                                                    <p class="text-sm text-muted-foreground">sarah@example.com</p>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="py-3 px-4 text-foreground">Basic Wash</td>
+                                        <td class="py-3 px-4 text-foreground">Jan 15, 2:00 PM</td>
+                                        <td class="py-3 px-4 text-foreground">BMW X3</td>
+                                        <td class="py-3 px-4 text-foreground">R150</td>
+                                        <td class="py-3 px-4">
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                                Pending
+                                            </span>
+                                        </td>
+                                        <td class="py-3 px-4">
+                                            <div class="flex items-center space-x-2">
+                                                <button class="text-primary hover:text-primary/80">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                                <button class="text-destructive hover:text-destructive/80">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <!-- @END_MAP )) -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- @END_COMPONENT: AdminDashboard -->
+
+    <!-- @COMPONENT: AuthModals [login and signup modals] -->
+    <div id="login-modal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden">
+        <div class="bg-card rounded-xl p-8 w-full max-w-md mx-4">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-2xl font-bold text-foreground">Sign In</h2>
+                <button onclick="hideLoginModal()" class="text-muted-foreground hover:text-foreground">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <!-- Quick Login Options -->
+            <div class="grid grid-cols-2 gap-4 mb-6">
+                <button onclick="quickLogin('user')" class="bg-secondary text-secondary-foreground px-4 py-3 rounded-lg hover:bg-secondary/80 transition-colors">
+                    <i class="fas fa-user mr-2"></i>Demo User
+                </button>
+                <button onclick="quickLogin('admin')" class="bg-primary text-primary-foreground px-4 py-3 rounded-lg hover:bg-primary/90 transition-colors">
+                    <i class="fas fa-crown mr-2"></i>Demo Admin
+                </button>
+            </div>
+            
+            <div class="text-center text-muted-foreground mb-4">
+                <span>or</span>
+            </div>
+            
+            <form data-event="submit:handleLogin">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-foreground mb-2">Email</label>
+                        <input type="email" 
+                               placeholder="your@email.com"
+                               class="w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-foreground mb-2">Password</label>
+                        <input type="password" 
+                               placeholder="••••••••"
+                               class="w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring">
+                    </div>
+                </div>
+                <button type="submit" class="w-full bg-primary text-primary-foreground py-3 rounded-lg mt-6 hover:bg-primary/90 transition-colors">
+                    Sign In
+                </button>
+            </form>
+            
+            <div class="text-center mt-4">
+                <p class="text-sm text-muted-foreground">
+                    Don't have an account? 
+                    <button onclick="showSignupModal()" class="text-primary hover:underline">Sign up</button>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div id="signup-modal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden">
+        <div class="bg-card rounded-xl p-8 w-full max-w-md mx-4">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-2xl font-bold text-foreground">Create Account</h2>
+                <button onclick="hideSignupModal()" class="text-muted-foreground hover:text-foreground">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <form data-event="submit:handleSignup">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-foreground mb-2">Full Name</label>
+                        <input type="text" 
+                               placeholder="John Doe"
+                               class="w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-foreground mb-2">Email</label>
+                        <input type="email" 
+                               placeholder="your@email.com"
+                               class="w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-foreground mb-2">Phone</label>
+                        <input type="tel" 
+                               placeholder="+27 123 456 7890"
+                               class="w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-foreground mb-2">Address</label>
+                        <input type="text" 
+                               placeholder="123 Main Street, Cape Town"
+                               class="w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-foreground mb-2">Password</label>
+                        <input type="password" 
+                               placeholder="••••••••"
+                               class="w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring">
+                    </div>
+                </div>
+                <button type="submit" class="w-full bg-primary text-primary-foreground py-3 rounded-lg mt-6 hover:bg-primary/90 transition-colors">
+                    Create Account
+                </button>
+            </form>
+            
+            <div class="text-center mt-4">
+                <p class="text-sm text-muted-foreground">
+                    Already have an account? 
+                    <button onclick="showLoginModal()" class="text-primary hover:underline">Sign in</button>
+                </p>
+            </div>
+        </div>
+    </div>
+    <!-- @END_COMPONENT: AuthModals -->
+
+    <!-- @COMPONENT: Footer [site footer with links and info] -->
+    <footer class="bg-secondary/50 py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-2xl font-bold text-primary mb-4">
+                        <i class="fas fa-car mr-2"></i>SparkClean
+                    </h3>
+                    <p class="text-muted-foreground mb-4">
+                        South Africa's premier car wash booking platform. Professional service, competitive pricing, convenient scheduling.
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-muted-foreground hover:text-primary">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="text-muted-foreground hover:text-primary">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="text-muted-foreground hover:text-primary">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold text-foreground mb-4">Services</h4>
+                    <ul class="space-y-2 text-muted-foreground">
+                        <li><a href="#" class="hover:text-primary">Basic Wash</a></li>
+                        <li><a href="#" class="hover:text-primary">Premium Wash</a></li>
+                        <li><a href="#" class="hover:text-primary">Deluxe Detail</a></li>
+                        <li><a href="#" class="hover:text-primary">Interior Cleaning</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold text-foreground mb-4">Support</h4>
+                    <ul class="space-y-2 text-muted-foreground">
+                        <li><a href="#" class="hover:text-primary">Help Center</a></li>
+                        <li><a href="#" class="hover:text-primary">Contact Us</a></li>
+                        <li><a href="#" class="hover:text-primary">Privacy Policy</a></li>
+                        <li><a href="#" class="hover:text-primary">Terms of Service</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold text-foreground mb-4">Contact Info</h4>
+                    <ul class="space-y-2 text-muted-foreground">
+                        <li class="flex items-center">
+                            <i class="fas fa-phone mr-2"></i>
+                            +27 123 456 7890
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-envelope mr-2"></i>
+                            info@sparkclean.co.za
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-map-marker-alt mr-2"></i>
+                            Cape Town, South Africa
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-border mt-8 pt-8 text-center text-muted-foreground">
+                <p>&copy; 2024 SparkClean Car Wash. All rights reserved. | Proudly South African</p>
+            </div>
+        </div>
+    </footer>
+    <!-- @END_COMPONENT: Footer -->
+
+    <script>
+    (function() {
+        // TODO: Implement business logic, API calls, and state management
+        
+        // Mock authentication state
+        let isAuthenticated = false;
+        let currentUser = null;
+        let bookingStep = 1;
+        
+        // UI helper functions
+        window.showLoginModal = function() {
+            document.getElementById('login-modal').classList.remove('hidden');
+        };
+        
+        window.hideLoginModal = function() {
+            document.getElementById('login-modal').classList.add('hidden');
+        };
+        
+        window.showSignupModal = function() {
+            hideLoginModal();
+            document.getElementById('signup-modal').classList.remove('hidden');
+        };
+        
+        window.hideSignupModal = function() {
+            document.getElementById('signup-modal').classList.add('hidden');
+        };
+        
+        window.showAdminDashboard = function() {
+            document.getElementById('admin-dashboard').classList.remove('hidden');
+        };
+        
+        window.hideAdminDashboard = function() {
+            document.getElementById('admin-dashboard').classList.add('hidden');
+        };
+        
+        // Quick login for demo purposes
+        window.quickLogin = function(role) {
+            if (role === 'admin') {
+                currentUser = {
+                    name: 'Admin User',
+                    email: 'admin@sparkclean.co.za',
+                    role: 'admin'
+                };
+            } else {
+                currentUser = {
+                    name: 'John Doe',
+                    email: 'john@example.com',
+                    role: 'user'
+                };
+            }
+            isAuthenticated = true;
+            updateAuthUI();
+            hideLoginModal();
+        };
+        
+        window.logout = function() {
+            isAuthenticated = false;
+            currentUser = null;
+            updateAuthUI();
+            hideAdminDashboard();
+        };
+        
+        function updateAuthUI() {
+            const authButtons = document.getElementById('auth-buttons');
+            const userMenu = document.getElementById('user-menu');
+            const adminButtons = document.querySelectorAll('.admin-only');
+            
+            if (isAuthenticated) {
+                authButtons.classList.add('hidden');
+                userMenu.classList.remove('hidden');
+                
+                if (currentUser.role === 'admin') {
+                    adminButtons.forEach(btn => btn.classList.remove('hidden'));
+                }
+            } else {
+                authButtons.classList.remove('hidden');
+                userMenu.classList.add('hidden');
+                adminButtons.forEach(btn => btn.classList.add('hidden'));
+            }
+        }
+        
+        window.toggleUserDropdown = function() {
+            const dropdown = document.getElementById('user-dropdown');
+            dropdown.classList.toggle('hidden');
+        };
+        
+        // Booking flow functions
+        window.scrollToBooking = function() {
+            document.getElementById('booking').scrollIntoView({ behavior: 'smooth' });
+        };
+        
+        window.scrollToServices = function() {
+            document.getElementById('services').scrollIntoView({ behavior: 'smooth' });
+        };
+        
+        window.selectService = function(serviceType) {
+            if (!isAuthenticated) {
+                showLoginModal();
+                return;
+            }
+            scrollToBooking();
+        };
+        
+        window.nextStep = function() {
+            if (bookingStep < 3) {
+                // Hide current step
+                document.getElementById(`step-${bookingStep}`).classList.add('hidden');
+                
+                // Update step
+                bookingStep++;
+                
+                // Show next step
+                document.getElementById(`step-${bookingStep}`).classList.remove('hidden');
+                
+                // Update step indicators
+                updateStepIndicators();
+            }
+        };
+        
+        window.previousStep = function() {
+            if (bookingStep > 1) {
+                // Hide current step
+                document.getElementById(`step-${bookingStep}`).classList.add('hidden');
+                
+                // Update step
+                bookingStep--;
+                
+                // Show previous step
+                document.getElementById(`step-${bookingStep}`).classList.remove('hidden');
+                
+                // Update step indicators
+                updateStepIndicators();
+            }
+        };
+        
+        function updateStepIndicators() {
+            const steps = document.querySelectorAll('.booking-step');
+            steps.forEach((step, index) => {
+                if (index < bookingStep - 1) {
+                    step.classList.add('active');
+                } else {
+                    step.classList.remove('active');
+                }
+            });
+        }
+        
+        window.confirmBooking = function() {
+            // TODO: Implement booking confirmation and payment processing
+            alert('Booking confirmed! You will receive a confirmation email shortly.');
+        };
+        
+        // Initialize the page
+        updateAuthUI();
+        
+        // Close dropdowns when clicking outside
+        document.addEventListener('click', function(event) {
+            const userMenu = document.getElementById('user-menu');
+            const dropdown = document.getElementById('user-dropdown');
+            
+            if (!userMenu.contains(event.target)) {
+                dropdown.classList.add('hidden');
+            }
+        });
+    })();
+    </script>
+</body>
+</html>

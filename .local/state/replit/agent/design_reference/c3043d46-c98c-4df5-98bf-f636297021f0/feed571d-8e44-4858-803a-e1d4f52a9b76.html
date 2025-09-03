@@ -1,0 +1,1630 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AquaShine - Premium Car Wash Booking System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    borderRadius: {
+                        lg: "var(--radius)",
+                        md: "calc(var(--radius) - 2px)",
+                        sm: "calc(var(--radius) - 4px)",
+                    },
+                    colors: {
+                        background: "var(--background)",
+                        foreground: "var(--foreground)",
+                        card: {
+                            DEFAULT: "var(--card)",
+                            foreground: "var(--card-foreground)",
+                        },
+                        popover: {
+                            DEFAULT: "var(--popover)",
+                            foreground: "var(--popover-foreground)",
+                        },
+                        primary: {
+                            DEFAULT: "var(--primary)",
+                            foreground: "var(--primary-foreground)",
+                        },
+                        secondary: {
+                            DEFAULT: "var(--secondary)",
+                            foreground: "var(--secondary-foreground)",
+                        },
+                        muted: {
+                            DEFAULT: "var(--muted)",
+                            foreground: "var(--muted-foreground)",
+                        },
+                        accent: {
+                            DEFAULT: "var(--accent)",
+                            foreground: "var(--accent-foreground)",
+                        },
+                        destructive: {
+                            DEFAULT: "var(--destructive)",
+                            foreground: "var(--destructive-foreground)",
+                        },
+                        border: "var(--border)",
+                        input: "var(--input)",
+                        ring: "var(--ring)",
+                        chart: {
+                            "1": "var(--chart-1)",
+                            "2": "var(--chart-2)",
+                            "3": "var(--chart-3)",
+                            "4": "var(--chart-4)",
+                            "5": "var(--chart-5)",
+                        }
+                    },
+                    fontFamily: {
+                        sans: ["Inter", "system-ui"],
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'glow': 'glow 2s ease-in-out infinite alternate',
+                        'ripple': 'ripple 0.6s linear',
+                        'slide-up': 'slideUp 0.8s ease-out',
+                        'fade-in': 'fadeIn 1s ease-out',
+                        'bounce-subtle': 'bounceSubtle 2s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0px)' },
+                            '50%': { transform: 'translateY(-20px)' }
+                        },
+                        glow: {
+                            '0%': { boxShadow: '0 0 20px rgba(6, 182, 212, 0.3)' },
+                            '100%': { boxShadow: '0 0 40px rgba(6, 182, 212, 0.6)' }
+                        },
+                        ripple: {
+                            '0%': { transform: 'scale(0)', opacity: '1' },
+                            '100%': { transform: 'scale(4)', opacity: '0' }
+                        },
+                        slideUp: {
+                            '0%': { transform: 'translateY(100px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' }
+                        },
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' }
+                        },
+                        bounceSubtle: {
+                            '0%, 100%': { transform: 'translateY(0px)' },
+                            '50%': { transform: 'translateY(-10px)' }
+                        }
+                    }
+                },
+            }
+        };
+    </script>
+    <style>
+        :root {
+            --background: hsl(222 84% 4%);
+            --foreground: hsl(210 40% 98%);
+            --card: hsl(222 84% 4% / 0.3);
+            --card-foreground: hsl(210 40% 98%);
+            --popover: hsl(222 84% 4%);
+            --popover-foreground: hsl(210 40% 98%);
+            --primary: hsl(172 66% 50%);
+            --primary-foreground: hsl(210 40% 98%);
+            --secondary: hsl(217 91% 60%);
+            --secondary-foreground: hsl(210 40% 98%);
+            --muted: hsl(217 32% 17%);
+            --muted-foreground: hsl(215 20% 65%);
+            --accent: hsl(187 85% 53%);
+            --accent-foreground: hsl(210 40% 98%);
+            --destructive: hsl(0 84% 60%);
+            --destructive-foreground: hsl(210 40% 98%);
+            --border: hsl(217 32% 17%);
+            --input: hsl(217 32% 17%);
+            --ring: hsl(172 66% 50%);
+            --radius: 12px;
+            --chart-1: hsl(172 66% 50%);
+            --chart-2: hsl(217 91% 60%);
+            --chart-3: hsl(187 85% 53%);
+            --chart-4: hsl(200 95% 60%);
+            --chart-5: hsl(160 84% 39%);
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        }
+
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .glass-dark {
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .gradient-bg {
+            background: linear-gradient(135deg, #0F172A 0%, #1E293B 50%, #0D9488 100%);
+        }
+
+        .text-gradient {
+            background: linear-gradient(135deg, #06B6D4, #0D9488);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .ripple-effect {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ripple-effect::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .ripple-effect:active::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .floating-card {
+            transform: translateY(0);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .floating-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 25px 50px -12px rgba(6, 182, 212, 0.25);
+        }
+
+        .service-card {
+            perspective: 1000px;
+        }
+
+        .service-card-inner {
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+
+        .service-card:hover .service-card-inner {
+            transform: rotateY(10deg) rotateX(5deg);
+        }
+
+        .parallax-bg {
+            background-attachment: fixed;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+
+        @media (max-width: 768px) {
+            .parallax-bg {
+                background-attachment: scroll;
+            }
+        }
+
+        .loading-skeleton {
+            background: linear-gradient(90deg, rgba(255,255,255,0.1) 25%, rgba(255,255,255,0.2) 50%, rgba(255,255,255,0.1) 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+        }
+
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        .progress-bar {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+    </style>
+</head>
+<body class="gradient-bg min-h-screen text-foreground overflow-x-hidden">
+    <!-- Navigation -->
+    <!-- @COMPONENT: NavigationHeader [responsive header with glassmorphism effect] -->
+    <nav class="fixed top-0 w-full z-50 glass-effect">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-gradient-to-r from-primary to-accent rounded-xl flex items-center justify-center">
+                        <i class="fas fa-car-side text-white text-lg"></i>
+                    </div>
+                    <span class="text-2xl font-bold text-gradient">AquaShine</span>
+                </div>
+                
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="#home" class="text-foreground hover:text-primary transition-colors duration-300 font-medium">Home</a>
+                    <a href="#services" class="text-muted-foreground hover:text-primary transition-colors duration-300 font-medium">Services</a>
+                    <a href="#reviews" class="text-muted-foreground hover:text-primary transition-colors duration-300 font-medium">Reviews</a>
+                    <a href="#compare" class="text-muted-foreground hover:text-primary transition-colors duration-300 font-medium">Compare</a>
+                    <a href="#dashboard" class="text-muted-foreground hover:text-primary transition-colors duration-300 font-medium">Dashboard</a>
+                </div>
+
+                <div class="flex items-center space-x-4">
+                    <div class="hidden md:flex items-center space-x-2 glass-effect px-3 py-2 rounded-lg">
+                        <i class="fas fa-phone text-primary"></i>
+                        <span class="text-sm font-medium" data-bind="contact.phone">+1 (555) 123-4567</span>
+                    </div>
+                    <button class="ripple-effect bg-gradient-to-r from-primary to-accent text-primary-foreground px-6 py-2 rounded-lg font-semibold hover:shadow-lg transition-all duration-300" data-event="click:openBookingModal">
+                        Book Now
+                    </button>
+                    <button class="md:hidden text-foreground">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+    <!-- @END_COMPONENT: NavigationHeader -->
+
+    <!-- Hero Section -->
+    <!-- @COMPONENT: HeroSection [parallax hero with glassmorphism overlay] -->
+    <section id="home" class="min-h-screen flex items-center justify-center relative parallax-bg" style="background-image: linear-gradient(rgba(15, 23, 42, 0.7), rgba(30, 58, 138, 0.6)), url('https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&h=1080');">
+        <!-- Professional car detailing service with soap and brush application -->
+        <div class="absolute inset-0 bg-gradient-to-b from-transparent via-background/50 to-background"></div>
+        
+        <div class="container mx-auto px-4 text-center relative z-10 animate-fade-in">
+            <div class="glass-effect p-12 rounded-3xl max-w-4xl mx-auto">
+                <h1 class="text-5xl md:text-7xl font-bold mb-6 animate-slide-up">
+                    <span class="text-gradient">GENTLE</span> ON YOUR CAR<br>
+                    <span class="text-gradient">POWERFUL</span> ON CLEAN
+                </h1>
+                <p class="text-xl md:text-2xl text-muted-foreground mb-8 max-w-2xl mx-auto leading-relaxed">
+                    Experience premium car wash services with eco-friendly products and cutting-edge technology
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                    <button class="ripple-effect bg-gradient-to-r from-primary to-accent text-primary-foreground px-8 py-4 rounded-xl font-semibold text-lg hover:shadow-2xl transition-all duration-300 min-w-[200px]" data-event="click:scrollToServices">
+                        Explore Services
+                    </button>
+                    <button class="glass-effect text-foreground px-8 py-4 rounded-xl font-semibold text-lg hover:bg-white/20 transition-all duration-300 min-w-[200px]" data-event="click:openVideoModal">
+                        <i class="fas fa-play mr-2"></i>
+                        Watch Demo
+                    </button>
+                </div>
+                
+                <!-- Live Service Availability Indicator -->
+                <div class="mt-8 flex items-center justify-center space-x-6">
+                    <div class="flex items-center space-x-2">
+                        <div class="w-3 h-3 bg-green-400 rounded-full animate-bounce-subtle"></div>
+                        <span class="text-sm font-medium">12 Slots Available Today</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <div class="w-3 h-3 bg-primary rounded-full animate-glow"></div>
+                        <span class="text-sm font-medium">Fast 30-min Service</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Floating animated elements -->
+        <div class="absolute top-20 left-10 w-20 h-20 bg-primary/20 rounded-full animate-float blur-sm"></div>
+        <div class="absolute bottom-20 right-10 w-32 h-32 bg-accent/20 rounded-full animate-float blur-sm" style="animation-delay: -2s;"></div>
+        <div class="absolute top-1/2 left-1/4 w-16 h-16 bg-secondary/20 rounded-full animate-float blur-sm" style="animation-delay: -4s;"></div>
+    </section>
+    <!-- @END_COMPONENT: HeroSection -->
+
+    <!-- Services Section -->
+    <!-- @COMPONENT: ServicesSection [interactive service cards with glassmorphism] -->
+    <section id="services" class="py-24 relative">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl md:text-6xl font-bold mb-6">
+                    <span class="text-gradient">Premium Services</span>
+                </h2>
+                <p class="text-xl text-muted-foreground max-w-2xl mx-auto">
+                    Experience professional car care with our comprehensive range of services
+                </p>
+            </div>
+
+            <!-- Service Filter Tabs -->
+            <div class="flex justify-center mb-12">
+                <div class="glass-effect p-2 rounded-2xl">
+                    <div class="flex space-x-2">
+                        <button class="px-6 py-3 rounded-xl bg-gradient-to-r from-primary to-accent text-primary-foreground font-semibold transition-all duration-300" data-event="click:filterServices" data-filter="all">
+                            All Services
+                        </button>
+                        <button class="px-6 py-3 rounded-xl text-muted-foreground hover:text-foreground hover:bg-white/10 transition-all duration-300" data-event="click:filterServices" data-filter="basic">
+                            Basic Wash
+                        </button>
+                        <button class="px-6 py-3 rounded-xl text-muted-foreground hover:text-foreground hover:bg-white/10 transition-all duration-300" data-event="click:filterServices" data-filter="premium">
+                            Premium
+                        </button>
+                        <button class="px-6 py-3 rounded-xl text-muted-foreground hover:text-foreground hover:bg-white/10 transition-all duration-300" data-event="click:filterServices" data-filter="detailing">
+                            Detailing
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Services Grid -->
+            <!-- @MAP: services.map(service => ( -->
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Service Card 1 -->
+                <div class="service-card group">
+                    <div class="service-card-inner glass-effect p-8 rounded-3xl floating-card relative overflow-hidden">
+                        <!-- Professional car exterior washing with premium soap -->
+                        <div class="absolute inset-0 bg-gradient-to-br from-primary/20 to-accent/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                        
+                        <div class="relative z-10">
+                            <div class="w-16 h-16 bg-gradient-to-r from-primary to-accent rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                                <i class="fas fa-car text-2xl text-white"></i>
+                            </div>
+                            <h3 class="text-2xl font-bold mb-4" data-bind="service.name">Premium Exterior Wash</h3>
+                            <p class="text-muted-foreground mb-6" data-bind="service.description">Complete exterior cleaning with premium soap, wax protection, and tire shine</p>
+                            
+                            <div class="flex items-center justify-between mb-6">
+                                <div class="flex items-center space-x-4">
+                                    <span class="text-3xl font-bold text-gradient" data-bind="service.price">$29</span>
+                                    <div class="text-sm text-muted-foreground">
+                                        <div class="flex items-center space-x-1">
+                                            <i class="fas fa-clock"></i>
+                                            <span data-bind="service.duration">45 min</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-1">
+                                    <div class="flex text-yellow-400">
+                                        <i class="fas fa-star text-sm"></i>
+                                        <i class="fas fa-star text-sm"></i>
+                                        <i class="fas fa-star text-sm"></i>
+                                        <i class="fas fa-star text-sm"></i>
+                                        <i class="fas fa-star text-sm"></i>
+                                    </div>
+                                    <span class="text-sm text-muted-foreground">4.9 (124)</span>
+                                </div>
+                                <button class="ripple-effect bg-gradient-to-r from-primary to-accent text-primary-foreground px-6 py-2 rounded-lg font-semibold hover:shadow-lg transition-all duration-300" data-event="click:quickBook" data-service-id="1">
+                                    Quick Book
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Service Card 2 -->
+                <div class="service-card group">
+                    <div class="service-card-inner glass-effect p-8 rounded-3xl floating-card relative overflow-hidden">
+                        <!-- Luxury car interior detailing with professional equipment -->
+                        <div class="absolute inset-0 bg-gradient-to-br from-secondary/20 to-primary/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                        
+                        <div class="relative z-10">
+                            <div class="w-16 h-16 bg-gradient-to-r from-secondary to-primary rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                                <i class="fas fa-spray-can text-2xl text-white"></i>
+                            </div>
+                            <h3 class="text-2xl font-bold mb-4" data-bind="service.name">Interior Detailing Plus</h3>
+                            <p class="text-muted-foreground mb-6" data-bind="service.description">Deep interior cleaning with leather conditioning, fabric protection, and sanitization</p>
+                            
+                            <div class="flex items-center justify-between mb-6">
+                                <div class="flex items-center space-x-4">
+                                    <span class="text-3xl font-bold text-gradient" data-bind="service.price">$49</span>
+                                    <div class="text-sm text-muted-foreground">
+                                        <div class="flex items-center space-x-1">
+                                            <i class="fas fa-clock"></i>
+                                            <span data-bind="service.duration">90 min</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-1">
+                                    <div class="flex text-yellow-400">
+                                        <i class="fas fa-star text-sm"></i>
+                                        <i class="fas fa-star text-sm"></i>
+                                        <i class="fas fa-star text-sm"></i>
+                                        <i class="fas fa-star text-sm"></i>
+                                        <i class="far fa-star text-sm"></i>
+                                    </div>
+                                    <span class="text-sm text-muted-foreground">4.7 (89)</span>
+                                </div>
+                                <button class="ripple-effect bg-gradient-to-r from-secondary to-primary text-primary-foreground px-6 py-2 rounded-lg font-semibold hover:shadow-lg transition-all duration-300" data-event="click:quickBook" data-service-id="2">
+                                    Quick Book
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Service Card 3 -->
+                <div class="service-card group">
+                    <div class="service-card-inner glass-effect p-8 rounded-3xl floating-card relative overflow-hidden">
+                        <!-- Complete car detailing service with waxing and polishing -->
+                        <div class="absolute inset-0 bg-gradient-to-br from-accent/20 to-secondary/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                        
+                        <div class="relative z-10">
+                            <div class="w-16 h-16 bg-gradient-to-r from-accent to-secondary rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                                <i class="fas fa-gem text-2xl text-white"></i>
+                            </div>
+                            <h3 class="text-2xl font-bold mb-4" data-bind="service.name">Complete Detailing</h3>
+                            <p class="text-muted-foreground mb-6" data-bind="service.description">Full service including wash, wax, interior detailing, and ceramic coating protection</p>
+                            
+                            <div class="flex items-center justify-between mb-6">
+                                <div class="flex items-center space-x-4">
+                                    <span class="text-3xl font-bold text-gradient" data-bind="service.price">$99</span>
+                                    <div class="text-sm text-muted-foreground">
+                                        <div class="flex items-center space-x-1">
+                                            <i class="fas fa-clock"></i>
+                                            <span data-bind="service.duration">180 min</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-1">
+                                    <div class="flex text-yellow-400">
+                                        <i class="fas fa-star text-sm"></i>
+                                        <i class="fas fa-star text-sm"></i>
+                                        <i class="fas fa-star text-sm"></i>
+                                        <i class="fas fa-star text-sm"></i>
+                                        <i class="fas fa-star text-sm"></i>
+                                    </div>
+                                    <span class="text-sm text-muted-foreground">5.0 (67)</span>
+                                </div>
+                                <button class="ripple-effect bg-gradient-to-r from-accent to-secondary text-primary-foreground px-6 py-2 rounded-lg font-semibold hover:shadow-lg transition-all duration-300" data-event="click:quickBook" data-service-id="3">
+                                    Quick Book
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Service Card 4 -->
+                <div class="service-card group">
+                    <div class="service-card-inner glass-effect p-8 rounded-3xl floating-card relative overflow-hidden">
+                        <!-- Express car wash service for quick cleaning -->
+                        <div class="absolute inset-0 bg-gradient-to-br from-green-500/20 to-primary/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                        
+                        <div class="relative z-10">
+                            <div class="w-16 h-16 bg-gradient-to-r from-green-500 to-primary rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                                <i class="fas fa-bolt text-2xl text-white"></i>
+                            </div>
+                            <h3 class="text-2xl font-bold mb-4" data-bind="service.name">Express Wash</h3>
+                            <p class="text-muted-foreground mb-6" data-bind="service.description">Quick and efficient exterior wash perfect for busy schedules</p>
+                            
+                            <div class="flex items-center justify-between mb-6">
+                                <div class="flex items-center space-x-4">
+                                    <span class="text-3xl font-bold text-gradient" data-bind="service.price">$15</span>
+                                    <div class="text-sm text-muted-foreground">
+                                        <div class="flex items-center space-x-1">
+                                            <i class="fas fa-clock"></i>
+                                            <span data-bind="service.duration">15 min</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-1">
+                                    <div class="flex text-yellow-400">
+                                        <i class="fas fa-star text-sm"></i>
+                                        <i class="fas fa-star text-sm"></i>
+                                        <i class="fas fa-star text-sm"></i>
+                                        <i class="fas fa-star text-sm"></i>
+                                        <i class="far fa-star text-sm"></i>
+                                    </div>
+                                    <span class="text-sm text-muted-foreground">4.6 (203)</span>
+                                </div>
+                                <button class="ripple-effect bg-gradient-to-r from-green-500 to-primary text-primary-foreground px-6 py-2 rounded-lg font-semibold hover:shadow-lg transition-all duration-300" data-event="click:quickBook" data-service-id="4">
+                                    Quick Book
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Service Card 5 -->
+                <div class="service-card group">
+                    <div class="service-card-inner glass-effect p-8 rounded-3xl floating-card relative overflow-hidden">
+                        <!-- Professional SUV and truck washing service -->
+                        <div class="absolute inset-0 bg-gradient-to-br from-purple-500/20 to-accent/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                        
+                        <div class="relative z-10">
+                            <div class="w-16 h-16 bg-gradient-to-r from-purple-500 to-accent rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                                <i class="fas fa-truck text-2xl text-white"></i>
+                            </div>
+                            <h3 class="text-2xl font-bold mb-4" data-bind="service.name">SUV & Truck Special</h3>
+                            <p class="text-muted-foreground mb-6" data-bind="service.description">Specialized washing for larger vehicles with extended cleaning time</p>
+                            
+                            <div class="flex items-center justify-between mb-6">
+                                <div class="flex items-center space-x-4">
+                                    <span class="text-3xl font-bold text-gradient" data-bind="service.price">$39</span>
+                                    <div class="text-sm text-muted-foreground">
+                                        <div class="flex items-center space-x-1">
+                                            <i class="fas fa-clock"></i>
+                                            <span data-bind="service.duration">60 min</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-1">
+                                    <div class="flex text-yellow-400">
+                                        <i class="fas fa-star text-sm"></i>
+                                        <i class="fas fa-star text-sm"></i>
+                                        <i class="fas fa-star text-sm"></i>
+                                        <i class="fas fa-star text-sm"></i>
+                                        <i class="fas fa-star text-sm"></i>
+                                    </div>
+                                    <span class="text-sm text-muted-foreground">4.8 (156)</span>
+                                </div>
+                                <button class="ripple-effect bg-gradient-to-r from-purple-500 to-accent text-primary-foreground px-6 py-2 rounded-lg font-semibold hover:shadow-lg transition-all duration-300" data-event="click:quickBook" data-service-id="5">
+                                    Quick Book
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Service Card 6 -->
+                <div class="service-card group">
+                    <div class="service-card-inner glass-effect p-8 rounded-3xl floating-card relative overflow-hidden">
+                        <!-- Automatic touchless car wash system in operation -->
+                        <div class="absolute inset-0 bg-gradient-to-br from-red-500/20 to-secondary/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                        
+                        <div class="relative z-10">
+                            <div class="w-16 h-16 bg-gradient-to-r from-red-500 to-secondary rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                                <i class="fas fa-robot text-2xl text-white"></i>
+                            </div>
+                            <h3 class="text-2xl font-bold mb-4" data-bind="service.name">Automated Premium</h3>
+                            <p class="text-muted-foreground mb-6" data-bind="service.description">State-of-the-art automated system with precision cleaning technology</p>
+                            
+                            <div class="flex items-center justify-between mb-6">
+                                <div class="flex items-center space-x-4">
+                                    <span class="text-3xl font-bold text-gradient" data-bind="service.price">$35</span>
+                                    <div class="text-sm text-muted-foreground">
+                                        <div class="flex items-center space-x-1">
+                                            <i class="fas fa-clock"></i>
+                                            <span data-bind="service.duration">25 min</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-1">
+                                    <div class="flex text-yellow-400">
+                                        <i class="fas fa-star text-sm"></i>
+                                        <i class="fas fa-star text-sm"></i>
+                                        <i class="fas fa-star text-sm"></i>
+                                        <i class="fas fa-star text-sm"></i>
+                                        <i class="fas fa-star text-sm"></i>
+                                    </div>
+                                    <span class="text-sm text-muted-foreground">4.9 (234)</span>
+                                </div>
+                                <button class="ripple-effect bg-gradient-to-r from-red-500 to-secondary text-primary-foreground px-6 py-2 rounded-lg font-semibold hover:shadow-lg transition-all duration-300" data-event="click:quickBook" data-service-id="6">
+                                    Quick Book
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- @END_MAP )) -->
+
+            <div class="text-center mt-12">
+                <button class="glass-effect text-foreground px-8 py-4 rounded-xl font-semibold text-lg hover:bg-white/20 transition-all duration-300" data-event="click:viewAllServices">
+                    View All Services
+                    <i class="fas fa-arrow-right ml-2"></i>
+                </button>
+            </div>
+        </div>
+    </section>
+    <!-- @END_COMPONENT: ServicesSection -->
+
+    <!-- Booking Calendar Section -->
+    <!-- @COMPONENT: BookingCalendar [interactive calendar with drag-and-drop] -->
+    <section class="py-24 relative">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl md:text-6xl font-bold mb-6">
+                    <span class="text-gradient">Book Your Slot</span>
+                </h2>
+                <p class="text-xl text-muted-foreground max-w-2xl mx-auto">
+                    Choose your preferred time slot with our interactive booking calendar
+                </p>
+            </div>
+
+            <div class="max-w-6xl mx-auto">
+                <div class="glass-effect p-8 rounded-3xl">
+                    <div class="grid lg:grid-cols-2 gap-8">
+                        <!-- Calendar Widget -->
+                        <div class="space-y-6">
+                            <div class="flex items-center justify-between">
+                                <h3 class="text-2xl font-bold">Select Date</h3>
+                                <div class="flex items-center space-x-2">
+                                    <button class="glass-effect p-2 rounded-lg hover:bg-white/20 transition-all duration-300">
+                                        <i class="fas fa-chevron-left"></i>
+                                    </button>
+                                    <span class="font-semibold text-lg px-4">January 2024</span>
+                                    <button class="glass-effect p-2 rounded-lg hover:bg-white/20 transition-all duration-300">
+                                        <i class="fas fa-chevron-right"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Calendar Grid -->
+                            <div class="grid grid-cols-7 gap-2">
+                                <div class="text-center p-3 text-muted-foreground font-medium">Su</div>
+                                <div class="text-center p-3 text-muted-foreground font-medium">Mo</div>
+                                <div class="text-center p-3 text-muted-foreground font-medium">Tu</div>
+                                <div class="text-center p-3 text-muted-foreground font-medium">We</div>
+                                <div class="text-center p-3 text-muted-foreground font-medium">Th</div>
+                                <div class="text-center p-3 text-muted-foreground font-medium">Fr</div>
+                                <div class="text-center p-3 text-muted-foreground font-medium">Sa</div>
+                                
+                                <!-- Calendar Days -->
+                                <!-- @MAP: calendarDays.map(day => ( -->
+                                <button class="p-3 rounded-xl text-center hover:bg-white/10 transition-all duration-300" data-date="2024-01-01">1</button>
+                                <button class="p-3 rounded-xl text-center hover:bg-white/10 transition-all duration-300" data-date="2024-01-02">2</button>
+                                <button class="p-3 rounded-xl text-center hover:bg-white/10 transition-all duration-300" data-date="2024-01-03">3</button>
+                                <button class="p-3 rounded-xl text-center hover:bg-white/10 transition-all duration-300" data-date="2024-01-04">4</button>
+                                <button class="p-3 rounded-xl text-center hover:bg-white/10 transition-all duration-300" data-date="2024-01-05">5</button>
+                                <button class="p-3 rounded-xl text-center hover:bg-white/10 transition-all duration-300" data-date="2024-01-06">6</button>
+                                <button class="p-3 rounded-xl text-center hover:bg-white/10 transition-all duration-300" data-date="2024-01-07">7</button>
+                                <button class="p-3 rounded-xl text-center hover:bg-white/10 transition-all duration-300" data-date="2024-01-08">8</button>
+                                <button class="p-3 rounded-xl text-center hover:bg-white/10 transition-all duration-300" data-date="2024-01-09">9</button>
+                                <button class="p-3 rounded-xl text-center hover:bg-white/10 transition-all duration-300" data-date="2024-01-10">10</button>
+                                <button class="p-3 rounded-xl text-center hover:bg-white/10 transition-all duration-300" data-date="2024-01-11">11</button>
+                                <button class="p-3 rounded-xl text-center hover:bg-white/10 transition-all duration-300" data-date="2024-01-12">12</button>
+                                <button class="p-3 rounded-xl text-center hover:bg-white/10 transition-all duration-300" data-date="2024-01-13">13</button>
+                                <button class="p-3 rounded-xl text-center hover:bg-white/10 transition-all duration-300" data-date="2024-01-14">14</button>
+                                <button class="bg-gradient-to-r from-primary to-accent text-primary-foreground p-3 rounded-xl text-center font-semibold hover:shadow-lg transition-all duration-300" data-date="2024-01-15">15</button>
+                                <button class="p-3 rounded-xl text-center hover:bg-white/10 transition-all duration-300" data-date="2024-01-16">16</button>
+                                <button class="p-3 rounded-xl text-center hover:bg-white/10 transition-all duration-300" data-date="2024-01-17">17</button>
+                                <button class="p-3 rounded-xl text-center hover:bg-white/10 transition-all duration-300" data-date="2024-01-18">18</button>
+                                <button class="p-3 rounded-xl text-center hover:bg-white/10 transition-all duration-300" data-date="2024-01-19">19</button>
+                                <button class="p-3 rounded-xl text-center hover:bg-white/10 transition-all duration-300" data-date="2024-01-20">20</button>
+                                <button class="p-3 rounded-xl text-center hover:bg-white/10 transition-all duration-300" data-date="2024-01-21">21</button>
+                                <!-- @END_MAP )) -->
+                            </div>
+                        </div>
+
+                        <!-- Time Slots -->
+                        <div class="space-y-6">
+                            <h3 class="text-2xl font-bold">Available Time Slots</h3>
+                            <div class="space-y-3">
+                                <!-- @MAP: timeSlots.map(slot => ( -->
+                                <div class="glass-effect p-4 rounded-xl flex items-center justify-between hover:bg-white/10 transition-all duration-300 cursor-pointer" data-event="click:selectTimeSlot" data-slot-id="slot1">
+                                    <div class="flex items-center space-x-4">
+                                        <div class="w-3 h-3 bg-green-400 rounded-full animate-bounce-subtle"></div>
+                                        <div>
+                                            <div class="font-semibold" data-bind="slot.time">9:00 AM - 10:00 AM</div>
+                                            <div class="text-sm text-muted-foreground">Available</div>
+                                        </div>
+                                    </div>
+                                    <div class="text-right">
+                                        <div class="text-sm text-muted-foreground">Express Wash</div>
+                                        <div class="font-semibold text-gradient">$15</div>
+                                    </div>
+                                </div>
+
+                                <div class="glass-effect p-4 rounded-xl flex items-center justify-between hover:bg-white/10 transition-all duration-300 cursor-pointer" data-event="click:selectTimeSlot" data-slot-id="slot2">
+                                    <div class="flex items-center space-x-4">
+                                        <div class="w-3 h-3 bg-green-400 rounded-full animate-bounce-subtle"></div>
+                                        <div>
+                                            <div class="font-semibold" data-bind="slot.time">11:00 AM - 12:30 PM</div>
+                                            <div class="text-sm text-muted-foreground">Available</div>
+                                        </div>
+                                    </div>
+                                    <div class="text-right">
+                                        <div class="text-sm text-muted-foreground">Premium Exterior</div>
+                                        <div class="font-semibold text-gradient">$29</div>
+                                    </div>
+                                </div>
+
+                                <div class="glass-effect p-4 rounded-xl flex items-center justify-between opacity-50 cursor-not-allowed" data-slot-id="slot3">
+                                    <div class="flex items-center space-x-4">
+                                        <div class="w-3 h-3 bg-red-400 rounded-full"></div>
+                                        <div>
+                                            <div class="font-semibold" data-bind="slot.time">1:00 PM - 2:30 PM</div>
+                                            <div class="text-sm text-muted-foreground">Booked</div>
+                                        </div>
+                                    </div>
+                                    <div class="text-right">
+                                        <div class="text-sm text-muted-foreground">Interior Detailing</div>
+                                        <div class="font-semibold">$49</div>
+                                    </div>
+                                </div>
+
+                                <div class="glass-effect p-4 rounded-xl flex items-center justify-between hover:bg-white/10 transition-all duration-300 cursor-pointer" data-event="click:selectTimeSlot" data-slot-id="slot4">
+                                    <div class="flex items-center space-x-4">
+                                        <div class="w-3 h-3 bg-yellow-400 rounded-full animate-bounce-subtle"></div>
+                                        <div>
+                                            <div class="font-semibold" data-bind="slot.time">3:00 PM - 6:00 PM</div>
+                                            <div class="text-sm text-muted-foreground">2 slots left</div>
+                                        </div>
+                                    </div>
+                                    <div class="text-right">
+                                        <div class="text-sm text-muted-foreground">Complete Detailing</div>
+                                        <div class="font-semibold text-gradient">$99</div>
+                                    </div>
+                                </div>
+                                <!-- @END_MAP )) -->
+                            </div>
+
+                            <button class="w-full ripple-effect bg-gradient-to-r from-primary to-accent text-primary-foreground py-4 rounded-xl font-semibold text-lg hover:shadow-2xl transition-all duration-300" data-event="click:proceedToBooking">
+                                Proceed to Booking
+                                <i class="fas fa-arrow-right ml-2"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- @END_COMPONENT: BookingCalendar -->
+
+    <!-- Reviews Section -->
+    <!-- @COMPONENT: ReviewsSection [customer testimonials with glassmorphism cards] -->
+    <section id="reviews" class="py-24 relative">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl md:text-6xl font-bold mb-6">
+                    <span class="text-gradient">Customer Reviews</span>
+                </h2>
+                <p class="text-xl text-muted-foreground max-w-2xl mx-auto">
+                    See what our satisfied customers have to say about our premium car wash services
+                </p>
+            </div>
+
+            <!-- Reviews Grid -->
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- @MAP: reviews.map(review => ( -->
+                <!-- Review Card 1 -->
+                <div class="glass-effect p-8 rounded-3xl floating-card">
+                    <div class="flex items-center mb-6">
+                        <div class="flex text-yellow-400 mr-4">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <span class="text-sm text-muted-foreground">5.0</span>
+                    </div>
+                    <p class="text-lg mb-6 leading-relaxed" data-bind="review.content">
+                        "I love choosing aesthetic at Oshine,and we were very impressed in cleaning service product for my son's 16th birthday. The entire was handled in Professional manner and all very Reasonable service."
+                    </p>
+                    <div class="flex items-center space-x-4">
+                        <!-- Professional headshot of satisfied customer -->
+                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&h=100" alt="Customer photo" class="w-12 h-12 rounded-full object-cover" data-bind="review.avatar">
+                        <div>
+                            <div class="font-semibold" data-bind="review.name">James Wilson</div>
+                            <div class="text-sm text-muted-foreground" data-bind="review.role">Business Owner</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Review Card 2 -->
+                <div class="glass-effect p-8 rounded-3xl floating-card">
+                    <div class="flex items-center mb-6">
+                        <div class="flex text-yellow-400 mr-4">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <span class="text-sm text-muted-foreground">5.0</span>
+                    </div>
+                    <p class="text-lg mb-6 leading-relaxed" data-bind="review.content">
+                        "Outstanding service quality and attention to detail. My car has never looked better! The staff is professional and the booking system makes everything so convenient."
+                    </p>
+                    <div class="flex items-center space-x-4">
+                        <!-- Happy female customer with professional appearance -->
+                        <img src="https://pixabay.com/get/gb6d73a18eda13f0fcbc424612f762f31a01ed113294b7a5bc99200d4bef65f1a61ec99609feb270c7ea8419c559bab5a29bf778dd9e42a7e864ec6a3f6a112e4_1280.jpg" alt="Customer photo" class="w-12 h-12 rounded-full object-cover" data-bind="review.avatar">
+                        <div>
+                            <div class="font-semibold" data-bind="review.name">Sarah Chen</div>
+                            <div class="text-sm text-muted-foreground" data-bind="review.role">Marketing Director</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Review Card 3 -->
+                <div class="glass-effect p-8 rounded-3xl floating-card">
+                    <div class="flex items-center mb-6">
+                        <div class="flex text-yellow-400 mr-4">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="far fa-star"></i>
+                        </div>
+                        <span class="text-sm text-muted-foreground">4.8</span>
+                    </div>
+                    <p class="text-lg mb-6 leading-relaxed" data-bind="review.content">
+                        "Great price and great service. Quick and efficient service delivery. Highly recommend for anyone looking for reliable car wash services in the area."
+                    </p>
+                    <div class="flex items-center space-x-4">
+                        <!-- Professional man in business attire -->
+                        <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&h=100" alt="Customer photo" class="w-12 h-12 rounded-full object-cover" data-bind="review.avatar">
+                        <div>
+                            <div class="font-semibold" data-bind="review.name">Michael Rodriguez</div>
+                            <div class="text-sm text-muted-foreground" data-bind="review.role">Software Engineer</div>
+                        </div>
+                    </div>
+                </div>
+                <!-- @END_MAP )) -->
+            </div>
+
+            <!-- Review Summary -->
+            <div class="mt-16 text-center">
+                <div class="glass-effect p-8 rounded-3xl max-w-2xl mx-auto">
+                    <div class="flex items-center justify-center space-x-8 mb-6">
+                        <div class="text-center">
+                            <div class="text-4xl font-bold text-gradient">4.9</div>
+                            <div class="text-sm text-muted-foreground">Average Rating</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-4xl font-bold text-gradient">850+</div>
+                            <div class="text-sm text-muted-foreground">Happy Customers</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-4xl font-bold text-gradient">98%</div>
+                            <div class="text-sm text-muted-foreground">Satisfaction Rate</div>
+                        </div>
+                    </div>
+                    <button class="glass-effect text-foreground px-8 py-3 rounded-xl font-semibold hover:bg-white/20 transition-all duration-300" data-event="click:viewAllReviews">
+                        View All Reviews
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- @END_COMPONENT: ReviewsSection -->
+
+    <!-- Comparison Section -->
+    <!-- @COMPONENT: ComparisonTable [animated comparison table with filtering] -->
+    <section id="compare" class="py-24 relative">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl md:text-6xl font-bold mb-6">
+                    <span class="text-gradient">Service Comparison</span>
+                </h2>
+                <p class="text-xl text-muted-foreground max-w-2xl mx-auto">
+                    Compare our services to find the perfect car wash package for your needs
+                </p>
+            </div>
+
+            <div class="max-w-6xl mx-auto">
+                <div class="glass-effect rounded-3xl overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead>
+                                <tr class="bg-gradient-to-r from-primary/20 to-accent/20">
+                                    <th class="text-left p-6 font-bold text-lg">Service Features</th>
+                                    <th class="text-center p-6 font-bold text-lg">Express<br><span class="text-sm font-normal text-muted-foreground">$15</span></th>
+                                    <th class="text-center p-6 font-bold text-lg">Premium<br><span class="text-sm font-normal text-muted-foreground">$29</span></th>
+                                    <th class="text-center p-6 font-bold text-lg">Interior Plus<br><span class="text-sm font-normal text-muted-foreground">$49</span></th>
+                                    <th class="text-center p-6 font-bold text-lg">Complete<br><span class="text-sm font-normal text-muted-foreground">$99</span></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="border-b border-border hover:bg-white/5 transition-colors duration-300">
+                                    <td class="p-6 font-medium">Exterior Wash</td>
+                                    <td class="text-center p-6"><i class="fas fa-check text-green-400 text-xl"></i></td>
+                                    <td class="text-center p-6"><i class="fas fa-check text-green-400 text-xl"></i></td>
+                                    <td class="text-center p-6"><i class="fas fa-check text-green-400 text-xl"></i></td>
+                                    <td class="text-center p-6"><i class="fas fa-check text-green-400 text-xl"></i></td>
+                                </tr>
+                                <tr class="border-b border-border hover:bg-white/5 transition-colors duration-300">
+                                    <td class="p-6 font-medium">Interior Cleaning</td>
+                                    <td class="text-center p-6"><i class="fas fa-times text-red-400 text-xl"></i></td>
+                                    <td class="text-center p-6"><i class="fas fa-times text-red-400 text-xl"></i></td>
+                                    <td class="text-center p-6"><i class="fas fa-check text-green-400 text-xl"></i></td>
+                                    <td class="text-center p-6"><i class="fas fa-check text-green-400 text-xl"></i></td>
+                                </tr>
+                                <tr class="border-b border-border hover:bg-white/5 transition-colors duration-300">
+                                    <td class="p-6 font-medium">Wax Protection</td>
+                                    <td class="text-center p-6"><i class="fas fa-times text-red-400 text-xl"></i></td>
+                                    <td class="text-center p-6"><i class="fas fa-check text-green-400 text-xl"></i></td>
+                                    <td class="text-center p-6"><i class="fas fa-check text-green-400 text-xl"></i></td>
+                                    <td class="text-center p-6"><i class="fas fa-check text-green-400 text-xl"></i></td>
+                                </tr>
+                                <tr class="border-b border-border hover:bg-white/5 transition-colors duration-300">
+                                    <td class="p-6 font-medium">Ceramic Coating</td>
+                                    <td class="text-center p-6"><i class="fas fa-times text-red-400 text-xl"></i></td>
+                                    <td class="text-center p-6"><i class="fas fa-times text-red-400 text-xl"></i></td>
+                                    <td class="text-center p-6"><i class="fas fa-times text-red-400 text-xl"></i></td>
+                                    <td class="text-center p-6"><i class="fas fa-check text-green-400 text-xl"></i></td>
+                                </tr>
+                                <tr class="border-b border-border hover:bg-white/5 transition-colors duration-300">
+                                    <td class="p-6 font-medium">Duration</td>
+                                    <td class="text-center p-6 font-semibold">15 min</td>
+                                    <td class="text-center p-6 font-semibold">45 min</td>
+                                    <td class="text-center p-6 font-semibold">90 min</td>
+                                    <td class="text-center p-6 font-semibold">180 min</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-6"></td>
+                                    <td class="text-center p-6">
+                                        <button class="ripple-effect bg-gradient-to-r from-green-500 to-primary text-primary-foreground px-6 py-2 rounded-lg font-semibold hover:shadow-lg transition-all duration-300" data-event="click:selectService" data-service="express">
+                                            Select
+                                        </button>
+                                    </td>
+                                    <td class="text-center p-6">
+                                        <button class="ripple-effect bg-gradient-to-r from-primary to-accent text-primary-foreground px-6 py-2 rounded-lg font-semibold hover:shadow-lg transition-all duration-300" data-event="click:selectService" data-service="premium">
+                                            Select
+                                        </button>
+                                    </td>
+                                    <td class="text-center p-6">
+                                        <button class="ripple-effect bg-gradient-to-r from-secondary to-primary text-primary-foreground px-6 py-2 rounded-lg font-semibold hover:shadow-lg transition-all duration-300" data-event="click:selectService" data-service="interior">
+                                            Select
+                                        </button>
+                                    </td>
+                                    <td class="text-center p-6">
+                                        <button class="ripple-effect bg-gradient-to-r from-accent to-secondary text-primary-foreground px-6 py-2 rounded-lg font-semibold hover:shadow-lg transition-all duration-300" data-event="click:selectService" data-service="complete">
+                                            Select
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- @END_COMPONENT: ComparisonTable -->
+
+    <!-- Dashboard Preview Section -->
+    <!-- @COMPONENT: DashboardPreview [admin dashboard mockup with glassmorphism] -->
+    <section id="dashboard" class="py-24 relative">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl md:text-6xl font-bold mb-6">
+                    <span class="text-gradient">Admin Dashboard</span>
+                </h2>
+                <p class="text-xl text-muted-foreground max-w-2xl mx-auto">
+                    Powerful management tools with real-time analytics and booking control
+                </p>
+            </div>
+
+            <div class="max-w-7xl mx-auto">
+                <div class="glass-effect rounded-3xl overflow-hidden">
+                    <div class="grid lg:grid-cols-4 min-h-[600px]">
+                        <!-- Sidebar Navigation -->
+                        <div class="glass-dark p-6 space-y-4">
+                            <div class="flex items-center space-x-3 mb-8">
+                                <div class="w-10 h-10 bg-gradient-to-r from-primary to-accent rounded-xl flex items-center justify-center">
+                                    <i class="fas fa-car-side text-white"></i>
+                                </div>
+                                <span class="text-xl font-bold text-gradient">Admin Panel</span>
+                            </div>
+
+                            <div class="space-y-2">
+                                <a href="#" class="flex items-center space-x-3 p-3 rounded-xl bg-gradient-to-r from-primary to-accent text-primary-foreground transition-all duration-300" data-bind="nav.active">
+                                    <i class="fas fa-tachometer-alt"></i>
+                                    <span class="font-medium">Dashboard</span>
+                                </a>
+                                <a href="#" class="flex items-center space-x-3 p-3 rounded-xl text-muted-foreground hover:text-foreground hover:bg-white/10 transition-all duration-300">
+                                    <i class="fas fa-calendar-check"></i>
+                                    <span class="font-medium">Recent Bookings</span>
+                                </a>
+                                <a href="#" class="flex items-center space-x-3 p-3 rounded-xl text-muted-foreground hover:text-foreground hover:bg-white/10 transition-all duration-300">
+                                    <i class="fas fa-cog"></i>
+                                    <span class="font-medium">Service Management</span>
+                                </a>
+                                <a href="#" class="flex items-center space-x-3 p-3 rounded-xl text-muted-foreground hover:text-foreground hover:bg-white/10 transition-all duration-300">
+                                    <i class="fas fa-clock"></i>
+                                    <span class="font-medium">Slot Management</span>
+                                </a>
+                                <a href="#" class="flex items-center space-x-3 p-3 rounded-xl text-muted-foreground hover:text-foreground hover:bg-white/10 transition-all duration-300">
+                                    <i class="fas fa-users"></i>
+                                    <span class="font-medium">User Management</span>
+                                </a>
+                                <a href="#" class="flex items-center space-x-3 p-3 rounded-xl text-muted-foreground hover:text-foreground hover:bg-white/10 transition-all duration-300">
+                                    <i class="fas fa-chart-bar"></i>
+                                    <span class="font-medium">Analytics</span>
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Dashboard Content -->
+                        <div class="lg:col-span-3 p-6 space-y-6">
+                            <!-- Stats Cards -->
+                            <div class="grid md:grid-cols-3 gap-6">
+                                <div class="glass-effect p-6 rounded-2xl floating-card">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <div class="text-3xl font-bold text-gradient" data-bind="stats.bookings">248</div>
+                                            <div class="text-sm text-muted-foreground">Total Bookings</div>
+                                        </div>
+                                        <div class="w-12 h-12 bg-gradient-to-r from-primary to-accent rounded-xl flex items-center justify-center">
+                                            <i class="fas fa-calendar-check text-white"></i>
+                                        </div>
+                                    </div>
+                                    <div class="mt-4">
+                                        <div class="progress-bar bg-muted rounded-full h-2">
+                                            <div class="bg-gradient-to-r from-primary to-accent h-2 rounded-full w-3/4 transition-all duration-1000"></div>
+                                        </div>
+                                        <div class="text-xs text-muted-foreground mt-1">+12% from last month</div>
+                                    </div>
+                                </div>
+
+                                <div class="glass-effect p-6 rounded-2xl floating-card">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <div class="text-3xl font-bold text-gradient" data-bind="stats.revenue">$12,450</div>
+                                            <div class="text-sm text-muted-foreground">Monthly Revenue</div>
+                                        </div>
+                                        <div class="w-12 h-12 bg-gradient-to-r from-secondary to-primary rounded-xl flex items-center justify-center">
+                                            <i class="fas fa-dollar-sign text-white"></i>
+                                        </div>
+                                    </div>
+                                    <div class="mt-4">
+                                        <div class="progress-bar bg-muted rounded-full h-2">
+                                            <div class="bg-gradient-to-r from-secondary to-primary h-2 rounded-full w-5/6 transition-all duration-1000"></div>
+                                        </div>
+                                        <div class="text-xs text-muted-foreground mt-1">+18% from last month</div>
+                                    </div>
+                                </div>
+
+                                <div class="glass-effect p-6 rounded-2xl floating-card">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <div class="text-3xl font-bold text-gradient" data-bind="stats.satisfaction">4.9</div>
+                                            <div class="text-sm text-muted-foreground">Avg. Rating</div>
+                                        </div>
+                                        <div class="w-12 h-12 bg-gradient-to-r from-accent to-secondary rounded-xl flex items-center justify-center">
+                                            <i class="fas fa-star text-white"></i>
+                                        </div>
+                                    </div>
+                                    <div class="mt-4">
+                                        <div class="progress-bar bg-muted rounded-full h-2">
+                                            <div class="bg-gradient-to-r from-accent to-secondary h-2 rounded-full w-full transition-all duration-1000"></div>
+                                        </div>
+                                        <div class="text-xs text-muted-foreground mt-1">+0.2 from last month</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Recent Bookings -->
+                            <div class="glass-effect p-6 rounded-2xl">
+                                <div class="flex items-center justify-between mb-6">
+                                    <h3 class="text-xl font-bold">Recent Bookings</h3>
+                                    <button class="text-primary hover:text-accent transition-colors duration-300 font-medium" data-event="click:viewAllBookings">
+                                        View All
+                                    </button>
+                                </div>
+
+                                <div class="space-y-4">
+                                    <!-- @MAP: recentBookings.map(booking => ( -->
+                                    <div class="flex items-center justify-between p-4 glass-effect rounded-xl hover:bg-white/10 transition-all duration-300">
+                                        <div class="flex items-center space-x-4">
+                                            <!-- Professional customer profile photo -->
+                                            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=50&h=50" alt="Customer" class="w-10 h-10 rounded-full object-cover" data-bind="booking.customer.avatar">
+                                            <div>
+                                                <div class="font-semibold" data-bind="booking.customer.name">James Wilson</div>
+                                                <div class="text-sm text-muted-foreground" data-bind="booking.service">Premium Exterior Wash</div>
+                                            </div>
+                                        </div>
+                                        <div class="text-right">
+                                            <div class="font-semibold text-gradient" data-bind="booking.amount">$29</div>
+                                            <div class="text-xs text-muted-foreground" data-bind="booking.time">2 hours ago</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="flex items-center justify-between p-4 glass-effect rounded-xl hover:bg-white/10 transition-all duration-300">
+                                        <div class="flex items-center space-x-4">
+                                            <!-- Young female customer smiling -->
+                                            <img src="https://pixabay.com/get/g150114e7056ac3e814923b1cd4cdd23124dc2a51f3079004499549323219f67951fc0406e1354a498b72a37d357657f32cd583713f996d7de7faf321d4ec7349_1280.jpg" alt="Customer" class="w-10 h-10 rounded-full object-cover" data-bind="booking.customer.avatar">
+                                            <div>
+                                                <div class="font-semibold" data-bind="booking.customer.name">Sarah Chen</div>
+                                                <div class="text-sm text-muted-foreground" data-bind="booking.service">Complete Detailing</div>
+                                            </div>
+                                        </div>
+                                        <div class="text-right">
+                                            <div class="font-semibold text-gradient" data-bind="booking.amount">$99</div>
+                                            <div class="text-xs text-muted-foreground" data-bind="booking.time">3 hours ago</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="flex items-center justify-between p-4 glass-effect rounded-xl hover:bg-white/10 transition-all duration-300">
+                                        <div class="flex items-center space-x-4">
+                                            <!-- Middle-aged businessman profile -->
+                                            <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=50&h=50" alt="Customer" class="w-10 h-10 rounded-full object-cover" data-bind="booking.customer.avatar">
+                                            <div>
+                                                <div class="font-semibold" data-bind="booking.customer.name">Michael Rodriguez</div>
+                                                <div class="text-sm text-muted-foreground" data-bind="booking.service">SUV & Truck Special</div>
+                                            </div>
+                                        </div>
+                                        <div class="text-right">
+                                            <div class="font-semibold text-gradient" data-bind="booking.amount">$39</div>
+                                            <div class="text-xs text-muted-foreground" data-bind="booking.time">5 hours ago</div>
+                                        </div>
+                                    </div>
+                                    <!-- @END_MAP )) -->
+                                </div>
+                            </div>
+
+                            <!-- Analytics Chart Placeholder -->
+                            <div class="glass-effect p-6 rounded-2xl">
+                                <h3 class="text-xl font-bold mb-6">Booking Analytics</h3>
+                                <!-- @FUNCTIONALITY: This chart should implement real-time booking analytics using Chart.js or similar -->
+                                <div class="h-64 bg-gradient-to-br from-primary/10 to-accent/10 rounded-xl flex items-center justify-center">
+                                    <div class="text-center">
+                                        <i class="fas fa-chart-line text-4xl text-primary mb-4"></i>
+                                        <div class="text-lg font-semibold">Interactive Analytics Chart</div>
+                                        <div class="text-sm text-muted-foreground">Real-time booking data visualization</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- @END_COMPONENT: DashboardPreview -->
+
+    <!-- Footer -->
+    <!-- @COMPONENT: Footer [glassmorphism footer with contact info] -->
+    <footer class="py-16 relative">
+        <div class="container mx-auto px-4">
+            <div class="glass-effect p-12 rounded-3xl">
+                <div class="grid md:grid-cols-3 gap-12">
+                    <!-- Contact Info -->
+                    <div>
+                        <div class="flex items-center space-x-3 mb-6">
+                            <div class="w-12 h-12 bg-gradient-to-r from-primary to-accent rounded-xl flex items-center justify-center">
+                                <i class="fas fa-car-side text-white text-lg"></i>
+                            </div>
+                            <span class="text-2xl font-bold text-gradient">AquaShine</span>
+                        </div>
+                        <div class="space-y-4">
+                            <div class="flex items-center space-x-3">
+                                <i class="fas fa-phone text-primary"></i>
+                                <span data-bind="contact.phone">+1 (555) 123-4567</span>
+                            </div>
+                            <div class="flex items-center space-x-3">
+                                <i class="fas fa-envelope text-primary"></i>
+                                <span data-bind="contact.email">hello@aquashine.com</span>
+                            </div>
+                            <div class="flex items-center space-x-3">
+                                <i class="fas fa-map-marker-alt text-primary"></i>
+                                <span data-bind="contact.address">123 Clean Street, Wash City</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Hours of Operation -->
+                    <div>
+                        <h3 class="text-xl font-bold mb-6">Hours of Operation</h3>
+                        <div class="space-y-2">
+                            <div class="flex justify-between">
+                                <span>Monday - Friday</span>
+                                <span class="text-primary font-semibold">8:00 AM - 7:00 PM</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>Saturday</span>
+                                <span class="text-primary font-semibold">9:00 AM - 6:00 PM</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>Sunday</span>
+                                <span class="text-primary font-semibold">10:00 AM - 5:00 PM</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Newsletter Signup -->
+                    <div>
+                        <h3 class="text-xl font-bold mb-6">Stay Updated</h3>
+                        <p class="text-muted-foreground mb-4">Get exclusive offers and booking reminders</p>
+                        <div class="space-y-3">
+                            <input type="email" placeholder="Enter your email" class="w-full glass-effect border border-border rounded-xl px-4 py-3 text-foreground placeholder-muted-foreground focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300" data-bind="newsletter.email">
+                            <button class="w-full ripple-effect bg-gradient-to-r from-primary to-accent text-primary-foreground py-3 rounded-xl font-semibold hover:shadow-lg transition-all duration-300" data-event="click:subscribeNewsletter">
+                                Subscribe Now
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="border-t border-border mt-12 pt-8 flex flex-col md:flex-row items-center justify-between">
+                    <div class="text-muted-foreground text-sm">
+                        © 2024 AquaShine Car Wash. All rights reserved.
+                    </div>
+                    <div class="flex items-center space-x-6 mt-4 md:mt-0">
+                        <a href="#" class="text-muted-foreground hover:text-primary transition-colors duration-300">
+                            <i class="fab fa-facebook text-xl"></i>
+                        </a>
+                        <a href="#" class="text-muted-foreground hover:text-primary transition-colors duration-300">
+                            <i class="fab fa-twitter text-xl"></i>
+                        </a>
+                        <a href="#" class="text-muted-foreground hover:text-primary transition-colors duration-300">
+                            <i class="fab fa-instagram text-xl"></i>
+                        </a>
+                        <a href="#" class="text-muted-foreground hover:text-primary transition-colors duration-300">
+                            <i class="fab fa-linkedin text-xl"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <!-- @END_COMPONENT: Footer -->
+
+    <!-- Floating Action Buttons -->
+    <div class="fixed bottom-8 right-8 z-50 space-y-4">
+        <!-- Chat Support -->
+        <button class="w-14 h-14 bg-gradient-to-r from-primary to-accent rounded-full flex items-center justify-center shadow-2xl hover:shadow-3xl transition-all duration-300 animate-bounce-subtle" data-event="click:openChat">
+            <i class="fas fa-comments text-white text-xl"></i>
+        </button>
+        
+        <!-- Scroll to Top -->
+        <button class="w-14 h-14 glass-effect rounded-full flex items-center justify-center shadow-2xl hover:bg-white/20 transition-all duration-300" data-event="click:scrollToTop">
+            <i class="fas fa-arrow-up text-primary text-xl"></i>
+        </button>
+    </div>
+
+    <!-- Modal Overlays (Hidden by default) -->
+    <!-- @COMPONENT: BookingModal [glassmorphism booking wizard] -->
+    <div id="bookingModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center hidden" data-event="click:closeModal">
+        <div class="glass-effect p-8 rounded-3xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto" data-event="click:stopPropagation">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-2xl font-bold">Book Your Service</h3>
+                <button class="text-muted-foreground hover:text-foreground transition-colors duration-300" data-event="click:closeModal">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+
+            <!-- Booking Steps Progress -->
+            <div class="flex items-center justify-between mb-8">
+                <div class="flex items-center space-x-2">
+                    <div class="w-8 h-8 bg-gradient-to-r from-primary to-accent rounded-full flex items-center justify-center text-white font-semibold">1</div>
+                    <span class="text-sm font-medium">Service</span>
+                </div>
+                <div class="flex-1 h-1 bg-muted mx-4 rounded-full">
+                    <div class="h-1 bg-gradient-to-r from-primary to-accent rounded-full w-1/3 transition-all duration-500"></div>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <div class="w-8 h-8 bg-muted rounded-full flex items-center justify-center text-muted-foreground font-semibold">2</div>
+                    <span class="text-sm text-muted-foreground">Vehicle</span>
+                </div>
+                <div class="flex-1 h-1 bg-muted mx-4 rounded-full"></div>
+                <div class="flex items-center space-x-2">
+                    <div class="w-8 h-8 bg-muted rounded-full flex items-center justify-center text-muted-foreground font-semibold">3</div>
+                    <span class="text-sm text-muted-foreground">Payment</span>
+                </div>
+            </div>
+
+            <!-- Booking Form -->
+            <form class="space-y-6" data-event="submit:processBooking">
+                <div>
+                    <label class="block text-sm font-medium mb-2">Vehicle Type</label>
+                    <select class="w-full glass-effect border border-border rounded-xl px-4 py-3 text-foreground focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300" data-bind="booking.vehicleType">
+                        <option value="">Select vehicle type</option>
+                        <option value="car">Car</option>
+                        <option value="suv">SUV</option>
+                        <option value="truck">Truck</option>
+                        <option value="van">Van</option>
+                    </select>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Vehicle Brand</label>
+                        <input type="text" placeholder="e.g., Toyota" class="w-full glass-effect border border-border rounded-xl px-4 py-3 text-foreground placeholder-muted-foreground focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300" data-bind="booking.vehicleBrand">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Model</label>
+                        <input type="text" placeholder="e.g., Camry" class="w-full glass-effect border border-border rounded-xl px-4 py-3 text-foreground placeholder-muted-foreground focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300" data-bind="booking.vehicleModel">
+                    </div>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Manufacturing Year</label>
+                        <input type="number" placeholder="2020" class="w-full glass-effect border border-border rounded-xl px-4 py-3 text-foreground placeholder-muted-foreground focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300" data-bind="booking.manufacturingYear">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Registration Plate</label>
+                        <input type="text" placeholder="ABC123" class="w-full glass-effect border border-border rounded-xl px-4 py-3 text-foreground placeholder-muted-foreground focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300" data-bind="booking.registrationPlate">
+                    </div>
+                </div>
+
+                <div class="flex space-x-4">
+                    <button type="button" class="flex-1 glass-effect text-foreground py-3 rounded-xl font-semibold hover:bg-white/20 transition-all duration-300" data-event="click:closeModal">
+                        Cancel
+                    </button>
+                    <button type="submit" class="flex-1 ripple-effect bg-gradient-to-r from-primary to-accent text-primary-foreground py-3 rounded-xl font-semibold hover:shadow-lg transition-all duration-300">
+                        Continue to Payment
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- @END_COMPONENT: BookingModal -->
+
+    <!-- Toast Notification -->
+    <!-- @COMPONENT: ToastNotification [real-time notifications] -->
+    <div id="toast" class="fixed top-24 right-8 z-50 glass-effect p-4 rounded-xl shadow-2xl transform translate-x-full transition-transform duration-300 max-w-sm" data-state="hidden">
+        <div class="flex items-center space-x-3">
+            <div class="w-6 h-6 bg-green-400 rounded-full flex items-center justify-center">
+                <i class="fas fa-check text-white text-sm"></i>
+            </div>
+            <div>
+                <div class="font-semibold text-sm" data-bind="toast.title">Booking Confirmed!</div>
+                <div class="text-xs text-muted-foreground" data-bind="toast.message">Your appointment has been scheduled</div>
+            </div>
+            <button class="text-muted-foreground hover:text-foreground transition-colors duration-300" data-event="click:closeToast">
+                <i class="fas fa-times text-sm"></i>
+            </button>
+        </div>
+    </div>
+    <!-- @END_COMPONENT: ToastNotification -->
+
+    <script>
+        (function() {
+            'use strict';
+            
+            // Smooth scrolling for navigation links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                });
+            });
+
+            // Parallax effect for hero section
+            window.addEventListener('scroll', function() {
+                const scrolled = window.pageYOffset;
+                const parallax = document.querySelector('.parallax-bg');
+                if (parallax) {
+                    const speed = scrolled * 0.5;
+                    parallax.style.transform = `translateY(${speed}px)`;
+                }
+            });
+
+            // Intersection Observer for animations
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -100px 0px'
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('animate-slide-up');
+                    }
+                });
+            }, observerOptions);
+
+            // Observe all service cards
+            document.querySelectorAll('.service-card, .floating-card').forEach(card => {
+                observer.observe(card);
+            });
+
+            // Modal functionality
+            const modal = document.getElementById('bookingModal');
+            const openModalButtons = document.querySelectorAll('[data-event*="openBookingModal"], [data-event*="quickBook"]');
+            const closeModalButtons = document.querySelectorAll('[data-event*="closeModal"]');
+
+            openModalButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    modal.classList.remove('hidden');
+                    document.body.style.overflow = 'hidden';
+                    // TODO: Load service details based on button data
+                });
+            });
+
+            closeModalButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    modal.classList.add('hidden');
+                    document.body.style.overflow = 'auto';
+                });
+            });
+
+            // Close modal on outside click
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.classList.add('hidden');
+                    document.body.style.overflow = 'auto';
+                }
+            });
+
+            // Toast notification functionality
+            function showToast(title, message, type = 'success') {
+                const toast = document.getElementById('toast');
+                const titleEl = toast.querySelector('[data-bind="toast.title"]');
+                const messageEl = toast.querySelector('[data-bind="toast.message"]');
+                
+                titleEl.textContent = title;
+                messageEl.textContent = message;
+                
+                toast.classList.remove('translate-x-full');
+                toast.classList.add('translate-x-0');
+                
+                setTimeout(() => {
+                    toast.classList.remove('translate-x-0');
+                    toast.classList.add('translate-x-full');
+                }, 3000);
+            }
+
+            // Ripple effect for buttons
+            document.querySelectorAll('.ripple-effect').forEach(button => {
+                button.addEventListener('click', function(e) {
+                    const ripple = document.createElement('span');
+                    const rect = this.getBoundingClientRect();
+                    const size = Math.max(rect.height, rect.width);
+                    const x = e.clientX - rect.left - size / 2;
+                    const y = e.clientY - rect.top - size / 2;
+                    
+                    ripple.style.width = ripple.style.height = size + 'px';
+                    ripple.style.left = x + 'px';
+                    ripple.style.top = y + 'px';
+                    ripple.classList.add('absolute', 'bg-white', 'rounded-full', 'opacity-30', 'animate-ripple', 'pointer-events-none');
+                    
+                    this.appendChild(ripple);
+                    
+                    setTimeout(() => {
+                        ripple.remove();
+                    }, 600);
+                });
+            });
+
+            // Service filter functionality
+            document.querySelectorAll('[data-event*="filterServices"]').forEach(button => {
+                button.addEventListener('click', function() {
+                    const filter = this.getAttribute('data-filter');
+                    
+                    // Update active button
+                    document.querySelectorAll('[data-event*="filterServices"]').forEach(btn => {
+                        btn.classList.remove('bg-gradient-to-r', 'from-primary', 'to-accent', 'text-primary-foreground');
+                        btn.classList.add('text-muted-foreground');
+                    });
+                    
+                    this.classList.add('bg-gradient-to-r', 'from-primary', 'to-accent', 'text-primary-foreground');
+                    this.classList.remove('text-muted-foreground');
+                    
+                    // TODO: Implement actual filtering logic
+                    console.log('Filtering services by:', filter);
+                });
+            });
+
+            // Scroll to top functionality
+            document.querySelectorAll('[data-event*="scrollToTop"]').forEach(button => {
+                button.addEventListener('click', () => {
+                    window.scrollTo({
+                        top: 0,
+                        behavior: 'smooth'
+                    });
+                });
+            });
+
+            // Navigation active state
+            window.addEventListener('scroll', () => {
+                const sections = document.querySelectorAll('section[id]');
+                const navLinks = document.querySelectorAll('nav a[href^="#"]');
+                
+                let current = '';
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    const sectionHeight = section.clientHeight;
+                    if (window.pageYOffset >= (sectionTop - 200)) {
+                        current = section.getAttribute('id');
+                    }
+                });
+
+                navLinks.forEach(link => {
+                    link.classList.remove('text-primary');
+                    link.classList.add('text-muted-foreground');
+                    if (link.getAttribute('href') === `#${current}`) {
+                        link.classList.add('text-primary');
+                        link.classList.remove('text-muted-foreground');
+                    }
+                });
+            });
+
+            // Form submission handling
+            document.querySelectorAll('form').forEach(form => {
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    // TODO: Implement form validation and submission
+                    showToast('Success!', 'Form submitted successfully');
+                });
+            });
+
+            // Calendar date selection
+            document.querySelectorAll('[data-date]').forEach(dateButton => {
+                dateButton.addEventListener('click', function() {
+                    // Remove active state from all dates
+                    document.querySelectorAll('[data-date]').forEach(btn => {
+                        btn.classList.remove('bg-gradient-to-r', 'from-primary', 'to-accent', 'text-primary-foreground');
+                    });
+                    
+                    // Add active state to clicked date
+                    this.classList.add('bg-gradient-to-r', 'from-primary', 'to-accent', 'text-primary-foreground');
+                    
+                    // TODO: Load available time slots for selected date
+                    console.log('Selected date:', this.getAttribute('data-date'));
+                });
+            });
+
+            // Time slot selection
+            document.querySelectorAll('[data-event*="selectTimeSlot"]').forEach(slot => {
+                slot.addEventListener('click', function() {
+                    // Remove active state from all slots
+                    document.querySelectorAll('[data-event*="selectTimeSlot"]').forEach(s => {
+                        s.classList.remove('ring-2', 'ring-primary');
+                    });
+                    
+                    // Add active state to clicked slot
+                    this.classList.add('ring-2', 'ring-primary');
+                    
+                    // TODO: Update booking form with selected slot
+                    console.log('Selected slot:', this.getAttribute('data-slot-id'));
+                });
+            });
+
+            // Mobile navigation toggle
+            const mobileMenuToggle = document.querySelector('button .fa-bars')?.parentElement;
+            if (mobileMenuToggle) {
+                mobileMenuToggle.addEventListener('click', function() {
+                    // TODO: Implement mobile navigation menu
+                    console.log('Mobile menu toggle clicked');
+                });
+            }
+
+            // Initialize loading states for async operations
+            function showLoadingState(element) {
+                element.classList.add('loading-skeleton');
+                element.style.pointerEvents = 'none';
+            }
+
+            function hideLoadingState(element) {
+                element.classList.remove('loading-skeleton');
+                element.style.pointerEvents = 'auto';
+            }
+
+            // Simulate real-time updates
+            setInterval(() => {
+                const availableSlots = document.querySelectorAll('.w-3.h-3.bg-green-400');
+                availableSlots.forEach(indicator => {
+                    indicator.classList.add('animate-bounce-subtle');
+                });
+                // TODO: Implement actual real-time slot availability updates
+            }, 5000);
+
+            console.log('AquaShine Car Wash System initialized');
+        })();
+    </script>
+</body>
+</html>

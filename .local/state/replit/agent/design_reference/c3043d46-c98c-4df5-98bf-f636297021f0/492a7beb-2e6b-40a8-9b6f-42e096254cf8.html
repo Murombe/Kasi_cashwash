@@ -1,0 +1,1051 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Car Wash - Professional Car Care Services</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    borderRadius: {
+                        lg: "var(--radius)",
+                        md: "calc(var(--radius) - 2px)",
+                        sm: "calc(var(--radius) - 4px)",
+                    },
+                    colors: {
+                        background: "var(--background)",
+                        foreground: "var(--foreground)",
+                        card: {
+                            DEFAULT: "var(--card)",
+                            foreground: "var(--card-foreground)",
+                        },
+                        popover: {
+                            DEFAULT: "var(--popover)",
+                            foreground: "var(--popover-foreground)",
+                        },
+                        primary: {
+                            DEFAULT: "var(--primary)",
+                            foreground: "var(--primary-foreground)",
+                        },
+                        secondary: {
+                            DEFAULT: "var(--secondary)",
+                            foreground: "var(--secondary-foreground)",
+                        },
+                        muted: {
+                            DEFAULT: "var(--muted)",
+                            foreground: "var(--muted-foreground)",
+                        },
+                        accent: {
+                            DEFAULT: "var(--accent)",
+                            foreground: "var(--accent-foreground)",
+                        },
+                        destructive: {
+                            DEFAULT: "var(--destructive)",
+                            foreground: "var(--destructive-foreground)",
+                        },
+                        border: "var(--border)",
+                        input: "var(--input)",
+                        ring: "var(--ring)",
+                    },
+                    fontFamily: {
+                        sans: ["var(--font-sans)"],
+                    }
+                },
+            }
+        };
+    </script>
+    <style>
+        :root {
+            --background: hsl(210 40% 98%);
+            --foreground: hsl(222.2 84% 4.9%);
+            --card: hsl(0 0% 100%);
+            --card-foreground: hsl(222.2 84% 4.9%);
+            --popover: hsl(0 0% 100%);
+            --popover-foreground: hsl(222.2 84% 4.9%);
+            --primary: hsl(196 64% 24%);
+            --primary-foreground: hsl(210 40% 98%);
+            --secondary: hsl(210 40% 96%);
+            --secondary-foreground: hsl(222.2 47% 11%);
+            --muted: hsl(210 40% 96%);
+            --muted-foreground: hsl(215.4 16.3% 46.9%);
+            --accent: hsl(197 71% 52%);
+            --accent-foreground: hsl(222.2 84% 4.9%);
+            --destructive: hsl(0 84.2% 60.2%);
+            --destructive-foreground: hsl(210 40% 98%);
+            --border: hsl(214.3 31.8% 91.4%);
+            --input: hsl(214.3 31.8% 91.4%);
+            --ring: hsl(196 64% 24%);
+            --radius: 0.5rem;
+            --font-sans: 'Inter', system-ui, sans-serif;
+        }
+
+        .dark {
+            --background: hsl(222.2 84% 4.9%);
+            --foreground: hsl(210 40% 98%);
+            --card: hsl(222.2 84% 4.9%);
+            --card-foreground: hsl(210 40% 98%);
+            --popover: hsl(222.2 84% 4.9%);
+            --popover-foreground: hsl(210 40% 98%);
+            --primary: hsl(197 71% 52%);
+            --primary-foreground: hsl(222.2 84% 4.9%);
+            --secondary: hsl(217.2 32.6% 17.5%);
+            --secondary-foreground: hsl(210 40% 98%);
+            --muted: hsl(217.2 32.6% 17.5%);
+            --muted-foreground: hsl(215 20.2% 65.1%);
+            --accent: hsl(217.2 32.6% 17.5%);
+            --accent-foreground: hsl(210 40% 98%);
+            --destructive: hsl(0 62.8% 30.6%);
+            --destructive-foreground: hsl(210 40% 98%);
+            --border: hsl(217.2 32.6% 17.5%);
+            --input: hsl(217.2 32.6% 17.5%);
+            --ring: hsl(197 71% 52%);
+        }
+
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+        }
+
+        .hero-wave {
+            background: linear-gradient(135deg, hsl(196 64% 24%) 0%, hsl(197 71% 52%) 100%);
+            position: relative;
+        }
+
+        .hero-wave::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 100px;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 120' preserveAspectRatio='none'%3E%3Cpath d='M0,0V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,53.67,583,72.05c69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1113-14.29,1200,52.47V0Z' opacity='.25' fill='%23f8fafc'%3E%3C/path%3E%3Cpath d='M0,0V15.81C13,36.92,27.64,56.86,47.69,72.05,99.41,111.27,165,111,224.58,91.58c31.15-10.15,60.09-26.07,89.67-39.8,40.92-19,84.73-46,130.83-49.67,36.26-2.85,70.9,9.42,98.6,31.56,31.77,25.39,62.32,62,103.63,73,40.44,10.79,81.35-6.69,119.13-24.28s75.16-39,116.92-43.05c59.73-5.85,113.28,22.88,168.9,38.84,30.2,8.66,59,6.17,87.09-7.5,22.43-10.89,48-26.93,60.65-49.24V0Z' opacity='.5' fill='%23f8fafc'%3E%3C/path%3E%3Cpath d='M0,0V5.63C149.93,59,314.09,71.32,475.83,42.57c43-7.64,84.23-20.12,127.61-26.46,59-8.63,112.48,12.24,165.56,35.4C827.93,77.22,886,95.24,951.2,90c86.53-7,172.46-45.71,248.8-84.81V0Z' fill='%23f8fafc'%3E%3C/path%3E%3C/svg%3E") no-repeat;
+            background-size: cover;
+        }
+
+        .footer-wave {
+            position: relative;
+        }
+
+        .footer-wave::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100px;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 120' preserveAspectRatio='none'%3E%3Cpath d='M0,0V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,53.67,583,72.05c69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1113-14.29,1200,52.47V0Z' opacity='.25' fill='%23ffffff'%3E%3C/path%3E%3Cpath d='M0,0V15.81C13,36.92,27.64,56.86,47.69,72.05,99.41,111.27,165,111,224.58,91.58c31.15-10.15,60.09-26.07,89.67-39.8,40.92-19,84.73-46,130.83-49.67,36.26-2.85,70.9,9.42,98.6,31.56,31.77,25.39,62.32,62,103.63,73,40.44,10.79,81.35-6.69,119.13-24.28s75.16-39,116.92-43.05c59.73-5.85,113.28,22.88,168.9,38.84,30.2,8.66,59,6.17,87.09-7.5,22.43-10.89,48-26.93,60.65-49.24V0Z' opacity='.5' fill='%23ffffff'%3E%3C/path%3E%3Cpath d='M0,0V5.63C149.93,59,314.09,71.32,475.83,42.57c43-7.64,84.23-20.12,127.61-26.46,59-8.63,112.48,12.24,165.56,35.4C827.93,77.22,886,95.24,951.2,90c86.53-7,172.46-45.71,248.8-84.81V0Z' fill='%23ffffff'%3E%3C/path%3E%3C/svg%3E") no-repeat;
+            background-size: cover;
+            transform: rotate(180deg);
+        }
+
+        .admin-sidebar {
+            background: linear-gradient(180deg, hsl(222.2 84% 4.9%) 0%, hsl(217.2 32.6% 17.5%) 100%);
+        }
+
+        .service-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .service-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        .current-page {
+            display: block;
+        }
+
+        .hidden-page {
+            display: none;
+        }
+    </style>
+</head>
+<body class="bg-background text-foreground">
+    <!-- Navigation -->
+    <nav class="bg-primary shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 flex items-center">
+                        <i class="fas fa-car text-primary-foreground text-2xl mr-2"></i>
+                        <span class="text-primary-foreground text-xl font-bold">Car Wash</span>
+                    </div>
+                    <div class="hidden md:ml-10 md:flex space-x-8">
+                        <button onclick="showPage('home')" class="text-primary-foreground hover:text-accent px-3 py-2 rounded-md text-sm font-medium nav-link">Home</button>
+                        <button onclick="showPage('services')" class="text-primary-foreground hover:text-accent px-3 py-2 rounded-md text-sm font-medium nav-link">Services</button>
+                        <button onclick="showPage('reviews')" class="text-primary-foreground hover:text-accent px-3 py-2 rounded-md text-sm font-medium nav-link">Reviews</button>
+                        <button onclick="showPage('comparison')" class="text-primary-foreground hover:text-accent px-3 py-2 rounded-md text-sm font-medium nav-link">Compare</button>
+                        <button onclick="showPage('dashboard')" class="text-primary-foreground hover:text-accent px-3 py-2 rounded-md text-sm font-medium nav-link">Dashboard</button>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="flex items-center space-x-2 text-primary-foreground">
+                        <i class="fas fa-phone text-sm"></i>
+                        <span class="text-sm">Call: 155 666 666</span>
+                    </div>
+                    <div class="flex items-center space-x-2 text-primary-foreground">
+                        <i class="fas fa-clock text-sm"></i>
+                        <span class="text-sm">Today: 7:00am - 9:00pm</span>
+                    </div>
+                    <button class="bg-accent hover:bg-accent/90 text-accent-foreground px-4 py-2 rounded-md text-sm font-medium transition-colors">
+                        Book an Appointment
+                    </button>
+                    <button class="text-primary-foreground hover:text-accent p-2">
+                        <i class="fas fa-user"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Homepage -->
+    <div id="home" class="current-page">
+        <!-- Hero Section -->
+        <section class="hero-wave text-primary-foreground relative overflow-hidden" style="height: 60vh;">
+            <!-- Car washing action shot with soap and water -->
+            <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&h=1080'); opacity: 0.3;"></div>
+            <div class="relative z-10 flex flex-col justify-center items-center h-full text-center px-4">
+                <p class="text-sm font-medium mb-2 tracking-wider uppercase">Get Your Shine On</p>
+                <h1 class="text-4xl md:text-6xl font-bold mb-4 leading-tight">
+                    GENTLE ON YOUR CAR,<br>
+                    <span class="text-accent">POWERFUL ON CLEAN</span>
+                </h1>
+                <button class="bg-accent hover:bg-accent/90 text-accent-foreground px-8 py-3 rounded-lg text-lg font-semibold mt-6 transition-colors">
+                    BOOK NOW
+                </button>
+            </div>
+        </section>
+
+        <!-- Services Section -->
+        <section class="py-16 bg-background">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold text-foreground mb-4">Most Popular Features Services</h2>
+                    <p class="text-muted-foreground max-w-2xl mx-auto">Experience a premium car washing service with our industry-leading equipment and experienced staff, bringing the ultimate shine to your car. Whether you need a quick wash or comprehensive detailing, we have the perfect package for you.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
+                    <!-- Service Card 1 -->
+                    <div class="service-card bg-card rounded-xl overflow-hidden shadow-lg">
+                        <!-- Professional car wash with foam application -->
+                        <div class="relative h-48 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1607860108855-64acf2078ed9?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600');">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                            <div class="absolute bottom-4 left-4 text-white">
+                                <h3 class="text-lg font-bold">Car Wash Premium</h3>
+                                <p class="text-sm opacity-90">Premium car washing service</p>
+                            </div>
+                        </div>
+                        <div class="p-6">
+                            <div class="flex justify-between items-center">
+                                <span class="text-2xl font-bold text-primary">R 299</span>
+                                <button class="bg-primary text-primary-foreground px-4 py-2 rounded-md hover:bg-primary/90 transition-colors">Book Now</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Service Card 2 -->
+                    <div class="service-card bg-card rounded-xl overflow-hidden shadow-lg">
+                        <!-- Car interior detailing and cleaning -->
+                        <div class="relative h-48 bg-cover bg-center" style="background-image: url('https://pixabay.com/get/g1fa2193e99b98fc655951b12bb36cac8d5dc51ff6bf47d5afa5fa518575d1d9bf1b2a14f0cd61e03e6bc546388c7b0466ed938def0c1b4320fb30a13be3c2474_1280.jpg');">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                            <div class="absolute bottom-4 left-4 text-white">
+                                <h3 class="text-lg font-bold">Car Wash Premium 2</h3>
+                                <p class="text-sm opacity-90">Professional car washing service</p>
+                            </div>
+                        </div>
+                        <div class="p-6">
+                            <div class="flex justify-between items-center">
+                                <span class="text-2xl font-bold text-primary">R 399</span>
+                                <button class="bg-primary text-primary-foreground px-4 py-2 rounded-md hover:bg-primary/90 transition-colors">Book Now</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Service Card 3 -->
+                    <div class="service-card bg-card rounded-xl overflow-hidden shadow-lg">
+                        <!-- Car spray wax application process -->
+                        <div class="relative h-48 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600');">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                            <div class="absolute bottom-4 left-4 text-white">
+                                <h3 class="text-lg font-bold">Car Sprays wax 20</h3>
+                                <p class="text-sm opacity-90">Car Glass washing service</p>
+                            </div>
+                        </div>
+                        <div class="p-6">
+                            <div class="flex justify-between items-center">
+                                <span class="text-2xl font-bold text-primary">R 199</span>
+                                <button class="bg-primary text-primary-foreground px-4 py-2 rounded-md hover:bg-primary/90 transition-colors">Book Now</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Service Card 4 -->
+                    <div class="service-card bg-card rounded-xl overflow-hidden shadow-lg">
+                        <!-- Professional car glass cleaning -->
+                        <div class="relative h-48 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1549924231-f129b911e442?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600');">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                            <div class="absolute bottom-4 left-4 text-white">
+                                <h3 class="text-lg font-bold">Car Glass Wax 343</h3>
+                                <p class="text-sm opacity-90">Car Glass washing service</p>
+                            </div>
+                        </div>
+                        <div class="p-6">
+                            <div class="flex justify-between items-center">
+                                <span class="text-2xl font-bold text-primary">R 149</span>
+                                <button class="bg-primary text-primary-foreground px-4 py-2 rounded-md hover:bg-primary/90 transition-colors">Book Now</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Service Card 5 -->
+                    <div class="service-card bg-card rounded-xl overflow-hidden shadow-lg">
+                        <!-- Car polish and detailing service -->
+                        <div class="relative h-48 bg-cover bg-center" style="background-image: url('https://pixabay.com/get/ga02c0502291fd00f7ab78793c45058600afefac2f47b25b7b7632b7d0639af3a6a43554132baa7e91baefe78b140f1c5db405db986973a4bc88db95028452065_1280.jpg');">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                            <div class="absolute bottom-4 left-4 text-white">
+                                <h3 class="text-lg font-bold">Car Polish & Detailing Packages</h3>
+                                <p class="text-sm opacity-90">Paint and soil detailing service</p>
+                            </div>
+                        </div>
+                        <div class="p-6">
+                            <div class="flex justify-between items-center">
+                                <span class="text-2xl font-bold text-primary">R 599</span>
+                                <button class="bg-primary text-primary-foreground px-4 py-2 rounded-md hover:bg-primary/90 transition-colors">Book Now</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Service Card 6 -->
+                    <div class="service-card bg-card rounded-xl overflow-hidden shadow-lg">
+                        <!-- Automatic car wash system with red brushes -->
+                        <div class="relative h-48 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1584464491033-06628f3a6b7b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600');">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                            <div class="absolute bottom-4 left-4 text-white">
+                                <h3 class="text-lg font-bold">Dangers of Automatic Car Washes</h3>
+                                <p class="text-sm opacity-90">Paint and soil scratches service</p>
+                            </div>
+                        </div>
+                        <div class="p-6">
+                            <div class="flex justify-between items-center">
+                                <span class="text-2xl font-bold text-primary">R 99</span>
+                                <button class="bg-primary text-primary-foreground px-4 py-2 rounded-md hover:bg-primary/90 transition-colors">Book Now</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-center">
+                    <button onclick="showPage('services')" class="bg-primary text-primary-foreground px-6 py-3 rounded-lg hover:bg-primary/90 transition-colors">
+                        Explore More
+                    </button>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- All Services Page -->
+    <div id="services" class="hidden-page">
+        <section class="py-16 bg-background">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h1 class="text-4xl font-bold text-foreground mb-4">All Services</h1>
+                    <p class="text-muted-foreground">Complete car care solutions</p>
+                </div>
+
+                <div class="flex flex-col lg:flex-row gap-8">
+                    <!-- Sidebar Filter -->
+                    <div class="lg:w-1/4">
+                        <div class="bg-card p-6 rounded-xl shadow-lg">
+                            <h3 class="text-lg font-semibold mb-4">Filter by Service Level</h3>
+                            <div class="space-y-2">
+                                <label class="flex items-center">
+                                    <input type="checkbox" class="mr-2" data-mock="true"> Premium
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" class="mr-2" data-mock="true"> Standard
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" class="mr-2" data-mock="true"> Basic
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" class="mr-2" data-mock="true"> Express
+                                </label>
+                            </div>
+                            <button class="w-full bg-accent text-accent-foreground py-2 px-4 rounded-md mt-4 hover:bg-accent/90 transition-colors">
+                                Clear Filter
+                            </button>
+                            
+                            <!-- Promotional Card -->
+                            <div class="mt-8 bg-gradient-to-br from-accent to-primary p-4 rounded-xl text-primary-foreground">
+                                <h4 class="font-bold text-lg mb-2">FREE CAR WASH</h4>
+                                <p class="text-sm mb-3">Get a free car wash with any premium service booking</p>
+                                <div class="text-center">
+                                    <div class="bg-red-500 text-white px-3 py-1 rounded-full text-sm font-bold inline-block mb-2">
+                                        CAR WASH
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Services Grid -->
+                    <div class="lg:w-3/4">
+                        <div class="flex justify-between items-center mb-6">
+                            <p class="text-muted-foreground">Showing 1-6 of 6 results</p>
+                            <select class="border border-border rounded-md px-3 py-2" data-mock="true">
+                                <option>Sort by Price</option>
+                                <option>Sort by Rating</option>
+                                <option>Sort by Duration</option>
+                            </select>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                            <!-- Service cards with detailed information -->
+                            <div class="service-card bg-card rounded-xl overflow-hidden shadow-lg">
+                                <!-- High-quality car detailing process -->
+                                <div class="relative h-48 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1607860108855-64acf2078ed9?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600');">
+                                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                                    <div class="absolute top-4 right-4">
+                                        <span class="bg-green-500 text-white px-2 py-1 rounded-full text-xs font-bold">AVAILABLE</span>
+                                    </div>
+                                    <div class="absolute bottom-4 left-4 text-white">
+                                        <h3 class="text-lg font-bold">Premium Detail Service</h3>
+                                        <div class="flex items-center mt-1">
+                                            <i class="fas fa-clock text-xs mr-1"></i>
+                                            <span class="text-xs">Premium car washing service</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="p-6">
+                                    <div class="flex justify-between items-center mb-3">
+                                        <span class="text-2xl font-bold text-primary">R 520</span>
+                                        <div class="flex items-center">
+                                            <div class="flex text-yellow-400 mr-1">
+                                                <i class="fas fa-star text-xs"></i>
+                                                <i class="fas fa-star text-xs"></i>
+                                                <i class="fas fa-star text-xs"></i>
+                                                <i class="fas fa-star text-xs"></i>
+                                                <i class="fas fa-star text-xs"></i>
+                                            </div>
+                                            <span class="text-xs text-muted-foreground">(45)</span>
+                                        </div>
+                                    </div>
+                                    <button class="w-full bg-primary text-primary-foreground py-2 rounded-md hover:bg-primary/90 transition-colors">
+                                        Book Now
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Repeat similar structure for other services -->
+                            <div class="service-card bg-card rounded-xl overflow-hidden shadow-lg">
+                                <!-- Car interior deep cleaning -->
+                                <div class="relative h-48 bg-cover bg-center" style="background-image: url('https://pixabay.com/get/g9ccff6da6b355b2afe172caaa699c92467ba8ba800a7ddf9ba2d130bdd180b8b0c91ba4d5926c03acf7bb3798ea8b11de4fb0327cdcddf86117c5aaefdcf9344_1280.jpg');">
+                                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                                    <div class="absolute top-4 right-4">
+                                        <span class="bg-green-500 text-white px-2 py-1 rounded-full text-xs font-bold">AVAILABLE</span>
+                                    </div>
+                                    <div class="absolute bottom-4 left-4 text-white">
+                                        <h3 class="text-lg font-bold">Interior Deep Clean</h3>
+                                        <div class="flex items-center mt-1">
+                                            <i class="fas fa-clock text-xs mr-1"></i>
+                                            <span class="text-xs">Professional car washing service</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="p-6">
+                                    <div class="flex justify-between items-center mb-3">
+                                        <span class="text-2xl font-bold text-primary">R 350</span>
+                                        <div class="flex items-center">
+                                            <div class="flex text-yellow-400 mr-1">
+                                                <i class="fas fa-star text-xs"></i>
+                                                <i class="fas fa-star text-xs"></i>
+                                                <i class="fas fa-star text-xs"></i>
+                                                <i class="fas fa-star text-xs"></i>
+                                                <i class="far fa-star text-xs"></i>
+                                            </div>
+                                            <span class="text-xs text-muted-foreground">(38)</span>
+                                        </div>
+                                    </div>
+                                    <button class="w-full bg-primary text-primary-foreground py-2 rounded-md hover:bg-primary/90 transition-colors">
+                                        Book Now
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Continue with remaining service cards -->
+                            <div class="service-card bg-card rounded-xl overflow-hidden shadow-lg">
+                                <!-- Car wax and polish application -->
+                                <div class="relative h-48 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600');">
+                                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                                    <div class="absolute top-4 right-4">
+                                        <span class="bg-green-500 text-white px-2 py-1 rounded-full text-xs font-bold">AVAILABLE</span>
+                                    </div>
+                                    <div class="absolute bottom-4 left-4 text-white">
+                                        <h3 class="text-lg font-bold">Wax & Polish Service</h3>
+                                        <div class="flex items-center mt-1">
+                                            <i class="fas fa-clock text-xs mr-1"></i>
+                                            <span class="text-xs">Car Glass washing service</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="p-6">
+                                    <div class="flex justify-between items-center mb-3">
+                                        <span class="text-2xl font-bold text-primary">R 280</span>
+                                        <div class="flex items-center">
+                                            <div class="flex text-yellow-400 mr-1">
+                                                <i class="fas fa-star text-xs"></i>
+                                                <i class="fas fa-star text-xs"></i>
+                                                <i class="fas fa-star text-xs"></i>
+                                                <i class="fas fa-star text-xs"></i>
+                                                <i class="fas fa-star text-xs"></i>
+                                            </div>
+                                            <span class="text-xs text-muted-foreground">(52)</span>
+                                        </div>
+                                    </div>
+                                    <button class="w-full bg-primary text-primary-foreground py-2 rounded-md hover:bg-primary/90 transition-colors">
+                                        Book Now
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Reviews Page -->
+    <div id="reviews" class="hidden-page">
+        <section class="py-16 bg-background">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h1 class="text-4xl font-bold text-foreground mb-4">All Reviews</h1>
+                    <p class="text-muted-foreground">What our customers say about our services</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <!-- Review Card 1 -->
+                    <div class="bg-card p-6 rounded-xl shadow-lg">
+                        <div class="flex items-center mb-4">
+                            <!-- Happy customer profile photo -->
+                            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&h=150" alt="Customer profile" class="w-12 h-12 rounded-full mr-4">
+                            <div>
+                                <h4 class="font-semibold text-foreground">John Smith</h4>
+                                <div class="flex text-yellow-400">
+                                    <i class="fas fa-star text-sm"></i>
+                                    <i class="fas fa-star text-sm"></i>
+                                    <i class="fas fa-star text-sm"></i>
+                                    <i class="fas fa-star text-sm"></i>
+                                    <i class="fas fa-star text-sm"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="text-muted-foreground text-sm mb-4">I love spending products at Optima and we were happy with our choice. During the service, we found everything on schedule, from start to finish. The cleaners did an excellent job and...</p>
+                        <p class="text-muted-foreground text-xs">Great price and great service. Delivery and wash quality exceeded.</p>
+                    </div>
+
+                    <!-- Review Card 2 -->
+                    <div class="bg-card p-6 rounded-xl shadow-lg">
+                        <div class="flex items-center mb-4">
+                            <!-- Professional woman profile photo -->
+                            <img src="https://pixabay.com/get/gcf096ce9ab74da9447bc38772eae9fc780f7cd5ded191efc83afb21549c56b2fba428597b2edb89394d07dd51783460e280b2578df320689112b8c9b30aeb0db_1280.jpg" alt="Customer profile" class="w-12 h-12 rounded-full mr-4">
+                            <div>
+                                <h4 class="font-semibold text-foreground">Sarah Johnson</h4>
+                                <div class="flex text-yellow-400">
+                                    <i class="fas fa-star text-sm"></i>
+                                    <i class="fas fa-star text-sm"></i>
+                                    <i class="fas fa-star text-sm"></i>
+                                    <i class="fas fa-star text-sm"></i>
+                                    <i class="fas fa-star text-sm"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="text-muted-foreground text-sm mb-4">I love spending products at Optima and we were happy with our choice. During the service, we found everything on schedule, from start to finish. The cleaners showed up a bit early for...</p>
+                        <p class="text-muted-foreground text-xs">The teams are prompt, professional and product to work with. The products experienced have quickly become...</p>
+                    </div>
+
+                    <!-- Review Card 3 -->
+                    <div class="bg-card p-6 rounded-xl shadow-lg">
+                        <div class="flex items-center mb-4">
+                            <!-- Satisfied male customer -->
+                            <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&h=150" alt="Customer profile" class="w-12 h-12 rounded-full mr-4">
+                            <div>
+                                <h4 class="font-semibold text-foreground">Mike Wilson</h4>
+                                <div class="flex text-yellow-400">
+                                    <i class="fas fa-star text-sm"></i>
+                                    <i class="fas fa-star text-sm"></i>
+                                    <i class="fas fa-star text-sm"></i>
+                                    <i class="fas fa-star text-sm"></i>
+                                    <i class="far fa-star text-sm"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="text-muted-foreground text-sm mb-4">Great price and great service. Delivery and wash quality exceeded expectations.</p>
+                        <p class="text-muted-foreground text-xs">Great price and great service. Delivery and wash quality exceeded.</p>
+                    </div>
+
+                    <!-- Review Card 4 -->
+                    <div class="bg-card p-6 rounded-xl shadow-lg">
+                        <div class="flex items-center mb-4">
+                            <!-- Happy female customer -->
+                            <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&h=150" alt="Customer profile" class="w-12 h-12 rounded-full mr-4">
+                            <div>
+                                <h4 class="font-semibold text-foreground">Emily Davis</h4>
+                                <div class="flex text-yellow-400">
+                                    <i class="fas fa-star text-sm"></i>
+                                    <i class="fas fa-star text-sm"></i>
+                                    <i class="fas fa-star text-sm"></i>
+                                    <i class="fas fa-star text-sm"></i>
+                                    <i class="fas fa-star text-sm"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="text-muted-foreground text-sm mb-4">Great price and great service. Delivery and wash quality exceeded expectations.</p>
+                        <p class="text-muted-foreground text-xs">Great price and great service. Delivery and wash quality exceeded.</p>
+                    </div>
+
+                    <!-- Review Card 5 -->
+                    <div class="bg-card p-6 rounded-xl shadow-lg">
+                        <div class="flex items-center mb-4">
+                            <!-- Professional businessman -->
+                            <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&h=150" alt="Customer profile" class="w-12 h-12 rounded-full mr-4">
+                            <div>
+                                <h4 class="font-semibold text-foreground">David Brown</h4>
+                                <div class="flex text-yellow-400">
+                                    <i class="fas fa-star text-sm"></i>
+                                    <i class="fas fa-star text-sm"></i>
+                                    <i class="fas fa-star text-sm"></i>
+                                    <i class="fas fa-star text-sm"></i>
+                                    <i class="fas fa-star text-sm"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="text-muted-foreground text-sm mb-4">Great price and great service. Delivery and wash quality exceeded expectations.</p>
+                        <p class="text-muted-foreground text-xs">Great price and great service. Delivery and wash quality exceeded.</p>
+                    </div>
+
+                    <!-- Review Card 6 -->
+                    <div class="bg-card p-6 rounded-xl shadow-lg">
+                        <div class="flex items-center mb-4">
+                            <!-- Young satisfied customer -->
+                            <img src="https://pixabay.com/get/g924da959d35027f7e280ba37fbd595218feb41c3f4cfbc77f91bafcd938a392322b1af9bd56d005afcacde2e5ebab3308dcb8f8974ab205abe16ec46effd802f_1280.jpg" alt="Customer profile" class="w-12 h-12 rounded-full mr-4">
+                            <div>
+                                <h4 class="font-semibold text-foreground">Alex Thompson</h4>
+                                <div class="flex text-yellow-400">
+                                    <i class="fas fa-star text-sm"></i>
+                                    <i class="fas fa-star text-sm"></i>
+                                    <i class="fas fa-star text-sm"></i>
+                                    <i class="fas fa-star text-sm"></i>
+                                    <i class="far fa-star text-sm"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="text-muted-foreground text-sm mb-4">Great price and great service. Delivery and wash quality exceeded expectations.</p>
+                        <p class="text-muted-foreground text-xs">Great price and great service. Delivery and wash quality exceeded.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Comparison Page -->
+    <div id="comparison" class="hidden-page">
+        <section class="py-16 bg-background">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h1 class="text-4xl font-bold text-foreground mb-4">Comparison</h1>
+                    <p class="text-muted-foreground">Compare our car wash services</p>
+                </div>
+
+                <div class="flex justify-center mb-8">
+                    <div class="flex space-x-4">
+                        <button class="bg-primary text-primary-foreground px-6 py-2 rounded-md">Add New</button>
+                        <button class="bg-secondary text-secondary-foreground px-6 py-2 rounded-md border border-border">Clear</button>
+                    </div>
+                </div>
+
+                <div class="bg-card rounded-xl shadow-lg overflow-hidden">
+                    <table class="w-full">
+                        <thead class="bg-muted">
+                            <tr>
+                                <th class="text-left p-4 font-semibold">Services</th>
+                                <th class="text-center p-4 font-semibold">Level</th>
+                                <th class="text-center p-4 font-semibold">Features</th>
+                                <th class="text-center p-4 font-semibold">Price</th>
+                                <th class="text-center p-4 font-semibold">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="border-b border-border">
+                                <td class="p-4">
+                                    <div class="flex items-center">
+                                        <!-- Car wash service icon -->
+                                        <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mr-3">
+                                            <i class="fas fa-car text-primary"></i>
+                                        </div>
+                                        <div>
+                                            <h4 class="font-semibold">Premium Wash</h4>
+                                            <p class="text-sm text-muted-foreground">Complete car care</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="text-center p-4">
+                                    <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-medium">Premium</span>
+                                </td>
+                                <td class="text-center p-4">
+                                    <div class="text-sm">
+                                        <div>✓ Exterior Wash</div>
+                                        <div>✓ Interior Clean</div>
+                                        <div>✓ Wax Application</div>
+                                    </div>
+                                </td>
+                                <td class="text-center p-4">
+                                    <span class="text-lg font-bold text-primary">R 520</span>
+                                </td>
+                                <td class="text-center p-4">
+                                    <button class="bg-primary text-primary-foreground px-4 py-2 rounded-md hover:bg-primary/90 transition-colors">
+                                        Select
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr class="border-b border-border">
+                                <td class="p-4">
+                                    <div class="flex items-center">
+                                        <div class="w-12 h-12 bg-accent/10 rounded-lg flex items-center justify-center mr-3">
+                                            <i class="fas fa-spray-can text-accent"></i>
+                                        </div>
+                                        <div>
+                                            <h4 class="font-semibold">Basic Wash</h4>
+                                            <p class="text-sm text-muted-foreground">Essential cleaning</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="text-center p-4">
+                                    <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-medium">Standard</span>
+                                </td>
+                                <td class="text-center p-4">
+                                    <div class="text-sm">
+                                        <div>✓ Exterior Wash</div>
+                                        <div>✓ Rinse & Dry</div>
+                                    </div>
+                                </td>
+                                <td class="text-center p-4">
+                                    <span class="text-lg font-bold text-primary">R 280</span>
+                                </td>
+                                <td class="text-center p-4">
+                                    <button class="bg-primary text-primary-foreground px-4 py-2 rounded-md hover:bg-primary/90 transition-colors">
+                                        Select
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Admin Dashboard -->
+    <div id="dashboard" class="hidden-page">
+        <div class="flex h-screen bg-background">
+            <!-- Sidebar -->
+            <div class="admin-sidebar w-64 text-white">
+                <div class="p-6">
+                    <div class="flex items-center">
+                        <i class="fas fa-car text-2xl mr-2"></i>
+                        <span class="text-xl font-bold">CAR WASH</span>
+                    </div>
+                </div>
+                <nav class="mt-8">
+                    <div class="px-6 py-3 text-white bg-white/10">
+                        <i class="fas fa-tachometer-alt mr-3"></i>
+                        Dashboard
+                    </div>
+                    <div class="px-6 py-3 text-gray-300 hover:text-white hover:bg-white/10 cursor-pointer">
+                        <i class="fas fa-calendar-alt mr-3"></i>
+                        Recent Booking
+                    </div>
+                    <div class="px-6 py-3 text-gray-300 hover:text-white hover:bg-white/10 cursor-pointer">
+                        <i class="fas fa-cogs mr-3"></i>
+                        Services Management
+                    </div>
+                    <div class="px-6 py-3 text-gray-300 hover:text-white hover:bg-white/10 cursor-pointer">
+                        <i class="fas fa-clock mr-3"></i>
+                        Slot Management
+                    </div>
+                    <div class="px-6 py-3 text-gray-300 hover:text-white hover:bg-white/10 cursor-pointer">
+                        <i class="fas fa-users mr-3"></i>
+                        User Management
+                        <i class="fas fa-chevron-down float-right mt-1"></i>
+                    </div>
+                </nav>
+            </div>
+
+            <!-- Main Content -->
+            <div class="flex-1 overflow-hidden">
+                <!-- Top Header -->
+                <header class="bg-card shadow-sm border-b border-border">
+                    <div class="flex justify-between items-center px-6 py-4">
+                        <div>
+                            <h1 class="text-2xl font-bold text-foreground">Dashboard</h1>
+                            <p class="text-muted-foreground">/admin/dashboard</p>
+                        </div>
+                        <div class="flex items-center space-x-4">
+                            <button class="bg-accent text-accent-foreground px-4 py-2 rounded-md hover:bg-accent/90 transition-colors">
+                                Book an Appointment
+                            </button>
+                            <div class="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
+                                <i class="fas fa-user text-primary-foreground text-sm"></i>
+                            </div>
+                        </div>
+                    </div>
+                </header>
+
+                <!-- Dashboard Content -->
+                <div class="p-6 bg-muted/30 h-full">
+                    <!-- Stats Cards -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                        <div class="bg-card p-6 rounded-xl shadow-sm">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm text-muted-foreground">Total Bookings</p>
+                                    <p class="text-2xl font-bold text-foreground">1,234</p>
+                                </div>
+                                <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-calendar-check text-primary"></i>
+                                </div>
+                            </div>
+                            <div class="mt-4 flex items-center">
+                                <span class="text-green-500 text-sm font-medium">+12.5%</span>
+                                <span class="text-muted-foreground text-sm ml-2">from last month</span>
+                            </div>
+                        </div>
+
+                        <div class="bg-card p-6 rounded-xl shadow-sm">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm text-muted-foreground">Active Services</p>
+                                    <p class="text-2xl font-bold text-foreground">12</p>
+                                </div>
+                                <div class="w-12 h-12 bg-accent/10 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-cogs text-accent"></i>
+                                </div>
+                            </div>
+                            <div class="mt-4 flex items-center">
+                                <span class="text-green-500 text-sm font-medium">+2</span>
+                                <span class="text-muted-foreground text-sm ml-2">new services</span>
+                            </div>
+                        </div>
+
+                        <div class="bg-card p-6 rounded-xl shadow-sm">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm text-muted-foreground">Revenue</p>
+                                    <p class="text-2xl font-bold text-foreground">R 45,678</p>
+                                </div>
+                                <div class="w-12 h-12 bg-green-500/10 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-dollar-sign text-green-500"></i>
+                                </div>
+                            </div>
+                            <div class="mt-4 flex items-center">
+                                <span class="text-green-500 text-sm font-medium">+8.2%</span>
+                                <span class="text-muted-foreground text-sm ml-2">from last month</span>
+                            </div>
+                        </div>
+
+                        <div class="bg-card p-6 rounded-xl shadow-sm">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm text-muted-foreground">Customers</p>
+                                    <p class="text-2xl font-bold text-foreground">892</p>
+                                </div>
+                                <div class="w-12 h-12 bg-blue-500/10 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-users text-blue-500"></i>
+                                </div>
+                            </div>
+                            <div class="mt-4 flex items-center">
+                                <span class="text-green-500 text-sm font-medium">+5.7%</span>
+                                <span class="text-muted-foreground text-sm ml-2">from last month</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Activity -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div class="bg-card p-6 rounded-xl shadow-sm">
+                            <h3 class="text-lg font-semibold text-foreground mb-4">Recent Bookings</h3>
+                            <div class="space-y-4">
+                                <div class="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                                    <div class="flex items-center">
+                                        <div class="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center mr-3">
+                                            <i class="fas fa-car text-primary text-sm"></i>
+                                        </div>
+                                        <div>
+                                            <p class="font-medium text-foreground">Premium Wash</p>
+                                            <p class="text-sm text-muted-foreground">John Smith - 2:00 PM</p>
+                                        </div>
+                                    </div>
+                                    <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-medium">Confirmed</span>
+                                </div>
+                                <div class="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                                    <div class="flex items-center">
+                                        <div class="w-10 h-10 bg-accent/10 rounded-full flex items-center justify-center mr-3">
+                                            <i class="fas fa-spray-can text-accent text-sm"></i>
+                                        </div>
+                                        <div>
+                                            <p class="font-medium text-foreground">Detail Service</p>
+                                            <p class="text-sm text-muted-foreground">Sarah Johnson - 3:30 PM</p>
+                                        </div>
+                                    </div>
+                                    <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs font-medium">Pending</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-card p-6 rounded-xl shadow-sm">
+                            <h3 class="text-lg font-semibold text-foreground mb-4">Service Performance</h3>
+                            <div class="space-y-4">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm text-foreground">Premium Wash</span>
+                                    <div class="flex items-center">
+                                        <div class="w-24 bg-muted rounded-full h-2 mr-2">
+                                            <div class="bg-primary h-2 rounded-full" style="width: 85%"></div>
+                                        </div>
+                                        <span class="text-sm text-muted-foreground">85%</span>
+                                    </div>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm text-foreground">Basic Wash</span>
+                                    <div class="flex items-center">
+                                        <div class="w-24 bg-muted rounded-full h-2 mr-2">
+                                            <div class="bg-accent h-2 rounded-full" style="width: 72%"></div>
+                                        </div>
+                                        <span class="text-sm text-muted-foreground">72%</span>
+                                    </div>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm text-foreground">Detail Service</span>
+                                    <div class="flex items-center">
+                                        <div class="w-24 bg-muted rounded-full h-2 mr-2">
+                                            <div class="bg-green-500 h-2 rounded-full" style="width: 90%"></div>
+                                        </div>
+                                        <span class="text-sm text-muted-foreground">90%</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer-wave bg-primary text-primary-foreground pt-20 pb-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+                <!-- Contact Info -->
+                <div>
+                    <h3 class="text-xl font-bold mb-4 flex items-center">
+                        <i class="fas fa-car mr-2"></i>
+                        Car Wash
+                    </h3>
+                    <div class="space-y-2 text-sm">
+                        <p>Phone: 155 666 666</p>
+                        <p>Email: info@carwash.com</p>
+                        <p>Email: info@carwash.com</p>
+                        <p>Contact: Contact.com</p>
+                    </div>
+                    <div class="flex space-x-4 mt-4">
+                        <i class="fab fa-facebook text-lg hover:text-accent cursor-pointer"></i>
+                        <i class="fab fa-instagram text-lg hover:text-accent cursor-pointer"></i>
+                        <i class="fab fa-youtube text-lg hover:text-accent cursor-pointer"></i>
+                        <i class="fab fa-twitter text-lg hover:text-accent cursor-pointer"></i>
+                    </div>
+                </div>
+
+                <!-- Company Info -->
+                <div>
+                    <h3 class="text-xl font-bold mb-4">Car Wash</h3>
+                    <p class="text-sm mb-4">Sign Up for Offers and Promotions!</p>
+                    <div class="flex">
+                        <input type="email" placeholder="Enter email" class="flex-1 px-3 py-2 bg-white/10 border border-white/20 rounded-l-md text-sm" data-mock="true">
+                        <button class="bg-accent text-accent-foreground px-4 py-2 rounded-r-md text-sm hover:bg-accent/90 transition-colors">
+                            <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Hours -->
+                <div>
+                    <h3 class="text-xl font-bold mb-4">Hours of Operation</h3>
+                    <div class="text-sm space-y-1">
+                        <div class="flex justify-between">
+                            <span>Open 7 Days a Week!</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Monday - Thursday:</span>
+                            <span>8:00am - 7:30 pm</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Friday - Sunday:</span>
+                            <span>8:00am - 8:00 pm</span>
+                        </div>
+                        <div class="flex justify-between font-semibold">
+                            <span>Closed on:</span>
+                            <span>---</span>
+                        </div>
+                        <div class="flex justify-between font-semibold">
+                            <span>Time Zone:</span>
+                            <span>EST, PST</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Simple page navigation
+        function showPage(pageId) {
+            // Hide all pages
+            const pages = ['home', 'services', 'reviews', 'comparison', 'dashboard'];
+            pages.forEach(page => {
+                const element = document.getElementById(page);
+                if (element) {
+                    element.classList.remove('current-page');
+                    element.classList.add('hidden-page');
+                }
+            });
+            
+            // Show selected page
+            const selectedPage = document.getElementById(pageId);
+            if (selectedPage) {
+                selectedPage.classList.remove('hidden-page');
+                selectedPage.classList.add('current-page');
+            }
+            
+            // Update active nav link
+            const navLinks = document.querySelectorAll('.nav-link');
+            navLinks.forEach(link => {
+                link.classList.remove('text-accent');
+            });
+            
+            // Scroll to top
+            window.scrollTo(0, 0);
+        }
+
+        // Initialize page
+        (function() {
+            // TODO: Implement real navigation system with React Router
+            // TODO: Connect to backend API for data
+            // TODO: Implement real authentication and authorization
+            // TODO: Add proper state management with Redux
+            
+            console.log('Car Wash Booking System initialized');
+        })();
+    </script>
+</body>
+</html>

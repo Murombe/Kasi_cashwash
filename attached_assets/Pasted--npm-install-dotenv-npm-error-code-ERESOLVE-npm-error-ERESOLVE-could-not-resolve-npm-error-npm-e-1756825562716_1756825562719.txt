@@ -1,0 +1,52 @@
+ npm install dotenv
+npm error code ERESOLVE
+npm error ERESOLVE could not resolve
+npm error
+npm error While resolving: @tailwindcss/vite@4.1.3
+npm error Found: vite@7.1.4
+npm error node_modules/vite
+npm error   peer vite@"^4.2.0 || ^5.0.0 || ^6.0.0 || ^7.0.0" from @vitejs/plugin-react@4.7.0
+npm error   node_modules/@vitejs/plugin-react
+npm error     dev @vitejs/plugin-react@"^4.3.2" from the root project
+npm error   dev vite@"^7.1.4" from the root project
+npm error
+npm error Could not resolve dependency:
+npm error peer vite@"^5.2.0 || ^6" from @tailwindcss/vite@4.1.3
+npm error node_modules/@tailwindcss/vite
+npm error   dev @tailwindcss/vite@"^4.1.3" from the root project
+npm error
+npm error Conflicting peer dependency: vite@6.3.5
+npm error node_modules/vite
+npm error   peer vite@"^5.2.0 || ^6" from @tailwindcss/vite@4.1.3
+npm error   node_modules/@tailwindcss/vite
+npm error     dev @tailwindcss/vite@"^4.1.3" from the root project
+npm error
+npm error Fix the upstream dependency conflict, or retry
+npm error this command with --force or --legacy-peer-deps
+npm error to accept an incorrect (and potentially broken) dependency resolution.
+npm error
+npm error
+npm error For a full report see:
+npm error C:\Users\0109011\AppData\Local\npm-cache\_logs\2025-09-02T15_04_56_562Z-eresolve-report.txt
+npm error A complete log of this run can be found in: C:\Users\0109011\AppData\Local\npm-cache\_logs\2025-09-02T15_04_56_562Z-debug-0.log
+PS C:\Users\0109011\Downloads\CarWashBooking\CarWashBooking> npx tsx server/index.ts
+
+node:internal/modules/run_main:123
+    triggerUncaughtException(
+    ^
+Error [ERR_MODULE_NOT_FOUND]: Cannot find package 'dotenv' imported from C:\Users\0109011\Downloads\CarWashBooking\CarWashBooking\server\index.ts
+    at Object.getPackageJSONURL (node:internal/modules/package_json_reader:266:9)
+    at packageResolve (node:internal/modules/esm/resolve:767:81)
+    at moduleResolve (node:internal/modules/esm/resolve:853:18)
+    at defaultResolve (node:internal/modules/esm/resolve:983:11)
+    at nextResolve (node:internal/modules/esm/hooks:748:28)
+    at resolveBase (file:///C:/Users/0109011/Downloads/CarWashBooking/CarWashBooking/node_modules/tsx/dist/esm/index.mjs?1756825525884:2:3744)
+    at resolveDirectory (file:///C:/Users/0109011/Downloads/CarWashBooking/CarWashBooking/node_modules/tsx/dist/esm/index.mjs?1756825525884:2:4243)
+    at resolveTsPaths (file:///C:/Users/0109011/Downloads/CarWashBooking/CarWashBooking/node_modules/tsx/dist/esm/index.mjs?1756825525884:2:4984)
+    at async resolve (file:///C:/Users/0109011/Downloads/CarWashBooking/CarWashBooking/node_modules/tsx/dist/esm/index.mjs?1756825525884:2:5355)
+    at async nextResolve (node:internal/modules/esm/hooks:748:22) {
+  code: 'ERR_MODULE_NOT_FOUND'
+}
+
+Node.js v22.19.0
+PS C:\Users\0109011\Downloads\CarWashBooking\CarWashBooking> 

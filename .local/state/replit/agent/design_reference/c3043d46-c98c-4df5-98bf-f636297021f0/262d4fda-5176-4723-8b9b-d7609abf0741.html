@@ -1,0 +1,1020 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CarWash Pro - Professional Car Wash Booking System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    borderRadius: {
+                        lg: "var(--radius)",
+                        md: "calc(var(--radius) - 2px)",
+                        sm: "calc(var(--radius) - 4px)",
+                    },
+                    colors: {
+                        background: "var(--background)",
+                        foreground: "var(--foreground)",
+                        card: {
+                            DEFAULT: "var(--card)",
+                            foreground: "var(--card-foreground)",
+                        },
+                        popover: {
+                            DEFAULT: "var(--popover)",
+                            foreground: "var(--popover-foreground)",
+                        },
+                        primary: {
+                            DEFAULT: "var(--primary)",
+                            foreground: "var(--primary-foreground)",
+                        },
+                        secondary: {
+                            DEFAULT: "var(--secondary)",
+                            foreground: "var(--secondary-foreground)",
+                        },
+                        muted: {
+                            DEFAULT: "var(--muted)",
+                            foreground: "var(--muted-foreground)",
+                        },
+                        accent: {
+                            DEFAULT: "var(--accent)",
+                            foreground: "var(--accent-foreground)",
+                        },
+                        destructive: {
+                            DEFAULT: "var(--destructive)",
+                            foreground: "var(--destructive-foreground)",
+                        },
+                        border: "var(--border)",
+                        input: "var(--input)",
+                        ring: "var(--ring)",
+                    },
+                    fontFamily: {
+                        sans: ["Inter", "sans-serif"],
+                        heading: ["Poppins", "sans-serif"],
+                    }
+                },
+            }
+        };
+    </script>
+    <style>
+        :root {
+            --background: hsl(0 0% 98%);
+            --foreground: hsl(222 47% 11%);
+            --card: hsl(0 0% 100%);
+            --card-foreground: hsl(222 47% 11%);
+            --popover: hsl(0 0% 100%);
+            --popover-foreground: hsl(222 47% 11%);
+            --primary: hsl(221 83% 53%);
+            --primary-foreground: hsl(0 0% 98%);
+            --secondary: hsl(214 32% 91%);
+            --secondary-foreground: hsl(222 47% 11%);
+            --muted: hsl(210 40% 96%);
+            --muted-foreground: hsl(215 16% 47%);
+            --accent: hsl(43 96% 56%);
+            --accent-foreground: hsl(222 47% 11%);
+            --destructive: hsl(0 84% 60%);
+            --destructive-foreground: hsl(0 0% 98%);
+            --border: hsl(214 32% 91%);
+            --input: hsl(214 32% 91%);
+            --ring: hsl(221 83% 53%);
+            --radius: 8px;
+            --font-sans: 'Inter', sans-serif;
+            --font-heading: 'Poppins', sans-serif;
+        }
+        
+        .dark {
+            --background: hsl(224 71% 4%);
+            --foreground: hsl(213 31% 91%);
+            --card: hsl(224 71% 4%);
+            --card-foreground: hsl(213 31% 91%);
+            --popover: hsl(224 71% 4%);
+            --popover-foreground: hsl(213 31% 91%);
+            --primary: hsl(217 91% 60%);
+            --primary-foreground: hsl(222 47% 1%);
+            --secondary: hsl(222 47% 11%);
+            --secondary-foreground: hsl(213 31% 91%);
+            --muted: hsl(223 47% 11%);
+            --muted-foreground: hsl(215 16% 57%);
+            --accent: hsl(43 96% 56%);
+            --accent-foreground: hsl(222 47% 1%);
+            --destructive: hsl(0 63% 31%);
+            --destructive-foreground: hsl(213 31% 91%);
+            --border: hsl(223 47% 11%);
+            --input: hsl(223 47% 11%);
+            --ring: hsl(217 91% 60%);
+        }
+        
+        body {
+            font-family: var(--font-sans);
+            background-color: hsl(var(--background));
+            color: hsl(var(--foreground));
+        }
+        
+        .font-heading {
+            font-family: var(--font-heading);
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--secondary)) 100%);
+        }
+        
+        .service-card {
+            transition: all 0.3s ease;
+        }
+        
+        .service-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        
+        .booking-step {
+            opacity: 0.5;
+            transition: opacity 0.3s ease;
+        }
+        
+        .booking-step.active {
+            opacity: 1;
+        }
+        
+        .dashboard-card {
+            background: linear-gradient(145deg, hsl(var(--card)) 0%, hsl(var(--muted)) 100%);
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-background">
+    <!-- Navigation -->
+    <!-- @COMPONENT: Navigation [responsive navbar with role-based menu items] -->
+    <nav class="bg-card shadow-sm border-b border-border sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-4">
+                    <div class="flex items-center space-x-2">
+                        <i class="fas fa-car text-primary text-2xl"></i>
+                        <span class="font-heading font-bold text-xl text-foreground">CarWash Pro</span>
+                    </div>
+                    
+                    <!-- Desktop Navigation -->
+                    <div class="hidden md:flex items-center space-x-8 ml-8">
+                        <a href="#" class="text-foreground hover:text-primary transition-colors font-medium">Home</a>
+                        <a href="#services" class="text-muted-foreground hover:text-primary transition-colors">Services</a>
+                        <a href="#booking" class="text-muted-foreground hover:text-primary transition-colors">Book Now</a>
+                        <a href="#dashboard" class="text-muted-foreground hover:text-primary transition-colors">Dashboard</a>
+                    </div>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <!-- User Menu -->
+                    <div class="hidden md:flex items-center space-x-2">
+                        <span class="text-sm text-muted-foreground" data-bind="user.name">Welcome, John Doe</span>
+                        <button class="bg-primary text-primary-foreground px-4 py-2 rounded-md hover:bg-primary/90 transition-colors" data-event="click:logout">
+                            <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                        </button>
+                    </div>
+                    
+                    <!-- Mobile Menu Button -->
+                    <button class="md:hidden text-foreground" data-event="click:toggleMobileMenu">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+    <!-- @END_COMPONENT: Navigation -->
+
+    <!-- Hero Section -->
+    <!-- @COMPONENT: HeroSection [main landing area with call-to-action] -->
+    <section class="gradient-bg text-primary-foreground py-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid lg:grid-cols-2 gap-12 items-center">
+                <div class="space-y-8">
+                    <h1 class="font-heading font-bold text-4xl lg:text-6xl leading-tight">
+                        Professional Car Wash Services at Your Convenience
+                    </h1>
+                    <p class="text-xl opacity-90 leading-relaxed">
+                        Book premium car wash services with just a few clicks. Professional cleaning, convenient scheduling, and guaranteed satisfaction.
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <button class="bg-accent text-accent-foreground px-8 py-4 rounded-lg font-semibold hover:bg-accent/90 transition-colors" data-event="click:navigateToBooking">
+                            <i class="fas fa-calendar-plus mr-2"></i>Book Now
+                        </button>
+                        <button class="border-2 border-primary-foreground text-primary-foreground px-8 py-4 rounded-lg font-semibold hover:bg-primary-foreground hover:text-primary transition-colors" data-event="click:viewServices">
+                            View Services
+                        </button>
+                    </div>
+                </div>
+                <div class="lg:text-right">
+                    <!-- Professional car wash facility with modern equipment -->
+                    <img src="https://pixabay.com/get/ga175a2f1ad48cb969149ce87914e399b40509476eb8f18b2a963513f622774a995dcb44f9ecb64b0619521d1b6f39d6d417fcd128a0892a38770ce55700887ce_1280.jpg" alt="Professional car wash facility" class="rounded-xl shadow-2xl w-full h-auto" />
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- @END_COMPONENT: HeroSection -->
+
+    <!-- Services Section -->
+    <!-- @COMPONENT: ServicesSection [service listing and comparison] -->
+    <section id="services" class="py-16 bg-muted/30">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="font-heading font-bold text-3xl lg:text-4xl text-foreground mb-4">
+                    Our Premium Services
+                </h2>
+                <p class="text-muted-foreground text-lg max-w-3xl mx-auto">
+                    Choose from our range of professional car wash services, each designed to keep your vehicle looking its best.
+                </p>
+            </div>
+            
+            <!-- Service Cards Grid -->
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- @MAP: services.map(service => ( -->
+                <div class="service-card bg-card rounded-xl shadow-md overflow-hidden">
+                    <!-- Car wash service showing exterior cleaning process -->
+                    <img src="https://images.unsplash.com/photo-1607860108855-64acf2078ed9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&h=240" alt="Basic Car Wash Service" class="w-full h-48 object-cover" />
+                    <div class="p-6">
+                        <h3 class="font-heading font-semibold text-xl text-foreground mb-2" data-bind="service.name">Basic Wash</h3>
+                        <p class="text-muted-foreground mb-4" data-bind="service.description">Exterior wash, rinse, and dry. Perfect for regular maintenance.</p>
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="text-2xl font-bold text-primary" data-bind="service.price">$20</span>
+                            <span class="text-sm text-muted-foreground" data-bind="service.duration">30 minutes</span>
+                        </div>
+                        <div class="flex gap-2 mb-4">
+                            <span class="bg-secondary text-secondary-foreground px-2 py-1 rounded text-xs">Exterior</span>
+                            <span class="bg-secondary text-secondary-foreground px-2 py-1 rounded text-xs">Quick Dry</span>
+                        </div>
+                        <button class="w-full bg-primary text-primary-foreground py-2 rounded-md hover:bg-primary/90 transition-colors" data-event="click:bookService" data-service-id="basic-wash">
+                            Book Now
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="service-card bg-card rounded-xl shadow-md overflow-hidden">
+                    <!-- Professional car detailing with interior cleaning -->
+                    <img src="https://images.unsplash.com/photo-1520340356584-f9917d1eea6f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&h=240" alt="Premium Car Wash Service" class="w-full h-48 object-cover" />
+                    <div class="p-6">
+                        <h3 class="font-heading font-semibold text-xl text-foreground mb-2">Premium Wash</h3>
+                        <p class="text-muted-foreground mb-4">Complete interior and exterior cleaning with premium products.</p>
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="text-2xl font-bold text-primary">$45</span>
+                            <span class="text-sm text-muted-foreground">60 minutes</span>
+                        </div>
+                        <div class="flex gap-2 mb-4">
+                            <span class="bg-secondary text-secondary-foreground px-2 py-1 rounded text-xs">Interior</span>
+                            <span class="bg-secondary text-secondary-foreground px-2 py-1 rounded text-xs">Exterior</span>
+                            <span class="bg-accent text-accent-foreground px-2 py-1 rounded text-xs">Popular</span>
+                        </div>
+                        <button class="w-full bg-primary text-primary-foreground py-2 rounded-md hover:bg-primary/90 transition-colors" data-event="click:bookService" data-service-id="premium-wash">
+                            Book Now
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="service-card bg-card rounded-xl shadow-md overflow-hidden">
+                    <!-- Luxury car detailing with wax and polish -->
+                    <img src="https://images.unsplash.com/photo-1601362840469-51e4d8d58785?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&h=240" alt="Deluxe Car Wash Service" class="w-full h-48 object-cover" />
+                    <div class="p-6">
+                        <h3 class="font-heading font-semibold text-xl text-foreground mb-2">Deluxe Detail</h3>
+                        <p class="text-muted-foreground mb-4">Full detailing service with wax, polish, and protection.</p>
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="text-2xl font-bold text-primary">$80</span>
+                            <span class="text-sm text-muted-foreground">90 minutes</span>
+                        </div>
+                        <div class="flex gap-2 mb-4">
+                            <span class="bg-secondary text-secondary-foreground px-2 py-1 rounded text-xs">Full Detail</span>
+                            <span class="bg-secondary text-secondary-foreground px-2 py-1 rounded text-xs">Wax & Polish</span>
+                        </div>
+                        <button class="w-full bg-primary text-primary-foreground py-2 rounded-md hover:bg-primary/90 transition-colors" data-event="click:bookService" data-service-id="deluxe-detail">
+                            Book Now
+                        </button>
+                    </div>
+                </div>
+                <!-- @END_MAP )) -->
+            </div>
+        </div>
+    </section>
+    <!-- @END_COMPONENT: ServicesSection -->
+
+    <!-- Booking Section -->
+    <!-- @COMPONENT: BookingSection [multi-step booking process] -->
+    <section id="booking" class="py-16">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="font-heading font-bold text-3xl lg:text-4xl text-foreground mb-4">
+                    Book Your Service
+                </h2>
+                <p class="text-muted-foreground text-lg">
+                    Simple 3-step booking process to get your car washed professionally.
+                </p>
+            </div>
+            
+            <!-- Booking Steps -->
+            <div class="flex justify-center mb-8">
+                <div class="flex items-center space-x-4">
+                    <div class="booking-step active flex items-center space-x-2">
+                        <div class="w-8 h-8 bg-primary text-primary-foreground rounded-full flex items-center justify-center font-semibold">1</div>
+                        <span class="font-medium">Service</span>
+                    </div>
+                    <div class="w-8 h-0.5 bg-border"></div>
+                    <div class="booking-step flex items-center space-x-2">
+                        <div class="w-8 h-8 bg-muted text-muted-foreground rounded-full flex items-center justify-center font-semibold">2</div>
+                        <span class="font-medium">Time Slot</span>
+                    </div>
+                    <div class="w-8 h-0.5 bg-border"></div>
+                    <div class="booking-step flex items-center space-x-2">
+                        <div class="w-8 h-8 bg-muted text-muted-foreground rounded-full flex items-center justify-center font-semibold">3</div>
+                        <span class="font-medium">Vehicle Info</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Booking Form -->
+            <div class="bg-card rounded-xl shadow-lg p-8">
+                <!-- @STATE: currentStep:number = 1, selectedService:object = null, selectedSlot:object = null -->
+                
+                <!-- Step 1: Service Selection -->
+                <div class="space-y-6" data-step="1">
+                    <h3 class="font-heading font-semibold text-xl mb-4">Select Your Service</h3>
+                    <div class="grid gap-4">
+                        <label class="flex items-center p-4 border-2 border-border rounded-lg cursor-pointer hover:border-primary transition-colors">
+                            <input type="radio" name="service" value="basic-wash" class="text-primary" data-mock="true" />
+                            <div class="ml-4 flex-1">
+                                <div class="flex justify-between items-center">
+                                    <h4 class="font-semibold">Basic Wash</h4>
+                                    <span class="font-bold text-primary">$20</span>
+                                </div>
+                                <p class="text-sm text-muted-foreground">Exterior wash, rinse, and dry</p>
+                            </div>
+                        </label>
+                        
+                        <label class="flex items-center p-4 border-2 border-primary rounded-lg cursor-pointer bg-primary/5">
+                            <input type="radio" name="service" value="premium-wash" checked class="text-primary" data-mock="true" />
+                            <div class="ml-4 flex-1">
+                                <div class="flex justify-between items-center">
+                                    <h4 class="font-semibold">Premium Wash</h4>
+                                    <span class="font-bold text-primary">$45</span>
+                                </div>
+                                <p class="text-sm text-muted-foreground">Complete interior and exterior cleaning</p>
+                            </div>
+                        </label>
+                        
+                        <label class="flex items-center p-4 border-2 border-border rounded-lg cursor-pointer hover:border-primary transition-colors">
+                            <input type="radio" name="service" value="deluxe-detail" class="text-primary" data-mock="true" />
+                            <div class="ml-4 flex-1">
+                                <div class="flex justify-between items-center">
+                                    <h4 class="font-semibold">Deluxe Detail</h4>
+                                    <span class="font-bold text-primary">$80</span>
+                                </div>
+                                <p class="text-sm text-muted-foreground">Full detailing with wax and polish</p>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+                
+                <!-- Step 2: Time Slot Selection -->
+                <div class="space-y-6 hidden" data-step="2">
+                    <h3 class="font-heading font-semibold text-xl mb-4">Choose Date & Time</h3>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Select Date</label>
+                            <input type="date" class="w-full px-3 py-2 border border-input rounded-md focus:ring-2 focus:ring-ring" data-mock="true" />
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Available Time Slots</label>
+                            <div class="grid grid-cols-2 gap-2">
+                                <button class="p-2 border border-border rounded-md hover:border-primary hover:bg-primary/10 transition-colors text-sm" data-event="click:selectTimeSlot" data-time="09:00">
+                                    9:00 AM
+                                </button>
+                                <button class="p-2 border border-border rounded-md hover:border-primary hover:bg-primary/10 transition-colors text-sm" data-event="click:selectTimeSlot" data-time="11:00">
+                                    11:00 AM
+                                </button>
+                                <button class="p-2 border border-primary bg-primary/10 rounded-md text-sm font-medium" data-event="click:selectTimeSlot" data-time="13:00">
+                                    1:00 PM ✓
+                                </button>
+                                <button class="p-2 border border-border rounded-md hover:border-primary hover:bg-primary/10 transition-colors text-sm" data-event="click:selectTimeSlot" data-time="15:00">
+                                    3:00 PM
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Step 3: Vehicle Information -->
+                <div class="space-y-6 hidden" data-step="3">
+                    <h3 class="font-heading font-semibold text-xl mb-4">Vehicle Information</h3>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Vehicle Type</label>
+                            <select class="w-full px-3 py-2 border border-input rounded-md focus:ring-2 focus:ring-ring" data-mock="true">
+                                <option>Car</option>
+                                <option>SUV</option>
+                                <option>Truck</option>
+                                <option>Van</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Vehicle Brand</label>
+                            <select class="w-full px-3 py-2 border border-input rounded-md focus:ring-2 focus:ring-ring" data-mock="true">
+                                <option>Toyota</option>
+                                <option>Honda</option>
+                                <option>BMW</option>
+                                <option>Hyundai</option>
+                                <option>Other</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Model</label>
+                            <input type="text" placeholder="e.g., Camry" class="w-full px-3 py-2 border border-input rounded-md focus:ring-2 focus:ring-ring" data-mock="true" />
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Year</label>
+                            <input type="number" placeholder="2020" class="w-full px-3 py-2 border border-input rounded-md focus:ring-2 focus:ring-ring" data-mock="true" />
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium mb-2">License Plate</label>
+                            <input type="text" placeholder="ABC123" class="w-full px-3 py-2 border border-input rounded-md focus:ring-2 focus:ring-ring" data-mock="true" />
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Navigation Buttons -->
+                <div class="flex justify-between mt-8">
+                    <button class="px-6 py-2 border border-border text-muted-foreground rounded-md hover:bg-muted transition-colors" data-event="click:previousStep">
+                        Previous
+                    </button>
+                    <button class="px-6 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors" data-event="click:nextStep">
+                        Continue
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- @END_COMPONENT: BookingSection -->
+
+    <!-- Dashboard Section -->
+    <!-- @COMPONENT: DashboardSection [admin and user dashboard interfaces] -->
+    <section id="dashboard" class="py-16 bg-muted/30">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <!-- Admin Dashboard -->
+            <div class="mb-16" data-role="admin">
+                <div class="text-center mb-12">
+                    <h2 class="font-heading font-bold text-3xl lg:text-4xl text-foreground mb-4">
+                        Admin Dashboard
+                    </h2>
+                    <p class="text-muted-foreground text-lg">
+                        Manage services, slots, and monitor business performance.
+                    </p>
+                </div>
+                
+                <!-- Stats Cards -->
+                <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <div class="dashboard-card rounded-xl p-6 text-center">
+                        <i class="fas fa-calendar-check text-primary text-3xl mb-4"></i>
+                        <h3 class="font-semibold text-2xl text-foreground" data-bind="stats.todayBookings">24</h3>
+                        <p class="text-muted-foreground">Today's Bookings</p>
+                    </div>
+                    <div class="dashboard-card rounded-xl p-6 text-center">
+                        <i class="fas fa-dollar-sign text-accent text-3xl mb-4"></i>
+                        <h3 class="font-semibold text-2xl text-foreground" data-bind="stats.revenue">$1,280</h3>
+                        <p class="text-muted-foreground">Today's Revenue</p>
+                    </div>
+                    <div class="dashboard-card rounded-xl p-6 text-center">
+                        <i class="fas fa-users text-secondary text-3xl mb-4"></i>
+                        <h3 class="font-semibold text-2xl text-foreground" data-bind="stats.totalUsers">456</h3>
+                        <p class="text-muted-foreground">Total Users</p>
+                    </div>
+                    <div class="dashboard-card rounded-xl p-6 text-center">
+                        <i class="fas fa-star text-accent text-3xl mb-4"></i>
+                        <h3 class="font-semibold text-2xl text-foreground" data-bind="stats.averageRating">4.8</h3>
+                        <p class="text-muted-foreground">Average Rating</p>
+                    </div>
+                </div>
+                
+                <!-- Management Tabs -->
+                <div class="bg-card rounded-xl shadow-lg">
+                    <div class="border-b border-border">
+                        <nav class="flex space-x-8 px-6">
+                            <button class="py-4 border-b-2 border-primary text-primary font-medium" data-tab="services">
+                                Services
+                            </button>
+                            <button class="py-4 border-b-2 border-transparent text-muted-foreground hover:text-foreground transition-colors" data-tab="slots">
+                                Time Slots
+                            </button>
+                            <button class="py-4 border-b-2 border-transparent text-muted-foreground hover:text-foreground transition-colors" data-tab="bookings">
+                                Bookings
+                            </button>
+                        </nav>
+                    </div>
+                    
+                    <!-- Services Management -->
+                    <div class="p-6" data-tab-content="services">
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="font-heading font-semibold text-xl">Manage Services</h3>
+                            <button class="bg-primary text-primary-foreground px-4 py-2 rounded-md hover:bg-primary/90 transition-colors" data-event="click:addService">
+                                <i class="fas fa-plus mr-2"></i>Add Service
+                            </button>
+                        </div>
+                        
+                        <div class="overflow-x-auto">
+                            <table class="w-full">
+                                <thead>
+                                    <tr class="border-b border-border">
+                                        <th class="text-left py-3 font-medium">Service Name</th>
+                                        <th class="text-left py-3 font-medium">Price</th>
+                                        <th class="text-left py-3 font-medium">Duration</th>
+                                        <th class="text-left py-3 font-medium">Status</th>
+                                        <th class="text-left py-3 font-medium">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- @MAP: services.map(service => ( -->
+                                    <tr class="border-b border-border/50" data-service-id="basic-wash">
+                                        <td class="py-3" data-bind="service.name">Basic Wash</td>
+                                        <td class="py-3" data-bind="service.price">$20</td>
+                                        <td class="py-3" data-bind="service.duration">30 min</td>
+                                        <td class="py-3">
+                                            <span class="bg-green-100 text-green-800 px-2 py-1 rounded text-sm">Active</span>
+                                        </td>
+                                        <td class="py-3">
+                                            <button class="text-primary hover:text-primary/80 mr-3" data-event="click:editService">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="text-destructive hover:text-destructive/80" data-event="click:deleteService">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <!-- @END_MAP )) -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- User Dashboard -->
+            <div data-role="user">
+                <div class="text-center mb-12">
+                    <h2 class="font-heading font-bold text-3xl lg:text-4xl text-foreground mb-4">
+                        My Dashboard
+                    </h2>
+                    <p class="text-muted-foreground text-lg">
+                        Track your bookings and manage your account.
+                    </p>
+                </div>
+                
+                <!-- User Stats -->
+                <div class="grid md:grid-cols-3 gap-6 mb-8">
+                    <div class="dashboard-card rounded-xl p-6 text-center">
+                        <i class="fas fa-clock text-accent text-3xl mb-4"></i>
+                        <h3 class="font-semibold text-2xl text-foreground" data-bind="userStats.upcoming">2</h3>
+                        <p class="text-muted-foreground">Upcoming Bookings</p>
+                    </div>
+                    <div class="dashboard-card rounded-xl p-6 text-center">
+                        <i class="fas fa-check-circle text-green-500 text-3xl mb-4"></i>
+                        <h3 class="font-semibold text-2xl text-foreground" data-bind="userStats.completed">18</h3>
+                        <p class="text-muted-foreground">Completed Services</p>
+                    </div>
+                    <div class="dashboard-card rounded-xl p-6 text-center">
+                        <i class="fas fa-heart text-red-500 text-3xl mb-4"></i>
+                        <h3 class="font-semibold text-2xl text-foreground" data-bind="userStats.favoriteService">Premium</h3>
+                        <p class="text-muted-foreground">Favorite Service</p>
+                    </div>
+                </div>
+                
+                <!-- Recent Bookings -->
+                <div class="bg-card rounded-xl shadow-lg p-6">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="font-heading font-semibold text-xl">Recent Bookings</h3>
+                        <button class="text-primary hover:text-primary/80 font-medium" data-event="click:viewAllBookings">
+                            View All
+                        </button>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        <!-- @MAP: userBookings.map(booking => ( -->
+                        <div class="flex items-center justify-between p-4 border border-border rounded-lg" data-booking-id="booking-1">
+                            <div class="flex items-center space-x-4">
+                                <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-car text-primary"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold" data-bind="booking.service">Premium Wash</h4>
+                                    <p class="text-sm text-muted-foreground" data-bind="booking.datetime">March 15, 2024 at 1:00 PM</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm" data-bind="booking.status">Confirmed</span>
+                                <p class="text-sm text-muted-foreground mt-1" data-bind="booking.price">$45</p>
+                            </div>
+                        </div>
+                        <!-- @END_MAP )) -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- @END_COMPONENT: DashboardSection -->
+
+    <!-- Payment Modal -->
+    <!-- @COMPONENT: PaymentModal [Stripe payment integration] -->
+    <div class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50" id="paymentModal">
+        <div class="bg-card rounded-xl shadow-2xl p-8 max-w-md w-full mx-4">
+            <div class="text-center mb-6">
+                <i class="fas fa-credit-card text-primary text-4xl mb-4"></i>
+                <h3 class="font-heading font-semibold text-2xl mb-2">Secure Payment</h3>
+                <p class="text-muted-foreground">Complete your booking with secure payment</p>
+            </div>
+            
+            <!-- Booking Summary -->
+            <div class="bg-muted rounded-lg p-4 mb-6">
+                <h4 class="font-semibold mb-2">Booking Summary</h4>
+                <div class="space-y-2 text-sm">
+                    <div class="flex justify-between">
+                        <span>Service:</span>
+                        <span data-bind="booking.service">Premium Wash</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>Date & Time:</span>
+                        <span data-bind="booking.datetime">Mar 15, 1:00 PM</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>Vehicle:</span>
+                        <span data-bind="booking.vehicle">Toyota Camry</span>
+                    </div>
+                    <hr class="my-2" />
+                    <div class="flex justify-between font-semibold">
+                        <span>Total:</span>
+                        <span data-bind="booking.total">$45.00</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Payment Form -->
+            <!-- @FUNCTIONALITY: This payment form should integrate with Stripe API for secure payment processing -->
+            <form class="space-y-4" data-event="submit:processPayment">
+                <div>
+                    <label class="block text-sm font-medium mb-2">Card Number</label>
+                    <input type="text" placeholder="1234 5678 9012 3456" class="w-full px-3 py-2 border border-input rounded-md focus:ring-2 focus:ring-ring" data-mock="true" />
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Expiry</label>
+                        <input type="text" placeholder="MM/YY" class="w-full px-3 py-2 border border-input rounded-md focus:ring-2 focus:ring-ring" data-mock="true" />
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">CVC</label>
+                        <input type="text" placeholder="123" class="w-full px-3 py-2 border border-input rounded-md focus:ring-2 focus:ring-ring" data-mock="true" />
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-2">Name on Card</label>
+                    <input type="text" placeholder="John Doe" class="w-full px-3 py-2 border border-input rounded-md focus:ring-2 focus:ring-ring" data-mock="true" />
+                </div>
+                
+                <div class="flex gap-4 mt-6">
+                    <button type="button" class="flex-1 px-4 py-2 border border-border text-muted-foreground rounded-md hover:bg-muted transition-colors" data-event="click:closePaymentModal">
+                        Cancel
+                    </button>
+                    <button type="submit" class="flex-1 px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors">
+                        <i class="fas fa-lock mr-2"></i>Pay $45.00
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- @END_COMPONENT: PaymentModal -->
+
+    <!-- Features Section -->
+    <section class="py-16 bg-card">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="font-heading font-bold text-3xl lg:text-4xl text-foreground mb-4">
+                    Why Choose CarWash Pro?
+                </h2>
+                <p class="text-muted-foreground text-lg max-w-3xl mx-auto">
+                    We provide professional car wash services with cutting-edge technology and exceptional customer service.
+                </p>
+            </div>
+            
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="text-center p-6">
+                    <div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-clock text-primary text-2xl"></i>
+                    </div>
+                    <h3 class="font-heading font-semibold text-xl mb-2">Quick & Convenient</h3>
+                    <p class="text-muted-foreground">Book in minutes, get your car washed at your preferred time.</p>
+                </div>
+                
+                <div class="text-center p-6">
+                    <div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-shield-alt text-primary text-2xl"></i>
+                    </div>
+                    <h3 class="font-heading font-semibold text-xl mb-2">Professional Quality</h3>
+                    <p class="text-muted-foreground">Trained professionals using premium products and equipment.</p>
+                </div>
+                
+                <div class="text-center p-6">
+                    <div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-leaf text-primary text-2xl"></i>
+                    </div>
+                    <h3 class="font-heading font-semibold text-xl mb-2">Eco-Friendly</h3>
+                    <p class="text-muted-foreground">Environmentally conscious cleaning products and water recycling.</p>
+                </div>
+                
+                <div class="text-center p-6">
+                    <div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-mobile-alt text-primary text-2xl"></i>
+                    </div>
+                    <h3 class="font-heading font-semibold text-xl mb-2">Mobile App</h3>
+                    <p class="text-muted-foreground">Easy booking and management through our mobile application.</p>
+                </div>
+                
+                <div class="text-center p-6">
+                    <div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-star text-primary text-2xl"></i>
+                    </div>
+                    <h3 class="font-heading font-semibold text-xl mb-2">Satisfaction Guaranteed</h3>
+                    <p class="text-muted-foreground">100% satisfaction guarantee or your money back.</p>
+                </div>
+                
+                <div class="text-center p-6">
+                    <div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-headset text-primary text-2xl"></i>
+                    </div>
+                    <h3 class="font-heading font-semibold text-xl mb-2">24/7 Support</h3>
+                    <p class="text-muted-foreground">Round-the-clock customer support for all your needs.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="py-16 bg-muted/30">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="font-heading font-bold text-3xl lg:text-4xl text-foreground mb-4">
+                    What Our Customers Say
+                </h2>
+                <p class="text-muted-foreground text-lg">
+                    Don't just take our word for it - hear from our satisfied customers.
+                </p>
+            </div>
+            
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- @MAP: testimonials.map(testimonial => ( -->
+                <div class="bg-card rounded-xl p-6 shadow-sm">
+                    <div class="flex items-center mb-4">
+                        <div class="flex text-accent">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                    </div>
+                    <p class="text-muted-foreground mb-4" data-bind="testimonial.content">
+                        "Excellent service! My car looks brand new after their premium wash. The booking process was super easy and the staff was very professional."
+                    </p>
+                    <div class="flex items-center">
+                        <!-- Happy customer portrait -->
+                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=64&h=64" alt="Customer testimonial" class="w-12 h-12 rounded-full mr-4" />
+                        <div>
+                            <h4 class="font-semibold" data-bind="testimonial.name">Michael Johnson</h4>
+                            <p class="text-sm text-muted-foreground" data-bind="testimonial.title">Business Owner</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- @END_MAP )) -->
+                
+                <div class="bg-card rounded-xl p-6 shadow-sm">
+                    <div class="flex items-center mb-4">
+                        <div class="flex text-accent">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                    </div>
+                    <p class="text-muted-foreground mb-4">
+                        "The convenience of online booking and the quality of service is outstanding. I've been using CarWash Pro for months now."
+                    </p>
+                    <div class="flex items-center">
+                        <!-- Satisfied female customer -->
+                        <img src="https://pixabay.com/get/gf3c20af4c4ab7ff8c8a2330443c84abd2a5b2bf8af063282a922654fbc2792b1f6037ace77725b52e947b59f2bbf814eb408489ffe0e540afa5484a7e7237910_1280.jpg" alt="Customer testimonial" class="w-12 h-12 rounded-full mr-4" />
+                        <div>
+                            <h4 class="font-semibold">Sarah Davis</h4>
+                            <p class="text-sm text-muted-foreground">Marketing Manager</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-card rounded-xl p-6 shadow-sm">
+                    <div class="flex items-center mb-4">
+                        <div class="flex text-accent">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                    </div>
+                    <p class="text-muted-foreground mb-4">
+                        "Best car wash service in town! The deluxe detail service made my old car look amazing. Highly recommended!"
+                    </p>
+                    <div class="flex items-center">
+                        <!-- Happy elderly customer -->
+                        <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=64&h=64" alt="Customer testimonial" class="w-12 h-12 rounded-full mr-4" />
+                        <div>
+                            <h4 class="font-semibold">Robert Wilson</h4>
+                            <p class="text-sm text-muted-foreground">Retired Teacher</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <!-- @COMPONENT: Footer [site information and links] -->
+    <footer class="bg-foreground text-background py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div>
+                    <div class="flex items-center space-x-2 mb-4">
+                        <i class="fas fa-car text-primary text-2xl"></i>
+                        <span class="font-heading font-bold text-xl">CarWash Pro</span>
+                    </div>
+                    <p class="text-background/80 leading-relaxed">
+                        Professional car wash services with convenient online booking and exceptional customer service.
+                    </p>
+                </div>
+                
+                <div>
+                    <h3 class="font-semibold text-lg mb-4">Services</h3>
+                    <ul class="space-y-2 text-background/80">
+                        <li><a href="#" class="hover:text-primary transition-colors">Basic Wash</a></li>
+                        <li><a href="#" class="hover:text-primary transition-colors">Premium Wash</a></li>
+                        <li><a href="#" class="hover:text-primary transition-colors">Deluxe Detail</a></li>
+                        <li><a href="#" class="hover:text-primary transition-colors">Interior Cleaning</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="font-semibold text-lg mb-4">Company</h3>
+                    <ul class="space-y-2 text-background/80">
+                        <li><a href="#" class="hover:text-primary transition-colors">About Us</a></li>
+                        <li><a href="#" class="hover:text-primary transition-colors">Contact</a></li>
+                        <li><a href="#" class="hover:text-primary transition-colors">Careers</a></li>
+                        <li><a href="#" class="hover:text-primary transition-colors">Privacy Policy</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="font-semibold text-lg mb-4">Contact Info</h3>
+                    <div class="space-y-2 text-background/80">
+                        <p><i class="fas fa-phone mr-2"></i>(555) 123-4567</p>
+                        <p><i class="fas fa-envelope mr-2"></i>info@carwashpro.com</p>
+                        <p><i class="fas fa-map-marker-alt mr-2"></i>123 Main St, City, State</p>
+                    </div>
+                    <div class="flex space-x-4 mt-4">
+                        <a href="#" class="text-background/80 hover:text-primary transition-colors">
+                            <i class="fab fa-facebook text-xl"></i>
+                        </a>
+                        <a href="#" class="text-background/80 hover:text-primary transition-colors">
+                            <i class="fab fa-twitter text-xl"></i>
+                        </a>
+                        <a href="#" class="text-background/80 hover:text-primary transition-colors">
+                            <i class="fab fa-instagram text-xl"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="border-t border-background/20 mt-8 pt-8 text-center text-background/60">
+                <p>&copy; 2024 CarWash Pro. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+    <!-- @END_COMPONENT: Footer -->
+
+    <script>
+        // TODO: Implement business logic, API calls, and state management
+        (function() {
+            // Basic interactivity for demonstration
+            let currentBookingStep = 1;
+            let selectedService = null;
+            let selectedSlot = null;
+            
+            // Mobile menu toggle
+            document.addEventListener('click', function(e) {
+                if (e.target.closest('[data-event="click:toggleMobileMenu"]')) {
+                    // TODO: Implement mobile menu toggle
+                    console.log('Toggle mobile menu');
+                }
+                
+                // Service booking
+                if (e.target.closest('[data-event="click:bookService"]')) {
+                    const serviceId = e.target.closest('[data-event="click:bookService"]').dataset.serviceId;
+                    document.getElementById('booking').scrollIntoView({ behavior: 'smooth' });
+                    console.log('Book service:', serviceId);
+                }
+                
+                // Booking step navigation
+                if (e.target.closest('[data-event="click:nextStep"]')) {
+                    // TODO: Implement step validation and navigation
+                    console.log('Next step');
+                }
+                
+                if (e.target.closest('[data-event="click:previousStep"]')) {
+                    // TODO: Implement step navigation
+                    console.log('Previous step');
+                }
+                
+                // Time slot selection
+                if (e.target.closest('[data-event="click:selectTimeSlot"]')) {
+                    const time = e.target.closest('[data-event="click:selectTimeSlot"]').dataset.time;
+                    // Remove existing selection
+                    document.querySelectorAll('[data-event="click:selectTimeSlot"]').forEach(btn => {
+                        btn.classList.remove('border-primary', 'bg-primary/10', 'font-medium');
+                        btn.classList.add('border-border');
+                    });
+                    // Add selection to clicked button
+                    e.target.classList.add('border-primary', 'bg-primary/10', 'font-medium');
+                    e.target.classList.remove('border-border');
+                    console.log('Selected time slot:', time);
+                }
+                
+                // Payment modal
+                if (e.target.closest('[data-event="click:openPayment"]')) {
+                    document.getElementById('paymentModal').classList.remove('hidden');
+                    document.getElementById('paymentModal').classList.add('flex');
+                }
+                
+                if (e.target.closest('[data-event="click:closePaymentModal"]')) {
+                    document.getElementById('paymentModal').classList.add('hidden');
+                    document.getElementById('paymentModal').classList.remove('flex');
+                }
+                
+                // Admin functions
+                if (e.target.closest('[data-event="click:addService"]')) {
+                    // TODO: Implement add service modal
+                    console.log('Add new service');
+                }
+                
+                if (e.target.closest('[data-event="click:editService"]')) {
+                    // TODO: Implement edit service modal
+                    console.log('Edit service');
+                }
+                
+                if (e.target.closest('[data-event="click:deleteService"]')) {
+                    // TODO: Implement delete confirmation
+                    console.log('Delete service');
+                }
+            });
+            
+            // Form submissions
+            document.addEventListener('submit', function(e) {
+                if (e.target.closest('[data-event="submit:processPayment"]')) {
+                    e.preventDefault();
+                    // TODO: Implement Stripe payment processing
+                    console.log('Process payment');
+                }
+            });
+            
+            // Tab switching
+            document.addEventListener('click', function(e) {
+                if (e.target.closest('[data-tab]')) {
+                    const tab = e.target.closest('[data-tab]').dataset.tab;
+                    
+                    // Update tab buttons
+                    document.querySelectorAll('[data-tab]').forEach(btn => {
+                        btn.classList.remove('border-primary', 'text-primary');
+                        btn.classList.add('border-transparent', 'text-muted-foreground');
+                    });
+                    e.target.classList.add('border-primary', 'text-primary');
+                    e.target.classList.remove('border-transparent', 'text-muted-foreground');
+                    
+                    // Update tab content
+                    document.querySelectorAll('[data-tab-content]').forEach(content => {
+                        content.classList.add('hidden');
+                    });
+                    document.querySelector(`[data-tab-content="${tab}"]`).classList.remove('hidden');
+                }
+            });
+            
+            // Smooth scrolling for navigation links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({ behavior: 'smooth' });
+                    }
+                });
+            });
+        })();
+    </script>
+</body>
+</html>
