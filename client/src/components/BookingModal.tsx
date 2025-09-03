@@ -5,10 +5,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import { X, Calendar, Clock, Car } from "lucide-react";
+import { X, Calendar, Clock, Car, CreditCard, Banknote } from "lucide-react";
 
 interface Service {
   id: string;
@@ -42,6 +43,7 @@ export default function BookingModal({ isOpen, onClose, selectedService }: Booki
     vehicleModel: "",
     manufacturingYear: "",
     registrationPlate: "",
+    paymentMethod: "cash",
   });
 
   const { toast } = useToast();
@@ -93,6 +95,7 @@ export default function BookingModal({ isOpen, onClose, selectedService }: Booki
       vehicleModel: "",
       manufacturingYear: "",
       registrationPlate: "",
+      paymentMethod: "cash",
     });
   };
 
@@ -118,6 +121,7 @@ export default function BookingModal({ isOpen, onClose, selectedService }: Booki
       vehicleModel: bookingData.vehicleModel,
       manufacturingYear: parseInt(bookingData.manufacturingYear),
       registrationPlate: bookingData.registrationPlate,
+      paymentMethod: bookingData.paymentMethod,
       totalAmount: selectedService.price,
     };
 
@@ -374,6 +378,50 @@ export default function BookingModal({ isOpen, onClose, selectedService }: Booki
                   data-testid="input-registration-plate"
                 />
               </div>
+            </div>
+
+            {/* Payment Method Selection */}
+            <div className="glass-effect p-4 rounded-xl">
+              <h3 className="font-semibold text-lg mb-4">Payment Method</h3>
+              <RadioGroup
+                value={bookingData.paymentMethod}
+                onValueChange={(value: 'cash' | 'card') => handleInputChange('paymentMethod', value)}
+                className="space-y-4"
+              >
+                {/* Cash Payment Option */}
+                <div className="flex items-center space-x-3 p-3 rounded-lg border border-border hover:bg-white/5 transition-colors">
+                  <RadioGroupItem value="cash" id="cash" data-testid="radio-payment-cash" />
+                  <Label htmlFor="cash" className="flex-1 cursor-pointer">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-3">
+                        <Banknote className="w-5 h-5 text-green-500" />
+                        <div>
+                          <div className="font-semibold">Cash Payment</div>
+                          <div className="text-sm text-muted-foreground">Pay on-site with South African Rand</div>
+                        </div>
+                      </div>
+                      <Badge className="bg-green-500/20 text-green-400">Popular</Badge>
+                    </div>
+                  </Label>
+                </div>
+
+                {/* Card Payment Option */}
+                <div className="flex items-center space-x-3 p-3 rounded-lg border border-border hover:bg-white/5 transition-colors">
+                  <RadioGroupItem value="card" id="card" data-testid="radio-payment-card" />
+                  <Label htmlFor="card" className="flex-1 cursor-pointer">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-3">
+                        <CreditCard className="w-5 h-5 text-blue-500" />
+                        <div>
+                          <div className="font-semibold">Card Payment</div>
+                          <div className="text-sm text-muted-foreground">Visa, MasterCard - Secure online payment</div>
+                        </div>
+                      </div>
+                      <Badge className="bg-blue-500/20 text-blue-400">Secure</Badge>
+                    </div>
+                  </Label>
+                </div>
+              </RadioGroup>
             </div>
 
             <div className="flex justify-between space-x-4">

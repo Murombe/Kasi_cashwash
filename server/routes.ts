@@ -28,7 +28,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(401).json({ message: 'Invalid credentials' });
       }
 
-      const token = generateToken({ id: user.id!, email: user.email, role: user.role });
+      const token = generateToken({ id: user.id!, email: user.email!, role: user.role! });
       res.json({ user, token });
     } catch (error) {
       console.error('Login error:', error);
@@ -69,7 +69,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         role: 'user',
       });
 
-      const token = generateToken({ id: user.id!, email: user.email, role: user.role });
+      const token = generateToken({ id: user.id!, email: user.email!, role: user.role! });
       res.status(201).json({ user, token });
     } catch (error) {
       console.error('Registration error:', error);
@@ -447,6 +447,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.put('/api/bookings/:id/payment-status', authenticateToken, requireAdmin, async (req, res) => {
+    try {
+      const { paymentStatus } = req.body;
+      const booking = await storage.updateBookingPaymentStatus(req.params.id, paymentStatus);
+      res.json(booking);
+    } catch (error) {
+      console.error("Error updating payment status:", error);
+      res.status(500).json({ message: "Failed to update payment status" });
+    }
+  });
+
   // Review routes
   app.get('/api/reviews', async (req, res) => {
     try {
@@ -488,6 +499,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (paymentMethod === 'cash') {
         // For cash payments, just confirm the booking
         if (bookingId) {
+          await storage.updateBookingPaymentMethod(bookingId, 'cash');
           await storage.updateBookingPaymentStatus(bookingId, 'pending');
           await storage.updateBookingStatus(bookingId, 'confirmed');
         }
@@ -499,6 +511,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       // For card payments, create Stripe payment intent
+      if (bookingId) {
+        await storage.updateBookingPaymentMethod(bookingId, 'card');
+      }
+
       const paymentIntent = await stripe.paymentIntents.create({
         amount: Math.round(amount * 100), // Convert ZAR to cents
         currency: "zar", // South African Rand

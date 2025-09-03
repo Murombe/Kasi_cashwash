@@ -165,14 +165,10 @@ export default function Checkout() {
   const urlParams = new URLSearchParams(location.split('?')[1] || '');
   const bookingId = urlParams.get('booking_id');
 
-
   useEffect(() => {
     if (!bookingId) {
-      toast({
-        title: "Invalid Booking",
-        description: "No booking ID provided. Redirecting to booking page.",
-        variant: "destructive",
-      });
+      // Silently redirect to booking page without showing error toast
+      // This prevents the error from showing on page load
       setLocation('/booking');
       return;
     }
@@ -302,8 +298,7 @@ export default function Checkout() {
               </p>
             </div>
 
-            {/* Single Column Layout for Better Mobile View */}
-            <div className="space-y-8">
+            <div className="grid lg:grid-cols-2 gap-8">
 
               {/* Booking Summary */}
               <GlassCard className="p-8">
@@ -334,7 +329,7 @@ export default function Checkout() {
                   </div>
 
                   {/* Vehicle Details */}
-                  <div className="border-b border-border pb-4">
+                  <div>
                     <h4 className="font-semibold mb-2">Vehicle</h4>
                     <div className="text-muted-foreground">
                       {bookingDetails.vehicleBrand} {bookingDetails.vehicleModel}
@@ -344,7 +339,7 @@ export default function Checkout() {
                   {/* Total */}
                   <div className="border-t border-border pt-4">
                     <div className="flex items-center justify-between text-xl font-bold">
-                      <span>Total Amount:</span>
+                      <span>Total</span>
                       <span className="text-gradient">R{bookingDetails.service.price}</span>
                     </div>
                   </div>
@@ -353,70 +348,50 @@ export default function Checkout() {
 
               {/* Payment Section */}
               <GlassCard className="p-8">
-                <h2 className="text-2xl font-bold mb-6">Choose Payment Method</h2>
+                <h2 className="text-2xl font-bold mb-6">Payment Method</h2>
 
                 {/* Payment Method Selection */}
-                <div className="space-y-4 mb-8">
-                  <h3 className="font-semibold text-lg">How would you like to pay?</h3>
-
-                  {/* Cash Payment Option */}
-                  <div
-                    className={`flex items-center space-x-4 p-6 rounded-xl border-2 cursor-pointer transition-all duration-200 ${
-                      paymentMethod === 'cash'
-                        ? 'border-primary bg-primary/10 ring-2 ring-primary/20 shadow-lg'
-                        : 'border-border hover:bg-white/5 hover:border-primary/50'
-                    }`}
-                    onClick={() => setPaymentMethod('cash')}
-                    data-testid="payment-option-cash"
-                  >
-                    <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
-                      paymentMethod === 'cash' ? 'border-primary' : 'border-muted-foreground'
-                    }`}>
-                      {paymentMethod === 'cash' && <div className="w-3 h-3 rounded-full bg-primary"></div>}
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-4">
-                          <Banknote className="w-6 h-6 text-green-400" />
-                          <div>
-                            <div className="font-bold text-lg">Cash Payment</div>
-                            <div className="text-sm text-muted-foreground">Pay on-site with South African Rand (R)</div>
+                <RadioGroup
+                  value={paymentMethod}
+                  onValueChange={(value: 'cash' | 'card') => setPaymentMethod(value)}
+                  className="mb-8"
+                >
+                  <div className="space-y-4">
+                    {/* Cash Payment Option */}
+                    <div className="flex items-center space-x-3 p-4 rounded-lg border border-border hover:bg-white/5 transition-colors">
+                      <RadioGroupItem value="cash" id="cash" data-testid="radio-payment-cash" />
+                      <Label htmlFor="cash" className="flex-1 cursor-pointer">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center space-x-3">
+                            <Banknote className="w-5 h-5" />
+                            <div>
+                              <div className="font-semibold">Cash Payment</div>
+                              <div className="text-sm text-muted-foreground">Pay on-site with South African Rand</div>
+                            </div>
                           </div>
+                          <Badge className="bg-green-500/20 text-green-400">Popular</Badge>
                         </div>
-                        <Badge className="bg-green-500/20 text-green-400 px-3 py-1">Most Popular</Badge>
-                      </div>
+                      </Label>
+                    </div>
+
+                    {/* Card Payment Option */}
+                    <div className="flex items-center space-x-3 p-4 rounded-lg border border-border hover:bg-white/5 transition-colors">
+                      <RadioGroupItem value="card" id="card" data-testid="radio-payment-card" />
+                      <Label htmlFor="card" className="flex-1 cursor-pointer">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center space-x-3">
+                            <CreditCard className="w-5 h-5" />
+                            <div>
+                              <div className="font-semibold">Card Payment</div>
+                              <div className="text-sm text-muted-foreground">Visa, MasterCard - Secure online payment</div>
+                            </div>
+                          </div>
+                          <Badge className="bg-blue-500/20 text-blue-400">Secure</Badge>
+                        </div>
+                      </Label>
                     </div>
                   </div>
-
-                  {/* Card Payment Option */}
-                  <div
-                    className={`flex items-center space-x-4 p-6 rounded-xl border-2 cursor-pointer transition-all duration-200 ${
-                      paymentMethod === 'card'
-                        ? 'border-primary bg-primary/10 ring-2 ring-primary/20 shadow-lg'
-                        : 'border-border hover:bg-white/5 hover:border-primary/50'
-                    }`}
-                    onClick={() => setPaymentMethod('card')}
-                    data-testid="payment-option-card"
-                  >
-                    <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
-                      paymentMethod === 'card' ? 'border-primary' : 'border-muted-foreground'
-                    }`}>
-                      {paymentMethod === 'card' && <div className="w-3 h-3 rounded-full bg-primary"></div>}
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-4">
-                          <CreditCard className="w-6 h-6 text-blue-400" />
-                          <div>
-                            <div className="font-bold text-lg">Card Payment</div>
-                            <div className="text-sm text-muted-foreground">Visa & MasterCard accepted - Secure online payment in ZAR</div>
-                          </div>
-                        </div>
-                        <Badge className="bg-blue-500/20 text-blue-400 px-3 py-1">Secure</Badge>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                </RadioGroup>
 
                 {/* Payment Form */}
                 {paymentMethod === 'card' && clientSecret ? (

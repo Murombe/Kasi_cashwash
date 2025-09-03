@@ -46,7 +46,6 @@ export default function Booking() {
     vehicleModel: "",
     manufacturingYear: "",
     registrationPlate: "",
-    paymentMethod: "",
   });
 
   const { toast } = useToast();
@@ -54,9 +53,9 @@ export default function Booking() {
   const queryClient = useQueryClient();
   const [, setLocation] = useLocation();
 
-  const { data: services, isLoading: servicesLoading } = useQuery({
+  const { data: services = [], isLoading: servicesLoading } = useQuery({
     queryKey: ["/api/services"],
-  });
+  }) as { data: Service[]; isLoading: boolean };
 
   const { data: availableSlots, isLoading: slotsLoading } = useQuery({
     queryKey: ["/api/slots", selectedService?.id, selectedDate],
@@ -72,10 +71,10 @@ export default function Booking() {
     enabled: !!selectedService?.id,
   });
 
-  const { data: userBookings = [] as any[] } = useQuery({
+  const { data: userBookings = [] } = useQuery({
     queryKey: ["/api/bookings"],
     enabled: isAuthenticated,
-  });
+  }) as { data: any[] };
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -136,7 +135,6 @@ export default function Booking() {
       vehicleModel: "",
       manufacturingYear: "",
       registrationPlate: "",
-      paymentMethod: "",
     });
   };
 
@@ -201,7 +199,6 @@ export default function Booking() {
       manufacturingYear: parseInt(bookingData.manufacturingYear),
       registrationPlate: bookingData.registrationPlate,
       totalAmount: selectedService.price,
-      paymentMethod: bookingData.paymentMethod,
     };
 
     bookingMutation.mutate(bookingPayload);
@@ -247,7 +244,7 @@ export default function Booking() {
           </div>
 
           {/* Recent Bookings */}
-          {Array.isArray(userBookings) && userBookings.length > 0 && (
+          {userBookings?.length > 0 && (
             <GlassCard className="p-6 mb-12">
               <h3 className="text-xl font-bold mb-4">Your Recent Bookings</h3>
               <div className="space-y-3">
@@ -296,7 +293,7 @@ export default function Booking() {
               </div>
             ) : (
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {Array.isArray(services) && services.map((service: Service) => (
+                {services?.map((service: Service) => (
                   <FloatingCard
                     key={service.id}
                     className={`p-6 cursor-pointer transition-all duration-300 ${
@@ -561,22 +558,6 @@ export default function Booking() {
                       data-testid="input-registration-plate"
                     />
                   </div>
-
-                  <div className="md:col-span-2">
-                    <Label htmlFor="paymentMethod">Payment Method</Label>
-                    <Select
-                      value={bookingData.paymentMethod}
-                      onValueChange={(value) => handleInputChange('paymentMethod', value)}
-                    >
-                      <SelectTrigger className="glass-effect border-border" data-testid="select-payment-method">
-                        <SelectValue placeholder="Select payment method" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="cash">💵 Cash Payment</SelectItem>
-                        <SelectItem value="card">💳 Card Payment</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
                 </div>
 
                 {/* Booking Summary */}
@@ -599,7 +580,7 @@ export default function Booking() {
                     </div>
                     <div className="flex justify-between text-lg font-bold">
                       <span>Total Amount:</span>
-                      <span className="text-gradient">R{selectedService.price}</span>
+                      <span className="text-gradient">${selectedService.price}</span>
                     </div>
                   </div>
                 </div>

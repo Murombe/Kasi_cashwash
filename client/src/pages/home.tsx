@@ -1,14 +1,19 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import Navigation from "@/components/layout/Navigation";
 import Footer from "@/components/layout/Footer";
 import ServiceCard from "@/components/ServiceCard";
 import { useAuth } from "@/hooks/useAuth";
-import { Calendar, Star, TrendingUp, Clock } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { apiRequest } from "@/lib/queryClient";
+import { isUnauthorizedError } from "@/lib/authUtils";
+import { Calendar, Star, TrendingUp, Clock, X } from "lucide-react";
 
 export default function Home() {
   const { user } = useAuth();
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
 
   const { data: services, isLoading: servicesLoading } = useQuery({
     queryKey: ["/api/services"],
@@ -18,12 +23,47 @@ export default function Home() {
     queryKey: ["/api/bookings"],
   });
 
+  const cancelBookingMutation = useMutation({
+    mutationFn: async (bookingId: string) => {
+      return apiRequest("PUT", `/api/bookings/${bookingId}/cancel`, {});
+    },
+    onSuccess: () => {
+      toast({
+        title: "Booking Cancelled",
+        description: "Your booking has been cancelled successfully.",
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/bookings"] });
+    },
+    onError: (error: Error) => {
+      if (isUnauthorizedError(error)) {
+        toast({
+          title: "Unauthorized",
+          description: "You are logged out. Logging in again...",
+          variant: "destructive",
+        });
+        setTimeout(() => {
+          window.location.href = "/api/login";
+        }, 500);
+        return;
+      }
+      toast({
+        title: "Error",
+        description: error.message || "Failed to cancel booking.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleCancelBooking = (bookingId: string) => {
+    cancelBookingMutation.mutate(bookingId);
+  };
+
   const recentBookings = userBookings?.slice(0, 3) || [];
 
   return (
     <div className="min-h-screen">
       <Navigation />
-      
+
       {/* Welcome Section */}
       <section className="pt-24 pb-16">
         <div className="container mx-auto px-4">
@@ -39,7 +79,7 @@ export default function Home() {
               </div>
               <div className="hidden md:block">
                 <Link href="/booking">
-                  <Button 
+                  <Button
                     className="ripple-effect bg-gradient-to-r from-primary to-accent text-primary-foreground px-8 py-4 rounded-xl font-semibold text-lg hover:shadow-2xl transition-all duration-300"
                     data-testid="button-book-now"
                   >
@@ -98,7 +138,7 @@ export default function Home() {
                 <span className="text-gradient">Recent Bookings</span>
               </h2>
               <Link href="/booking">
-                <Button 
+                <Button
                   variant="outline"
                   className="glass-effect border-border hover:bg-white/20"
                   data-testid="button-view-all-bookings"
@@ -137,19 +177,41 @@ export default function Home() {
                             booking.status === 'completed' ? 'bg-green-500/20 text-green-400' :
                             booking.status === 'confirmed' ? 'bg-blue-500/20 text-blue-400' :
                             booking.status === 'in-progress' ? 'bg-yellow-500/20 text-yellow-400' :
+                            booking.status === 'cancelled' ? 'bg-red-500/20 text-red-400' :
                             'bg-gray-500/20 text-gray-400'
                           }`}>
                             {booking.status}
                           </span>
+                          {booking.paymentMethod && (
+                            <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                              booking.paymentMethod === 'card' ? 'bg-blue-500/20 text-blue-400' : 'bg-green-500/20 text-green-400'
+                            }`}>
+                              {booking.paymentMethod} payment
+                            </span>
+                          )}
                         </div>
                       </div>
-                      <div className="text-right">
+                      <div className="text-right flex flex-col items-end space-y-2">
                         <div className="text-2xl font-bold text-gradient" data-testid={`booking-amount-${booking.id}`}>
                           R{booking.totalAmount}
                         </div>
                         <div className="text-sm text-muted-foreground">
                           {booking.slot?.startTime} - {booking.slot?.endTime}
                         </div>
+                        {/* Cancel Button - Only show for pending or confirmed bookings */}
+                        {(booking.status === 'pending' || booking.status === 'confirmed') && (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleCancelBooking(booking.id)}
+                            disabled={cancelBookingMutation.isPending}
+                            className="glass-effect border-destructive text-destructive hover:bg-destructive/20 mt-2"
+                            data-testid={`button-cancel-booking-${booking.id}`}
+                          >
+                            <X className="w-4 h-4 mr-1" />
+                            Cancel
+                          </Button>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -168,7 +230,7 @@ export default function Home() {
               <span className="text-gradient">Popular Services</span>
             </h2>
             <Link href="/services">
-              <Button 
+              <Button
                 variant="outline"
                 className="glass-effect border-border hover:bg-white/20"
                 data-testid="button-view-all-services"
@@ -208,7 +270,7 @@ export default function Home() {
             </h2>
             <div className="grid md:grid-cols-3 gap-6">
               <Link href="/booking">
-                <Button 
+                <Button
                   className="w-full ripple-effect bg-gradient-to-r from-primary to-accent text-primary-foreground py-4 rounded-xl font-semibold text-lg hover:shadow-2xl transition-all duration-300"
                   data-testid="button-quick-book"
                 >
@@ -216,7 +278,7 @@ export default function Home() {
                 </Button>
               </Link>
               <Link href="/services">
-                <Button 
+                <Button
                   variant="outline"
                   className="w-full glass-effect border-border hover:bg-white/20 py-4 rounded-xl font-semibold text-lg"
                   data-testid="button-browse-services"
@@ -225,7 +287,7 @@ export default function Home() {
                 </Button>
               </Link>
               <Link href="/comparison">
-                <Button 
+                <Button
                   variant="outline"
                   className="w-full glass-effect border-border hover:bg-white/20 py-4 rounded-xl font-semibold text-lg"
                   data-testid="button-compare-packages"
