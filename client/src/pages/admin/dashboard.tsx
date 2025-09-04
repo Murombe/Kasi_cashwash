@@ -1,15 +1,17 @@
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import Sidebar from "@/components/admin/Sidebar";
 import { GlassCard } from "@/components/ui/glass-card";
 import { FloatingCard } from "@/components/ui/floating-card";
-import { Calendar, DollarSign, Star, TrendingUp, Users, Car, Clock, Award } from "lucide-react";
+import { Calendar, DollarSign, Star, TrendingUp, Users, Car, Clock, Award, AlertTriangle } from "lucide-react";
+import { differenceInMinutes } from "date-fns";
 
 export default function AdminDashboard() {
   const { user, isAuthenticated, isLoading } = useAuth();
   const { toast } = useToast();
+  const [currentTime, setCurrentTime] = useState(new Date());
 
   useEffect(() => {
     if (!isLoading && (!isAuthenticated || user?.role !== 'admin')) {
@@ -23,6 +25,38 @@ export default function AdminDashboard() {
       }, 1500);
     }
   }, [isAuthenticated, user, isLoading, toast]);
+
+  // Update current time every minute for real-time booking status
+  useEffect(() => {
+    const timer = setInterval(() => setCurrentTime(new Date()), 60000);
+    return () => clearInterval(timer);
+  }, []);
+
+  // Admin-specific booking time status (different messaging than customer view)
+  const getAdminBookingTimeStatus = (booking: any) => {
+    if (!booking.slot?.date || !booking.slot?.startTime) return null;
+
+    const serviceDateTime = new Date(`${booking.slot.date}T${booking.slot.startTime}`);
+    const minutesDiff = differenceInMinutes(serviceDateTime, currentTime);
+
+    // Service starts soon - show countdown
+    if (minutesDiff > 0 && minutesDiff <= 30) {
+      return { type: 'countdown', minutes: minutesDiff, message: `Starts in ${minutesDiff} min` };
+    }
+
+    // Customer is late - show from admin perspective
+    if (minutesDiff < 0 && minutesDiff >= -15) {
+      const minutesLate = Math.abs(minutesDiff);
+      return { type: 'late', minutes: minutesLate, message: `Customer ${minutesLate} min late!` };
+    }
+
+    // Auto-cancelled for no-show
+    if (minutesDiff < -15) {
+      return { type: 'auto-cancel', minutes: Math.abs(minutesDiff), message: 'Auto-cancelled (no-show)' };
+    }
+
+    return null;
+  };
 
   const { data: bookings, isLoading: bookingsLoading } = useQuery({
     queryKey: ["/api/bookings"],
@@ -63,12 +97,12 @@ export default function AdminDashboard() {
 
   // Calculate statistics
   const totalBookings = bookings?.length || 0;
-  const totalRevenue = bookings?.reduce((sum: number, booking: any) => 
+  const totalRevenue = bookings?.reduce((sum: number, booking: any) =>
     sum + parseFloat(booking.totalAmount || '0'), 0) || 0;
-  const averageRating = reviews?.length 
+  const averageRating = reviews?.length
     ? (reviews.reduce((sum: number, review: any) => sum + review.rating, 0) / reviews.length).toFixed(1)
     : "0.0";
-  
+
   const recentBookings = bookings?.slice(0, 5) || [];
   const pendingBookings = bookings?.filter((booking: any) => booking.status === 'pending').length || 0;
   const completedBookings = bookings?.filter((booking: any) => booking.status === 'completed').length || 0;
@@ -77,7 +111,7 @@ export default function AdminDashboard() {
   return (
     <div className="min-h-screen">
       <Sidebar />
-      
+
       <div className="ml-64 p-8">
         {/* Header */}
         <div className="mb-8">
@@ -170,17 +204,17 @@ export default function AdminDashboard() {
             <div className="text-2xl font-bold text-gradient" data-testid="pending-bookings">{pendingBookings}</div>
             <div className="text-sm text-muted-foreground">Pending Bookings</div>
           </GlassCard>
-          
+
           <GlassCard className="p-4 text-center">
             <div className="text-2xl font-bold text-gradient" data-testid="completed-bookings">{completedBookings}</div>
             <div className="text-sm text-muted-foreground">Completed Today</div>
           </GlassCard>
-          
+
           <GlassCard className="p-4 text-center">
             <div className="text-2xl font-bold text-gradient">{reviews?.length || 0}</div>
             <div className="text-sm text-muted-foreground">Total Reviews</div>
           </GlassCard>
-          
+
           <GlassCard className="p-4 text-center">
             <div className="text-2xl font-bold text-gradient">98%</div>
             <div className="text-sm text-muted-foreground">Satisfaction Rate</div>
@@ -217,37 +251,126 @@ export default function AdminDashboard() {
                   <p>No recent bookings</p>
                 </div>
               ) : (
-                recentBookings.map((booking: any) => (
-                  <div key={booking.id} className="flex items-center justify-between p-4 glass-effect rounded-xl hover:bg-white/10 transition-all duration-300" data-testid={`recent-booking-${booking.id}`}>
-                    <div className="flex items-center space-x-4">
-                      <div className="w-10 h-10 bg-gradient-to-r from-primary to-accent rounded-full flex items-center justify-center">
-                        <Car className="text-white w-5 h-5" />
+                recentBookings.map((booking: any) => {
+                  const timeStatus = getAdminBookingTimeStatus(booking);
+                  return (
+                    <div key={booking.id} className="flex items-center justify-between p-4 glass-effect rounded-xl hover:bg-white/10 transition-all duration-300" data-testid={`recent-booking-${booking.id}`}>
+                      <div className="flex items-center space-x-4">
+                        <div className="w-10 h-10 bg-gradient-to-r from-primary to-accent rounded-full flex items-center justify-center">
+                          <Car className="text-white w-5 h-5" />
+                        </div>
+                        <div>
+                          <div className="font-semibold">{booking.service?.name || 'Service'}</div>
+                          <div className="text-sm text-muted-foreground">
+                            {booking.vehicleBrand} {booking.vehicleModel}
+                          </div>
+                          {timeStatus && (
+                            <div className={`text-xs flex items-center mt-1 ${
+                              timeStatus.type === 'late' ? 'text-red-500' :
+                              timeStatus.type === 'countdown' ? 'text-yellow-500' :
+                              timeStatus.type === 'auto-cancel' ? 'text-red-600' : 'text-muted-foreground'
+                            }`}>
+                              {timeStatus.type === 'late' && <AlertTriangle className="w-3 h-3 mr-1" />}
+                              {timeStatus.type === 'countdown' && <Clock className="w-3 h-3 mr-1" />}
+                              {timeStatus.message}
+                            </div>
+                          )}
+                        </div>
                       </div>
-                      <div>
-                        <div className="font-semibold">{booking.service?.name || 'Service'}</div>
-                        <div className="text-sm text-muted-foreground">
-                          {booking.vehicleBrand} {booking.vehicleModel}
+                      <div className="text-right">
+                        <div className="font-semibold text-gradient">R{booking.totalAmount}</div>
+                        <div className="text-xs text-muted-foreground">{booking.slot?.date}</div>
+                        <div className="text-xs text-muted-foreground">
+                          {booking.slot?.startTime} - {booking.slot?.endTime}
                         </div>
                       </div>
                     </div>
-                    <div className="text-right">
-                      <div className="font-semibold text-gradient">${booking.totalAmount}</div>
-                      <div className="text-xs text-muted-foreground">{booking.slot?.date}</div>
-                    </div>
-                  </div>
-                ))
+                  );
+                })
               )}
             </div>
           </GlassCard>
 
-          {/* Analytics Chart Placeholder */}
+          {/* Booking Analytics */}
           <GlassCard className="p-6">
             <h3 className="text-xl font-bold mb-6">Booking Analytics</h3>
-            <div className="h-64 bg-gradient-to-br from-primary/10 to-accent/10 rounded-xl flex items-center justify-center">
-              <div className="text-center">
-                <TrendingUp className="w-16 h-16 text-primary mx-auto mb-4" />
-                <div className="text-lg font-semibold">Interactive Analytics Chart</div>
-                <div className="text-sm text-muted-foreground">Real-time booking data visualization</div>
+            <div className="space-y-6">
+              {/* Service Popularity */}
+              <div>
+                <h4 className="text-sm font-medium text-muted-foreground mb-3">Most Popular Services</h4>
+                <div className="space-y-3">
+                  {services?.slice(0, 4).map((service: any, index: number) => {
+                    const serviceBookings = bookings?.filter((b: any) => b.serviceId === service.id).length || 0;
+                    const percentage = totalBookings > 0 ? (serviceBookings / totalBookings) * 100 : 0;
+                    return (
+                      <div key={service.id} className="flex items-center justify-between">
+                        <div className="flex items-center space-x-3">
+                          <div className={`w-3 h-3 rounded-full ${
+                            index === 0 ? 'bg-primary' :
+                            index === 1 ? 'bg-accent' :
+                            index === 2 ? 'bg-secondary' : 'bg-muted'
+                          }`}></div>
+                          <span className="text-sm">{service.name}</span>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <div className="text-sm font-medium">{serviceBookings}</div>
+                          <div className="text-xs text-muted-foreground">({percentage.toFixed(0)}%)</div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Revenue by Service */}
+              <div>
+                <h4 className="text-sm font-medium text-muted-foreground mb-3">Revenue Breakdown</h4>
+                <div className="space-y-3">
+                  {services?.slice(0, 3).map((service: any, index: number) => {
+                    const serviceRevenue = bookings?.filter((b: any) => b.serviceId === service.id)
+                      .reduce((sum: number, booking: any) => sum + parseFloat(booking.totalAmount || '0'), 0) || 0;
+                    const percentage = totalRevenue > 0 ? (serviceRevenue / totalRevenue) * 100 : 0;
+                    return (
+                      <div key={service.id} className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm">{service.name}</span>
+                          <span className="text-sm font-medium">R{serviceRevenue.toFixed(0)}</span>
+                        </div>
+                        <div className="w-full bg-muted rounded-full h-2">
+                          <div
+                            className={`h-2 rounded-full ${
+                              index === 0 ? 'bg-gradient-to-r from-primary to-accent' :
+                              index === 1 ? 'bg-gradient-to-r from-accent to-secondary' :
+                              'bg-gradient-to-r from-secondary to-primary'
+                            }`}
+                            style={{ width: `${Math.max(percentage, 5)}%` }}
+                          ></div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Booking Status Overview */}
+              <div>
+                <h4 className="text-sm font-medium text-muted-foreground mb-3">Booking Status</h4>
+                <div className="grid grid-cols-3 gap-4">
+                  <div className="text-center p-3 bg-green-500/10 rounded-lg">
+                    <div className="text-lg font-bold text-green-600">{completedBookings}</div>
+                    <div className="text-xs text-muted-foreground">Completed</div>
+                  </div>
+                  <div className="text-center p-3 bg-yellow-500/10 rounded-lg">
+                    <div className="text-lg font-bold text-yellow-600">{pendingBookings}</div>
+                    <div className="text-xs text-muted-foreground">Pending</div>
+                  </div>
+                  <div className="text-center p-3 bg-red-500/10 rounded-lg">
+                    <div className="text-lg font-bold text-red-600">
+                      {bookings?.filter((b: any) => b.status === 'cancelled').length || 0}
+                    </div>
+                    <div className="text-xs text-muted-foreground">Cancelled</div>
+                  </div>
+                </div>
               </div>
             </div>
           </GlassCard>

@@ -16,7 +16,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { apiRequest } from "@/lib/queryClient";
 import { isUnauthorizedError } from "@/lib/authUtils";
-import { Plus, Edit, Trash2, Car, Clock, DollarSign, Tag, Calendar, X } from "lucide-react";
+import { Plus, Edit, Trash2, Car, Clock, DollarSign, Tag, Calendar, X, Eye, Users, TrendingUp } from "lucide-react";
 
 interface Service {
   id: string;
@@ -34,6 +34,14 @@ interface TimeSlot {
   date: string;
   startTime: string;
   endTime: string;
+  isBooked?: boolean;
+}
+
+interface ServiceDetails extends Service {
+  slots?: TimeSlot[];
+  bookingCount?: number;
+  totalRevenue?: number;
+  avgRating?: number;
 }
 
 export default function AdminServices() {
@@ -42,7 +50,9 @@ export default function AdminServices() {
   const queryClient = useQueryClient();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const [editingService, setEditingService] = useState<Service | null>(null);
+  const [viewingService, setViewingService] = useState<ServiceDetails | null>(null);
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -210,6 +220,45 @@ export default function AdminServices() {
     });
     setSlots([]);
     setNewSlot({ date: "", startTime: "", endTime: "" });
+  };
+
+  const openDetailsModal = async (service: Service) => {
+    try {
+      // Fetch service details including slots and stats
+      const [serviceResponse, slotsResponse, statsResponse] = await Promise.all([
+        apiRequest("GET", `/api/services/${service.id}`),
+        apiRequest("GET", `/api/slots?serviceId=${service.id}`),
+        apiRequest("GET", `/api/services/${service.id}/stats`)
+      ]);
+
+      const serviceDetails: ServiceDetails = {
+        ...service,
+        slots: slotsResponse || [],
+        bookingCount: statsResponse?.bookingCount || 0,
+        totalRevenue: statsResponse?.totalRevenue || 0,
+        avgRating: statsResponse?.avgRating || 0,
+      };
+
+      setViewingService(serviceDetails);
+      setIsDetailsModalOpen(true);
+    } catch (error) {
+      // If stats endpoint doesn't exist, just show basic details
+      const serviceDetails: ServiceDetails = {
+        ...service,
+        slots: [],
+        bookingCount: 0,
+        totalRevenue: 0,
+        avgRating: 0,
+      };
+
+      setViewingService(serviceDetails);
+      setIsDetailsModalOpen(true);
+    }
+  };
+
+  const closeDetailsModal = () => {
+    setIsDetailsModalOpen(false);
+    setViewingService(null);
   };
 
   const addSlot = () => {
@@ -483,12 +532,21 @@ export default function AdminServices() {
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => openModal(service)}
+                    onClick={() => openDetailsModal(service)}
                     className="flex-1 glass-effect border-border hover:bg-white/20"
+                    data-testid={`button-view-${service.id}`}
+                  >
+                    <Eye className="w-4 h-4 mr-1" />
+                    Details
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => openModal(service)}
+                    className="glass-effect border-border hover:bg-white/20"
                     data-testid={`button-edit-${service.id}`}
                   >
-                    <Edit className="w-4 h-4 mr-1" />
-                    Edit
+                    <Edit className="w-4 h-4" />
                   </Button>
                   <Button
                     variant="outline"
@@ -723,6 +781,155 @@ export default function AdminServices() {
                 </Button>
               </div>
             </form>
+          </DialogContent>
+        </Dialog>
+
+        {/* Service Details Modal */}
+        <Dialog open={isDetailsModalOpen} onOpenChange={closeDetailsModal}>
+          <DialogContent className="glass-effect border-border max-w-4xl max-h-[80vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="text-xl font-bold">
+                Service Details: {viewingService?.name}
+              </DialogTitle>
+            </DialogHeader>
+
+            {viewingService && (
+              <div className="space-y-6">
+                {/* Service Overview */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-4">
+                    <div>
+                      <h3 className="text-lg font-semibold mb-2 flex items-center">
+                        <Tag className="w-5 h-5 mr-2" />
+                        Service Information
+                      </h3>
+                      <div className="space-y-2">
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Category:</span>
+                          <Badge className={getCategoryColor(viewingService.category)}>
+                            {viewingService.category}
+                          </Badge>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Price:</span>
+                          <span className="font-semibold text-gradient">R{viewingService.price}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Duration:</span>
+                          <span className="flex items-center">
+                            <Clock className="w-4 h-4 mr-1" />
+                            {viewingService.duration} min
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Status:</span>
+                          <Badge variant={viewingService.isActive ? "default" : "secondary"}>
+                            {viewingService.isActive ? "Active" : "Inactive"}
+                          </Badge>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div>
+                      <h4 className="font-medium mb-2">Description</h4>
+                      <p className="text-muted-foreground text-sm">
+                        {viewingService.description}
+                      </p>
+                    </div>
+
+                    {viewingService.features && viewingService.features.length > 0 && (
+                      <div>
+                        <h4 className="font-medium mb-2">Features</h4>
+                        <div className="flex flex-wrap gap-2">
+                          {viewingService.features.map((feature, index) => (
+                            <Badge key={index} variant="outline" className="text-xs">
+                              {feature}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-semibold mb-2 flex items-center">
+                      <TrendingUp className="w-5 h-5 mr-2" />
+                      Statistics
+                    </h3>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="text-center p-4 bg-gradient-to-r from-primary/10 to-accent/10 rounded-lg">
+                        <div className="flex items-center justify-center mb-2">
+                          <Users className="w-5 h-5 text-primary" />
+                        </div>
+                        <div className="text-2xl font-bold text-gradient">
+                          {viewingService.bookingCount || 0}
+                        </div>
+                        <div className="text-sm text-muted-foreground">Total Bookings</div>
+                      </div>
+                      <div className="text-center p-4 bg-gradient-to-r from-green-500/10 to-emerald-500/10 rounded-lg">
+                        <div className="flex items-center justify-center mb-2">
+                          <DollarSign className="w-5 h-5 text-green-600" />
+                        </div>
+                        <div className="text-2xl font-bold text-green-600">
+                          R{viewingService.totalRevenue || 0}
+                        </div>
+                        <div className="text-sm text-muted-foreground">Total Revenue</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <Separator />
+
+                {/* Time Slots */}
+                <div>
+                  <h3 className="text-lg font-semibold mb-4 flex items-center">
+                    <Calendar className="w-5 h-5 mr-2" />
+                    Available Time Slots
+                  </h3>
+                  {viewingService.slots && viewingService.slots.length > 0 ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {viewingService.slots.map((slot, index) => (
+                        <div
+                          key={index}
+                          className="p-4 border rounded-lg glass-effect border-border"
+                        >
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <div className="font-medium">{slot.date}</div>
+                              <div className="text-sm text-muted-foreground">
+                                {slot.startTime} - {slot.endTime}
+                              </div>
+                            </div>
+                            <Badge variant={slot.isBooked ? "destructive" : "default"}>
+                              {slot.isBooked ? "Booked" : "Available"}
+                            </Badge>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-8">
+                      <Calendar className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
+                      <p className="text-muted-foreground">No time slots available</p>
+                      <p className="text-sm text-muted-foreground">
+                        Add time slots when editing this service
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            <div className="flex justify-end mt-6">
+              <Button
+                onClick={closeDetailsModal}
+                className="glass-effect border-border hover:bg-white/20"
+                data-testid="button-close-details"
+              >
+                Close
+              </Button>
+            </div>
           </DialogContent>
         </Dialog>
       </div>
