@@ -32,7 +32,7 @@ export default function Navigation() {
             <div className="w-10 h-10 bg-gradient-to-r from-primary to-accent rounded-xl flex items-center justify-center">
               <Car className="text-white text-lg" />
             </div>
-            <span className="text-2xl font-bold text-gradient">AquaShine</span>
+            <span className="text-2xl font-bold text-gradient">Kasi Car Wash</span>
           </Link>
           
           {/* Desktop Navigation */}
@@ -82,7 +82,7 @@ export default function Navigation() {
           <div className="hidden md:flex items-center space-x-4">
             <div className="flex items-center space-x-2 glass-effect px-3 py-2 rounded-lg">
               <Phone className="text-primary w-4 h-4" />
-              <span className="text-sm font-medium">+1 (555) 123-4567</span>
+              <span className="text-sm font-medium">+27 (011) 123 7456</span>
             </div>
 
             {isAuthenticated ? (

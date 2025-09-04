@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Link } from "wouter";
+import { Eye, EyeOff } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { Button } from "@/components/ui/button";
@@ -14,22 +15,29 @@ import { useToast } from "@/hooks/use-toast";
 const registerSchema = z.object({
   email: z.string().email("Please enter a valid email"),
   password: z.string().min(6, "Password must be at least 6 characters"),
+  confirmPassword: z.string().min(6, "Please confirm your password"),
   firstName: z.string().optional(),
   lastName: z.string().optional(),
   phone: z.string().optional(),
   address: z.string().optional(),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "Passwords don't match",
+  path: ["confirmPassword"],
 });
 
 type RegisterForm = z.infer<typeof registerSchema>;
 
 export default function Register() {
   const { toast } = useToast();
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const form = useForm<RegisterForm>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
       email: "",
       password: "",
+      confirmPassword: "",
       firstName: "",
       lastName: "",
       phone: "",
@@ -46,7 +54,7 @@ export default function Register() {
       localStorage.setItem("token", data.token);
       toast({
         title: "Registration successful",
-        description: "Welcome to AquaShine!",
+        description: "Welcome to Kasi Car Wash!",
       });
       window.location.href = "/"; // Full page reload to update auth state
     },
@@ -81,20 +89,20 @@ export default function Register() {
                 <Label htmlFor="firstName">First Name</Label>
                 <Input
                   id="firstName"
-                  placeholder="John"
+                  placeholder="First Name"
                   data-testid="input-firstName"
                   {...form.register("firstName")}
-                  className="bg-white/50"
+                  className="bg-white/50 focus:bg-white/60 focus:ring-2 focus:ring-primary/20 focus:border-primary/30 focus-visible:bg-white/60 text-gray-800 placeholder:text-gray-500"
                 />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="lastName">Last Name</Label>
                 <Input
                   id="lastName"
-                  placeholder="Doe"
+                  placeholder="Last Name"
                   data-testid="input-lastName"
                   {...form.register("lastName")}
-                  className="bg-white/50"
+                  className="bg-white/50 focus:bg-white/60 focus:ring-2 focus:ring-primary/20 focus:border-primary/30 focus-visible:bg-white/60 text-gray-800 placeholder:text-gray-500"
                 />
               </div>
             </div>
@@ -107,25 +115,60 @@ export default function Register() {
                 placeholder="your@email.com"
                 data-testid="input-email"
                 {...form.register("email")}
-                className="bg-white/50"
+                className="bg-white/50 focus:bg-white/60 focus:ring-2 focus:ring-primary/20 focus:border-primary/30 focus-visible:bg-white/60 text-gray-800 placeholder:text-gray-500"
               />
               {form.formState.errors.email && (
                 <p className="text-sm text-red-600">{form.formState.errors.email.message}</p>
               )}
             </div>
-            
+
             <div className="space-y-2">
               <Label htmlFor="password">Password *</Label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="At least 6 characters"
-                data-testid="input-password"
-                {...form.register("password")}
-                className="bg-white/50"
-              />
+              <div className="relative">
+                <Input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  placeholder="At least 6 characters"
+                  data-testid="input-password"
+                  {...form.register("password")}
+                  className="bg-white/50 focus:bg-white/60 focus:ring-2 focus:ring-primary/20 focus:border-primary/30 focus-visible:bg-white/60 text-gray-800 placeholder:text-gray-500 pr-10"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 transition-colors"
+                  data-testid="button-toggle-password"
+                >
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
               {form.formState.errors.password && (
                 <p className="text-sm text-red-600">{form.formState.errors.password.message}</p>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="confirmPassword">Confirm Password *</Label>
+              <div className="relative">
+                <Input
+                  id="confirmPassword"
+                  type={showConfirmPassword ? "text" : "password"}
+                  placeholder="Retype your password"
+                  data-testid="input-confirm-password"
+                  {...form.register("confirmPassword")}
+                  className="bg-white/50 focus:bg-white/60 focus:ring-2 focus:ring-primary/20 focus:border-primary/30 focus-visible:bg-white/60 text-gray-800 placeholder:text-gray-500 pr-10"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 transition-colors"
+                  data-testid="button-toggle-confirm-password"
+                >
+                  {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
+              {form.formState.errors.confirmPassword && (
+                <p className="text-sm text-red-600">{form.formState.errors.confirmPassword.message}</p>
               )}
             </div>
 
@@ -136,7 +179,7 @@ export default function Register() {
                 placeholder="+27 11 123 4567"
                 data-testid="input-phone"
                 {...form.register("phone")}
-                className="bg-white/50"
+                className="bg-white/50 focus:bg-white/60 focus:ring-2 focus:ring-primary/20 focus:border-primary/30 focus-visible:bg-white/60 text-gray-800 placeholder:text-gray-500"
               />
             </div>
 
@@ -147,7 +190,7 @@ export default function Register() {
                 placeholder="123 Main St, City"
                 data-testid="input-address"
                 {...form.register("address")}
-                className="bg-white/50"
+                className="bg-white/50 focus:bg-white/60 focus:ring-2 focus:ring-primary/20 focus:border-primary/30 focus-visible:bg-white/60 text-gray-800 placeholder:text-gray-500"
               />
             </div>
 

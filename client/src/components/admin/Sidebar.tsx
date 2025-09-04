@@ -32,7 +32,7 @@ export default function Sidebar() {
           const isActive = location === item.href ||
             (item.href === "/admin/dashboard" && location.startsWith("/admin") &&
              location !== "/admin/services" && location !== "/admin/bookings" && location !== "/admin/users" && location !== "/admin/slots");
-          
+
           return (
             <Link key={item.href} href={item.href}>
               <Button
@@ -56,7 +56,10 @@ export default function Sidebar() {
       <div className="mt-auto pt-6 border-t border-border space-y-2">
         <Button
           variant="ghost"
-          onClick={() => window.location.href = '/api/logout'}
+          onClick={() => {
+            localStorage.removeItem("token");
+            window.location.href = "/";
+          }}
           className="w-full justify-start space-x-3 p-3 rounded-xl text-muted-foreground hover:text-foreground hover:bg-white/10 transition-all duration-300"
           data-testid="button-logout"
         >
