@@ -568,11 +568,7 @@ export default function AdminBookings() {
                       {/* Payment Confirmation Buttons */}
                       {booking.paymentStatus === 'pending' && booking.status !== 'cancelled' && (
                         <div className="flex space-x-2">
-                          {/* Debug info - temporary */}
-                          <div className="text-xs text-gray-400">
-                            Method: {booking.paymentMethod || 'undefined'} | Status: {booking.paymentStatus}
-                          </div>
-                          {booking.paymentMethod === 'cash' && (
+                          {(booking.paymentMethod === 'cash' || !booking.paymentMethod) && (
                             <Button
                               size="sm"
                               onClick={() => handlePaymentConfirmation(booking.id)}
@@ -584,7 +580,7 @@ export default function AdminBookings() {
                               Confirm Cash Payment
                             </Button>
                           )}
-                          {booking.paymentMethod === 'card' && (
+                          {(booking.paymentMethod === 'card' || !booking.paymentMethod) && (
                             <Button
                               size="sm"
                               onClick={() => handlePaymentConfirmation(booking.id)}
