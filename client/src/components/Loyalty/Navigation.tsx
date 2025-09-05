@@ -20,11 +20,8 @@ export default function Navigation() {
 
   const adminLinks = [
     { href: "/admin/dashboard", label: "Dashboard" },
-    { href: "/admin/analytics", label: "Analytics" },
     { href: "/admin/services", label: "Services" },
     { href: "/admin/bookings", label: "Bookings" },
-    { href: "/admin/staff", label: "Staff" },
-    { href: "/admin/inventory", label: "Inventory" },
   ];
 
   return (
@@ -43,8 +40,8 @@ export default function Navigation() {
           <div className="hidden md:flex items-center space-x-8">
             {navLinks.map((link) => {
               if (!link.public && !isAuthenticated) return null;
-              // Hide customer-facing features for admin users
-              if ((link.href === "/booking" || link.href === "/services" || link.href === "/reviews" || link.href === "/comparison" || link.href === "/loyalty") && user?.role === 'admin') return null;
+              // Hide "Book Now", "Services", "Reviews", and "Compare" for admin users
+              if ((link.href === "/booking" || link.href === "/services" || link.href === "/reviews" || link.href === "/comparison") && user?.role === 'admin') return null;
               return (
                 <Link
                   key={link.href}
@@ -156,8 +153,8 @@ export default function Navigation() {
           <div className="md:hidden mt-4 glass-effect rounded-2xl p-6 space-y-4">
             {navLinks.map((link) => {
               if (!link.public && !isAuthenticated) return null;
-              // Hide customer-facing features for admin users
-              if ((link.href === "/booking" || link.href === "/services" || link.href === "/reviews" || link.href === "/comparison" || link.href === "/loyalty") && user?.role === 'admin') return null;
+              // Hide "Book Now", "Services", "Reviews", and "Compare" for admin users
+              if ((link.href === "/booking" || link.href === "/services" || link.href === "/reviews" || link.href === "/comparison") && user?.role === 'admin') return null;
               return (
                 <Link
                   key={link.href}

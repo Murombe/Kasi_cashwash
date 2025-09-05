@@ -1,6 +1,6 @@
 import bcrypt from 'bcryptjs';
 import { db } from "./db";
-import { users, services, slots, bookings, reviews } from "@shared/schema";
+import { users, services, slots, bookings, reviews, staff } from "@shared/schema";
 import { sql } from "drizzle-orm";
 
 async function seed() {
@@ -12,6 +12,7 @@ async function seed() {
     await db.delete(bookings);
     await db.delete(slots);
     await db.delete(services);
+    await db.delete(staff);
     await db.delete(users);
     console.log("✅ Cleared existing data");
 
@@ -48,6 +49,73 @@ async function seed() {
       .returning();
 
     console.log("✅ Regular user created (user@example.com / user123)");
+
+    // Create staff users and staff records
+    const staffUsers = [];
+    const staffData = [
+      {
+        email: "thabo.molefe@aquashine.co.za",
+        firstName: "Thabo",
+        lastName: "Molefe",
+        phone: "+27 11 456 7890",
+        position: "Senior Staff",
+        employeeId: "AS001"
+      },
+      {
+        email: "nomsa.dlamini@aquashine.co.za",
+        firstName: "Nomsa",
+        lastName: "Dlamini",
+        phone: "+27 11 567 8901",
+        position: "Team Leader",
+        employeeId: "AS002"
+      },
+      {
+        email: "khwezi.murombe@aquashine.co.za",
+        firstName: "Khwezi",
+        lastName: "Murombe",
+        phone: "+27 83 322 018",
+        position: "Senior Staff",
+        employeeId: "AS003"
+      }
+    ];
+
+    // Create staff user accounts
+    for (const staffInfo of staffData) {
+      const staffPassword = await bcrypt.hash('staff123', 12);
+      const staffUser = await db
+        .insert(users)
+        .values({
+          email: staffInfo.email,
+          password: staffPassword,
+          firstName: staffInfo.firstName,
+          lastName: staffInfo.lastName,
+          role: "user",
+          phone: staffInfo.phone,
+          address: "AquaShine Car Wash, Johannesburg",
+        })
+        .returning();
+
+      staffUsers.push({ ...staffUser[0], ...staffInfo });
+    }
+
+    // Create staff records
+    for (const staffUser of staffUsers) {
+      await db
+        .insert(staff)
+        .values({
+          userId: staffUser.id,
+          employeeId: staffUser.employeeId,
+          position: staffUser.position,
+          department: "Operations",
+          hireDate: "2024-01-15",
+          isActive: true,
+          performanceScore: 8.5,
+          totalServicesCompleted: 150,
+          averageServiceTime: 45,
+        });
+    }
+
+    console.log("✅ Staff members created");
 
     // Create services with ZAR pricing
     const servicesData = [
@@ -117,7 +185,7 @@ async function seed() {
     // Create time slots for the next 30 days
     const slotsData = [];
     const today = new Date();
-    
+
     for (let day = 1; day <= 30; day++) {
       const date = new Date(today);
       date.setDate(today.getDate() + day);
@@ -155,7 +223,7 @@ async function seed() {
     console.log('User:  user@example.com / user123');
 
     console.log("🎉 Database seeded successfully!");
-    
+
   } catch (error) {
     console.error("❌ Error seeding database:", error);
     throw error;

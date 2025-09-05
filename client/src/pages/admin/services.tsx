@@ -226,9 +226,9 @@ export default function AdminServices() {
     try {
       // Fetch service details including slots and stats
       const [serviceResponse, slotsResponse, statsResponse] = await Promise.all([
-        apiRequest("GET", `/api/services/${service.id}`),
-        apiRequest("GET", `/api/slots?serviceId=${service.id}`),
-        apiRequest("GET", `/api/services/${service.id}/stats`)
+        apiRequest("GET", `/api/services/${service.id}`).then(res => res.json()),
+        apiRequest("GET", `/api/slots?serviceId=${service.id}`).then(res => res.json()),
+        apiRequest("GET", `/api/services/${service.id}/stats`).then(res => res.json())
       ]);
 
       const serviceDetails: ServiceDetails = {
@@ -594,7 +594,7 @@ export default function AdminServices() {
                     onValueChange={(value) => setFormData(prev => ({ ...prev, category: value }))}
                   >
                     <SelectTrigger className="glass-effect border-border" data-testid="select-service-category">
-                      <SelectValue />
+                      <SelectValue placeholder="Select category" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="basic">Basic</SelectItem>

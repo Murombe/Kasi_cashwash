@@ -221,76 +221,7 @@ export default function AdminDashboard() {
           </GlassCard>
         </div>
 
-        <div className="grid lg:grid-cols-2 gap-8">
-          {/* Recent Bookings */}
-          <GlassCard className="p-6">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-bold">Recent Bookings</h3>
-              <a href="/admin/bookings" className="text-primary hover:text-accent transition-colors duration-300 font-medium">
-                View All
-              </a>
-            </div>
-
-            <div className="space-y-4">
-              {bookingsLoading ? (
-                Array.from({ length: 5 }).map((_, i) => (
-                  <div key={i} className="flex items-center justify-between p-4 glass-effect rounded-xl animate-pulse">
-                    <div className="flex items-center space-x-4">
-                      <div className="w-10 h-10 bg-muted rounded-full"></div>
-                      <div className="space-y-2">
-                        <div className="h-4 bg-muted rounded w-32"></div>
-                        <div className="h-3 bg-muted rounded w-24"></div>
-                      </div>
-                    </div>
-                    <div className="h-6 bg-muted rounded w-16"></div>
-                  </div>
-                ))
-              ) : recentBookings.length === 0 ? (
-                <div className="text-center py-8 text-muted-foreground">
-                  <Calendar className="w-16 h-16 mx-auto mb-4 opacity-50" />
-                  <p>No recent bookings</p>
-                </div>
-              ) : (
-                recentBookings.map((booking: any) => {
-                  const timeStatus = getAdminBookingTimeStatus(booking);
-                  return (
-                    <div key={booking.id} className="flex items-center justify-between p-4 glass-effect rounded-xl hover:bg-white/10 transition-all duration-300" data-testid={`recent-booking-${booking.id}`}>
-                      <div className="flex items-center space-x-4">
-                        <div className="w-10 h-10 bg-gradient-to-r from-primary to-accent rounded-full flex items-center justify-center">
-                          <Car className="text-white w-5 h-5" />
-                        </div>
-                        <div>
-                          <div className="font-semibold">{booking.service?.name || 'Service'}</div>
-                          <div className="text-sm text-muted-foreground">
-                            {booking.vehicleBrand} {booking.vehicleModel}
-                          </div>
-                          {timeStatus && (
-                            <div className={`text-xs flex items-center mt-1 ${
-                              timeStatus.type === 'late' ? 'text-red-500' :
-                              timeStatus.type === 'countdown' ? 'text-yellow-500' :
-                              timeStatus.type === 'auto-cancel' ? 'text-red-600' : 'text-muted-foreground'
-                            }`}>
-                              {timeStatus.type === 'late' && <AlertTriangle className="w-3 h-3 mr-1" />}
-                              {timeStatus.type === 'countdown' && <Clock className="w-3 h-3 mr-1" />}
-                              {timeStatus.message}
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <div className="font-semibold text-gradient">R{booking.totalAmount}</div>
-                        <div className="text-xs text-muted-foreground">{booking.slot?.date}</div>
-                        <div className="text-xs text-muted-foreground">
-                          {booking.slot?.startTime} - {booking.slot?.endTime}
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })
-              )}
-            </div>
-          </GlassCard>
-
+        <div className="grid lg:grid-cols-1 gap-8">
           {/* Booking Analytics */}
           <GlassCard className="p-6">
             <h3 className="text-xl font-bold mb-6">Booking Analytics</h3>

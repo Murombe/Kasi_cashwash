@@ -12,12 +12,16 @@ import Booking from "@/pages/booking";
 import Reviews from "@/pages/reviews";
 import Comparison from "@/pages/comparison";
 import AdminDashboard from "@/pages/admin/dashboard";
+import Analytics from "@/pages/admin/analytics";
 import AdminServices from "@/pages/admin/services";
 import AdminBookings from "@/pages/admin/bookings";
 import AdminUsers from "./pages/admin/users";
 import AdminSlots from "./pages/admin/slots";
+import Staff from "@/pages/admin/staff";
+import Inventory from "@/pages/admin/inventory";
 import Checkout from "@/pages/checkout";
 import CheckoutSuccess from "@/pages/checkout-success";
+import Loyalty from "@/pages/loyalty";
 import Login from "@/pages/auth/login";
 import Register from "@/pages/auth/register";
 import AdminSetup from "@/pages/admin-setup";
@@ -59,12 +63,16 @@ function Router() {
           <Route path="/checkout/success" component={CheckoutSuccess} />
           <Route path="/reviews" component={Reviews} />
           <Route path="/comparison" component={Comparison} />
+          <Route path="/loyalty" component={Loyalty} />
           {user?.role === 'admin' && (
             <>
               <Route path="/admin/dashboard" component={AdminDashboard} />
+              <Route path="/admin/analytics" component={Analytics} />
               <Route path="/admin/services" component={AdminServices} />
               <Route path="/admin/bookings" component={AdminBookings} />
               <Route path="/admin/slots" component={AdminSlots} />
+              <Route path="/admin/staff" component={Staff} />
+              <Route path="/admin/inventory" component={Inventory} />
               <Route path="/admin/users" component={AdminUsers} />
             </>
           )}

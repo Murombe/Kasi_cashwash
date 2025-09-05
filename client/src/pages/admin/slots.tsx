@@ -39,6 +39,19 @@ interface NewSlotData {
   endTime: string;
 }
 
+const generateTimeOptions = () => {
+  const options = [];
+  for (let hour = 8; hour <= 18; hour++) {
+    const time24 = hour.toString().padStart(2, '0') + ':00';
+    options.push(time24);
+    if (hour < 18) {
+      const halfHour = hour.toString().padStart(2, '0') + ':30';
+      options.push(halfHour);
+    }
+  }
+  return options;
+};
+
 export default function AdminSlots() {
   const { user, isAuthenticated, isLoading } = useAuth();
   const { toast } = useToast();
@@ -293,25 +306,39 @@ export default function AdminSlots() {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="startTime">Start Time</Label>
-                    <Input
-                      id="startTime"
-                      type="time"
+                    <Select
                       value={newSlotData.startTime}
-                      onChange={(e) => setNewSlotData({...newSlotData, startTime: e.target.value})}
-                      className="glass-effect border-border"
-                      data-testid="input-new-slot-start-time"
-                    />
+                      onValueChange={(value) => setNewSlotData({...newSlotData, startTime: value})}
+                    >
+                      <SelectTrigger className="glass-effect border-border" data-testid="select-new-slot-start-time">
+                        <SelectValue placeholder="Select start time" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {generateTimeOptions().map((time) => (
+                          <SelectItem key={time} value={time}>
+                            {time}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
                   <div>
                     <Label htmlFor="endTime">End Time</Label>
-                    <Input
-                      id="endTime"
-                      type="time"
+                    <Select
                       value={newSlotData.endTime}
-                      onChange={(e) => setNewSlotData({...newSlotData, endTime: e.target.value})}
-                      className="glass-effect border-border"
-                      data-testid="input-new-slot-end-time"
-                    />
+                      onValueChange={(value) => setNewSlotData({...newSlotData, endTime: value})}
+                    >
+                      <SelectTrigger className="glass-effect border-border" data-testid="select-new-slot-end-time">
+                        <SelectValue placeholder="Select end time" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {generateTimeOptions().map((time) => (
+                          <SelectItem key={time} value={time}>
+                            {time}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
                 </div>
 

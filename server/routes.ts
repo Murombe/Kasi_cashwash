@@ -1,5 +1,6 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
+import crypto from "crypto";
 import { storage } from "./storage";
 import { authenticateToken, requireAdmin, generateToken, hashPassword, comparePassword } from "./auth";
 // import { setupAuth, isAuthenticated } from "./replitAuth"; // For Replit deployment
@@ -51,6 +52,61 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get('/api/auth/logout', (req, res) => {
     res.json({ message: 'Logged out successfully' });
+  });
+
+  // Password reset routes
+  app.post('/api/auth/forgot-password', async (req, res) => {
+    try {
+      const { email } = req.body;
+      const user = await storage.getUserByEmail(email);
+
+      if (!user) {
+        // Don't reveal whether email exists for security
+        return res.json({ message: 'If an account with that email exists, a reset link has been sent.' });
+      }
+
+      // Generate reset token
+      const resetToken = crypto.randomBytes(32).toString('hex');
+      await storage.createPasswordResetToken(user.id!, resetToken);
+
+      // In a real app, you'd send an email here
+      console.log(`Password reset token for ${email}: ${resetToken}`);
+
+      res.json({ message: 'If an account with that email exists, a reset link has been sent.' });
+    } catch (error) {
+      console.error('Forgot password error:', error);
+      res.status(500).json({ message: 'Internal server error' });
+    }
+  });
+
+  app.post('/api/auth/reset-password', async (req, res) => {
+    try {
+      const { token, newPassword } = req.body;
+
+      if (!token || !newPassword) {
+        return res.status(400).json({ message: 'Token and new password are required' });
+      }
+
+      const resetToken = await storage.getPasswordResetToken(token);
+
+      if (!resetToken) {
+        return res.status(400).json({ message: 'Invalid or expired reset token' });
+      }
+
+      // Hash new password
+      const hashedPassword = await hashPassword(newPassword);
+
+      // Update user password
+      await storage.updateUserPassword(resetToken.userId, hashedPassword);
+
+      // Mark token as used
+      await storage.markTokenAsUsed(resetToken.id);
+
+      res.json({ message: 'Password successfully reset' });
+    } catch (error) {
+      console.error('Reset password error:', error);
+      res.status(500).json({ message: 'Internal server error' });
+    }
   });
 
   app.post('/api/auth/register', async (req, res) => {
@@ -468,6 +524,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { status } = req.body;
       const booking = await storage.updateBookingStatus(req.params.id, status);
+
+      // If booking is completed and payment is completed, trigger service completion processing
+      if (status === 'completed' && booking.paymentStatus === 'completed') {
+        await storage.processServiceCompletion(req.params.id);
+      }
+
       res.json(booking);
     } catch (error) {
       console.error("Error updating booking status:", error);
@@ -586,6 +648,47 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Invalid data", errors: error.errors });
       }
       res.status(500).json({ message: "Failed to create review" });
+    }
+  });
+
+  // Get staff ratings endpoint for customers
+  app.get("/api/staff/public", async (req, res) => {
+    try {
+      const staffRecords = await storage.getAllStaff();
+
+      // Get public staff info with ratings for customer selection - filter out staff on leave
+      const availableStaff = [];
+      for (const staff of staffRecords) {
+        if (!staff.isActive) continue;
+        const activeLeave = await storage.getActiveStaffLeave(staff.id);
+        if (!activeLeave) { // Only include if not on leave
+          availableStaff.push(staff);
+        }
+      }
+
+      const staffWithRatings = await Promise.all(
+        availableStaff.map(async (staff) => {
+            const user = await storage.getUser(staff.userId);
+            const staffReviews = await storage.getReviewsByStaffId(staff.id);
+            const avgRating = staffReviews.length > 0
+              ? staffReviews.reduce((sum, review) => sum + review.rating, 0) / staffReviews.length
+              : 5.0;
+
+            return {
+              id: staff.id,
+              name: `${user?.firstName || ''} ${user?.lastName || ''}`.trim(),
+              role: staff.position,
+              rating: Number(avgRating.toFixed(1)),
+              reviewCount: staffReviews.length,
+              servicesCompleted: staff.totalServicesCompleted || 0
+            };
+          })
+      );
+
+      res.json(staffWithRatings);
+    } catch (error) {
+      console.error("Error fetching public staff:", error);
+      res.status(500).json({ message: "Failed to fetch staff" });
     }
   });
 
@@ -724,15 +827,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get('/api/admin/analytics', authenticateToken, requireAdmin, async (req, res) => {
-    try {
-      const analytics = await storage.getAnalytics();
-      res.json(analytics);
-    } catch (error) {
-      console.error("Error fetching analytics:", error);
-      res.status(500).json({ message: "Failed to fetch analytics" });
-    }
-  });
 
   app.get('/api/admin/sales-export', authenticateToken, requireAdmin, async (req, res) => {
     try {
@@ -834,6 +928,480 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error exporting sales data:", error);
       res.status(500).json({ message: "Failed to export sales data" });
+    }
+  });
+
+  // Loyalty Program Routes
+  app.get('/api/user/loyalty', authenticateToken, async (req, res) => {
+    try {
+      const userId = req.user?.id;
+      if (!userId) {
+        return res.status(401).json({ message: "User not authenticated" });
+      }
+
+      const user = await storage.getUserById(userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      res.json({
+        loyaltyPoints: user.loyaltyPoints || 0,
+        totalVisits: user.totalVisits || 0,
+        loyaltyTier: user.loyaltyTier || 'bronze'
+      });
+    } catch (error) {
+      console.error("Error fetching user loyalty data:", error);
+      res.status(500).json({ message: "Failed to fetch loyalty data" });
+    }
+  });
+
+  app.get('/api/loyalty/rewards', async (req, res) => {
+    try {
+      const rewards = await storage.getLoyaltyRewards();
+      res.json(rewards || []);
+    } catch (error) {
+      console.error("Error fetching loyalty rewards:", error);
+      res.status(500).json({ message: "Failed to fetch rewards" });
+    }
+  });
+
+  app.get('/api/loyalty/transactions', authenticateToken, async (req, res) => {
+    try {
+      const userId = req.user?.id;
+      if (!userId) {
+        return res.status(401).json({ message: "User not authenticated" });
+      }
+
+      const transactions = await storage.getUserLoyaltyTransactions(userId);
+      res.json(transactions || []);
+    } catch (error) {
+      console.error("Error fetching loyalty transactions:", error);
+      res.status(500).json({ message: "Failed to fetch loyalty transactions" });
+    }
+  });
+
+  app.post('/api/loyalty/redeem', authenticateToken, async (req, res) => {
+    try {
+      const userId = req.user?.id;
+      const { rewardId } = req.body;
+
+      if (!userId) {
+        return res.status(401).json({ message: "User not authenticated" });
+      }
+
+      const result = await storage.redeemLoyaltyReward(userId, rewardId);
+      res.json(result);
+    } catch (error: any) {
+      console.error("Error redeeming loyalty reward:", error);
+      res.status(400).json({ message: error.message || "Failed to redeem reward" });
+    }
+  });
+
+  // Enhanced analytics endpoints
+  app.get('/api/admin/analytics', authenticateToken, requireAdmin, async (req, res) => {
+    try {
+      const analytics = await storage.getAnalytics();
+      const servicePopularity = await storage.getServicePopularityTrends();
+
+      const enhancedAnalytics = {
+        revenue: {
+          total: (analytics.totalRevenue || 0).toString(),
+          daily: Math.floor((analytics.totalRevenue || 0) / 30).toString(), // Approximate daily
+          monthly: (analytics.totalRevenue || 0).toString(),
+          growth: '12.5' // Mock growth percentage
+        },
+        customers: {
+          total: analytics.totalUsers || 0,
+          vip: Math.floor((analytics.totalUsers || 0) * 0.15), // 15% VIP
+          new: Math.floor((analytics.totalUsers || 0) * 0.1), // 10% new
+          retention: '85.2' // Mock retention percentage
+        },
+        services: {
+          popular: servicePopularity,
+          trends: []
+        },
+        staff: {
+          performance: [
+            { name: 'John Smith', score: '4.8', services: 45 },
+            { name: 'Sarah Johnson', score: '4.6', services: 38 },
+            { name: 'Mike Wilson', score: '4.9', services: 52 }
+          ],
+          schedules: [
+            { name: 'John Smith', status: 'present', hours: 8 },
+            { name: 'Sarah Johnson', status: 'present', hours: 6 },
+            { name: 'Mike Wilson', status: 'late', hours: 8 }
+          ]
+        }
+      };
+
+      res.json(enhancedAnalytics);
+    } catch (error) {
+      console.error('Error fetching analytics:', error);
+      res.status(500).json({ message: 'Failed to fetch analytics' });
+    }
+  });
+
+  app.get('/api/admin/customer-segmentation', authenticateToken, requireAdmin, async (req, res) => {
+    try {
+      const segments = await storage.getCustomerSegmentation();
+      res.json(segments);
+    } catch (error) {
+      console.error('Error fetching customer segmentation:', error);
+      res.status(500).json({ message: 'Failed to fetch customer segmentation' });
+    }
+  });
+
+  app.get('/api/admin/inventory/low-stock', authenticateToken, requireAdmin, async (req, res) => {
+    try {
+      const lowStockItems = await storage.getLowStockItems();
+      res.json(lowStockItems);
+    } catch (error) {
+      console.error('Error fetching low stock items:', error);
+      res.status(500).json({ message: 'Failed to fetch low stock items' });
+    }
+  });
+
+  // Export reports
+  app.post('/api/admin/export-report', authenticateToken, requireAdmin, async (req, res) => {
+    try {
+      const { type } = req.body;
+
+      if (type === 'pdf') {
+        const doc = new PDFDocument();
+
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', 'attachment; filename="analytics-report.pdf"');
+
+        doc.pipe(res);
+
+        doc.fontSize(20).text('Business Analytics Report', 100, 100);
+        doc.fontSize(12).text(`Generated on: ${new Date().toLocaleDateString()}`, 100, 130);
+
+        const rawAnalytics = await storage.getAnalytics();
+        doc.text(`Total Revenue: R${rawAnalytics.totalRevenue || 0}`, 100, 160);
+        doc.text(`Total Customers: ${rawAnalytics.totalUsers || 0}`, 100, 180);
+        doc.text(`Total Bookings: ${rawAnalytics.totalBookings || 0}`, 100, 200);
+
+        doc.end();
+      } else if (type === 'excel') {
+        const workbook = new ExcelJS.Workbook();
+        const worksheet = workbook.addWorksheet('Analytics');
+
+        worksheet.columns = [
+          { header: 'Metric', key: 'metric', width: 20 },
+          { header: 'Value', key: 'value', width: 15 }
+        ];
+
+        const rawAnalytics = await storage.getAnalytics();
+        worksheet.addRow({ metric: 'Total Revenue', value: `R${rawAnalytics.totalRevenue || 0}` });
+        worksheet.addRow({ metric: 'Total Customers', value: rawAnalytics.totalUsers || 0 });
+        worksheet.addRow({ metric: 'Total Bookings', value: rawAnalytics.totalBookings || 0 });
+
+        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        res.setHeader('Content-Disposition', 'attachment; filename="analytics-report.xlsx"');
+
+        await workbook.xlsx.write(res);
+        res.end();
+      } else {
+        res.status(400).json({ message: 'Invalid export type' });
+      }
+    } catch (error) {
+      console.error('Error exporting report:', error);
+      res.status(500).json({ message: 'Failed to export report' });
+    }
+  });
+
+  // Staff management API endpoints
+  app.get('/api/staff', authenticateToken, requireAdmin, async (req, res) => {
+    try {
+      console.log('Fetching all staff records...');
+      const staffRecords = await storage.getAllStaff();
+      console.log(`Found ${staffRecords.length} staff records`);
+
+      // Get user info for each staff member
+      const staffWithUserInfo = await Promise.all(
+        staffRecords.map(async (staff) => {
+          try {
+            console.log(`Processing staff member ${staff.id}`);
+            const user = await storage.getUser(staff.userId);
+            console.log(`User found for staff ${staff.id}:`, user ? 'Yes' : 'No');
+
+            // Calculate actual rating from reviews
+            let staffReviews = [];
+            let avgRating = 5.0;
+            try {
+              staffReviews = await storage.getReviewsByStaffId(staff.id);
+              avgRating = staffReviews.length > 0
+                ? staffReviews.reduce((sum, review) => sum + review.rating, 0) / staffReviews.length
+                : 5.0;
+            } catch (reviewError) {
+              console.log(`Could not fetch reviews for staff ${staff.id}:`, reviewError instanceof Error ? reviewError.message : String(reviewError));
+            }
+
+            // Check if staff is currently on leave
+            const activeLeave = await storage.getActiveStaffLeave(staff.id);
+            console.log(`Active leave for staff ${staff.id}:`, activeLeave ? 'Yes' : 'No');
+
+            let currentStatus = 'inactive';
+
+            if (staff.isActive) {
+              if (activeLeave) {
+                currentStatus = 'on leave';
+              } else {
+                currentStatus = 'active';
+              }
+            }
+
+            return {
+              id: staff.id,
+              name: `${user?.firstName || ''} ${user?.lastName || ''}`.trim(),
+              role: staff.position,
+              email: user?.email,
+              phone: user?.phone,
+              employeeId: staff.employeeId,
+              status: currentStatus,
+              rating: Number(avgRating.toFixed(1)),
+              servicesCompleted: staff.totalServicesCompleted || 0,
+              schedule: 'Mon-Fri 9AM-5PM', // Default schedule
+              currentLeave: activeLeave ? {
+                id: activeLeave.id,
+                leaveType: activeLeave.leaveType,
+                startDate: activeLeave.startDate,
+                endDate: activeLeave.endDate,
+                startTime: activeLeave.startTime,
+                endTime: activeLeave.endTime,
+                reason: activeLeave.reason
+              } : null
+            };
+          } catch (staffError) {
+            console.error(`Error processing staff member ${staff.id}:`, staffError);
+            throw staffError;
+          }
+        })
+      );
+
+      console.log(`Successfully processed ${staffWithUserInfo.length} staff members`);
+      res.json(staffWithUserInfo);
+    } catch (error) {
+      console.error('Error fetching staff:', error);
+      const errorMsg = error instanceof Error ? error.message : String(error);
+      if (error instanceof Error) {
+        console.error('Full error details:', error.message, error.stack);
+      }
+      res.status(500).json({ message: 'Failed to fetch staff: ' + errorMsg });
+    }
+  });
+
+  app.post('/api/staff', authenticateToken, requireAdmin, async (req, res) => {
+    try {
+      console.log('Staff creation request body:', req.body);
+      const { name, role, email, phone, employeeId, department } = req.body;
+
+      // Basic validation
+      if (!name || !role || !email || !phone) {
+        console.log('Validation failed - missing fields:', { name: !!name, role: !!role, email: !!email, phone: !!phone });
+        return res.status(400).json({ message: 'All fields are required: name, role, email, and phone' });
+      }
+
+      // Check if email already exists
+      const existingUser = await storage.getUserByEmail(email);
+      if (existingUser) {
+        return res.status(400).json({ message: 'Email already exists' });
+      }
+
+      // First create a user account for the staff member
+      const hashedPassword = await hashPassword('defaultPassword123'); // Default password they can change later
+      const userData = {
+        email,
+        password: hashedPassword,
+        firstName: name.split(' ')[0] || name,
+        lastName: name.split(' ').slice(1).join(' ') || '',
+        phone,
+        role: 'staff'
+      };
+
+      const newUser = await storage.createUser(userData);
+
+      // Then create the staff record linked to the user
+      const staffData = {
+        userId: newUser.id,
+        employeeId: employeeId || `EMP${Date.now()}`,
+        position: role,
+        department: department || 'Operations',
+        hireDate: new Date().toISOString().split('T')[0], // Today's date
+        isActive: true
+      };
+
+      const staff = await storage.createStaff(staffData);
+
+      // Return combined data for the frontend
+      const staffWithUserInfo = {
+        id: staff.id,
+        name,
+        role,
+        email,
+        phone,
+        employeeId: staff.employeeId,
+        status: staff.isActive ? 'active' : 'inactive',
+        rating: 5.0, // Default rating
+        servicesCompleted: 0,
+        schedule: 'Mon-Fri 9AM-5PM' // Default schedule
+      };
+
+      res.json(staffWithUserInfo);
+    } catch (error) {
+      console.error('Error creating staff:', error);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      if (errorMessage.includes('duplicate key') || errorMessage.includes('unique constraint')) {
+        return res.status(400).json({ message: 'Email or Employee ID already exists' });
+      }
+      const errorMsg = error instanceof Error ? error.message : String(error);
+      res.status(500).json({ message: 'Failed to create staff member: ' + errorMsg });
+    }
+  });
+
+  app.put('/api/staff/:id', authenticateToken, requireAdmin, async (req, res) => {
+    try {
+      console.log('Updating staff:', req.params.id, req.body);
+
+      const { name, role, email, phone } = req.body;
+
+      // Update staff record
+      const staffUpdates = {
+        position: role
+      };
+
+      const staff = await storage.updateStaff(req.params.id, staffUpdates);
+
+      // Also update user record if name, email or phone changed
+      if (name || email || phone) {
+        const user = await storage.getUser(staff.userId);
+        if (user) {
+          const userUpdates: any = {};
+          if (name) {
+            const nameParts = name.split(' ');
+            userUpdates.firstName = nameParts[0] || name;
+            userUpdates.lastName = nameParts.slice(1).join(' ') || '';
+          }
+          if (email) userUpdates.email = email;
+          if (phone) userUpdates.phone = phone;
+
+          if (Object.keys(userUpdates).length > 0) {
+            await storage.updateUser(user.id, userUpdates);
+          }
+        }
+      }
+
+      res.json(staff);
+    } catch (error) {
+      console.error('Error updating staff:', error);
+      const errorMsg = error instanceof Error ? error.message : String(error);
+      res.status(500).json({ message: 'Failed to update staff: ' + errorMsg });
+    }
+  });
+
+  // Staff leave management endpoints
+  app.post('/api/staff/:id/leave', authenticateToken, requireAdmin, async (req, res) => {
+    try {
+      console.log('Creating leave for staff:', req.params.id);
+      console.log('Request body:', req.body);
+
+      const { leaveType, startDate, endDate, startTime, endTime, reason } = req.body;
+
+      const leaveData = {
+        staffId: req.params.id,
+        leaveType,
+        startDate,
+        endDate,
+        startTime: startTime || null,
+        endTime: endTime || null,
+        reason,
+        status: 'active' // Immediately active
+      };
+
+      console.log('Creating leave with data:', leaveData);
+      const leave = await storage.createStaffLeave(leaveData);
+      console.log('Leave created successfully:', leave);
+      res.json(leave);
+    } catch (error) {
+      console.error('Error creating staff leave:', error);
+      const errorMsg = error instanceof Error ? error.message : String(error);
+      res.status(500).json({ message: 'Failed to schedule leave: ' + errorMsg });
+    }
+  });
+
+  app.put('/api/staff/:staffId/leave/:leaveId/return', authenticateToken, requireAdmin, async (req, res) => {
+    try {
+      // Mark staff as returned from leave
+      const leave = await storage.updateStaffLeave(req.params.leaveId, {
+        status: 'completed',
+        isActive: false
+      });
+      res.json(leave);
+    } catch (error) {
+      console.error('Error marking staff return:', error);
+      res.status(500).json({ message: 'Failed to mark staff return' });
+    }
+  });
+
+  app.get('/api/staff/:id/leave-history', authenticateToken, requireAdmin, async (req, res) => {
+    try {
+      const leaveHistory = await storage.getStaffLeaveHistory(req.params.id);
+      res.json(leaveHistory);
+    } catch (error) {
+      console.error('Error fetching leave history:', error);
+      res.status(500).json({ message: 'Failed to fetch leave history' });
+    }
+  });
+
+  app.delete('/api/staff/:id', authenticateToken, requireAdmin, async (req, res) => {
+    try {
+      await storage.deleteStaff(req.params.id);
+      res.json({ message: 'Staff member deactivated successfully' });
+    } catch (error) {
+      console.error('Error deleting staff:', error);
+      res.status(500).json({ message: 'Failed to delete staff' });
+    }
+  });
+
+  // Inventory management API endpoints
+  app.get('/api/inventory/items', authenticateToken, requireAdmin, async (req, res) => {
+    try {
+      const items = await storage.getAllInventoryItems();
+      res.json(items);
+    } catch (error) {
+      console.error('Error fetching inventory items:', error);
+      res.status(500).json({ message: 'Failed to fetch inventory items' });
+    }
+  });
+
+  app.post('/api/inventory/items', authenticateToken, requireAdmin, async (req, res) => {
+    try {
+      const item = await storage.createInventoryItem(req.body);
+      res.json(item);
+    } catch (error) {
+      console.error('Error creating inventory item:', error);
+      res.status(500).json({ message: 'Failed to create inventory item' });
+    }
+  });
+
+  app.put('/api/inventory/items/:id', authenticateToken, requireAdmin, async (req, res) => {
+    try {
+      const item = await storage.updateInventoryItem(req.params.id, req.body);
+      res.json(item);
+    } catch (error) {
+      console.error('Error updating inventory item:', error);
+      res.status(500).json({ message: 'Failed to update inventory item' });
+    }
+  });
+
+  app.get('/api/inventory/categories', authenticateToken, requireAdmin, async (req, res) => {
+    try {
+      const categories = await storage.getAllInventoryCategories();
+      res.json(categories);
+    } catch (error) {
+      console.error('Error fetching inventory categories:', error);
+      res.status(500).json({ message: 'Failed to fetch inventory categories' });
     }
   });
 

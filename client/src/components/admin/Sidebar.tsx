@@ -1,13 +1,16 @@
 import { Link, useLocation } from "wouter";
-import { Car, BarChart3, Calendar, Settings, Users, Star, LogOut, Clock } from "lucide-react";
+import { Car, BarChart3, Calendar, Settings, Users, Star, LogOut, Clock, TrendingUp, UserCheck, Package } from "lucide-react";
 import { GlassCard } from "@/components/ui/glass-card";
 import { Button } from "@/components/ui/button";
 
 const navigationItems = [
   { href: "/admin/dashboard", label: "Dashboard", icon: BarChart3 },
+  { href: "/admin/analytics", label: "Analytics", icon: TrendingUp },
   { href: "/admin/bookings", label: "Bookings", icon: Calendar },
   { href: "/admin/services", label: "Services", icon: Settings },
   { href: "/admin/slots", label: "Time Slots", icon: Clock },
+  { href: "/admin/staff", label: "Staff", icon: UserCheck },
+  { href: "/admin/inventory", label: "Inventory", icon: Package },
   { href: "/admin/users", label: "User Management", icon: Users },
   { href: "/reviews", label: "Reviews", icon: Star },
   { href: "/", label: "View Site", icon: BarChart3 },

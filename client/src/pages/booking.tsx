@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import Navigation from "@/components/layout/Navigation";
 import Footer from "@/components/layout/Footer";
+import RatingModal from "@/components/RatingModal";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -14,7 +15,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { apiRequest } from "@/lib/queryClient";
 import { isUnauthorizedError } from "@/lib/authUtils";
 import { useLocation } from "wouter";
-import { Calendar, Clock, Car, ChevronLeft, ChevronRight, Check, X, CreditCard, Banknote, AlertTriangle } from "lucide-react";
+import { Calendar, Clock, Car, ChevronLeft, ChevronRight, Check, X, CreditCard, Banknote, AlertTriangle, Star } from "lucide-react";
 import { format, differenceInMinutes, parseISO, addMinutes } from "date-fns";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useEffect } from "react";
@@ -43,6 +44,8 @@ export default function Booking() {
   const [selectedSlot, setSelectedSlot] = useState<Slot | null>(null);
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [cancelledBookingIds, setCancelledBookingIds] = useState<string[]>([]);
+  const [ratingModalOpen, setRatingModalOpen] = useState(false);
+  const [selectedBookingForRating, setSelectedBookingForRating] = useState<any>(null);
   const [bookingData, setBookingData] = useState({
     vehicleType: "",
     vehicleBrand: "",
@@ -79,6 +82,11 @@ export default function Booking() {
     queryKey: ["/api/bookings"],
     enabled: isAuthenticated,
   }) as { data: any[] };
+
+  const { data: userReviews } = useQuery({
+    queryKey: ["/api/reviews"],
+    enabled: isAuthenticated,
+  });
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -173,6 +181,19 @@ export default function Booking() {
 
   const handleCancelBooking = (bookingId: string) => {
     cancelBookingMutation.mutate(bookingId);
+  };
+
+  const handleRateService = (booking: any) => {
+    setSelectedBookingForRating({
+      id: booking.id,
+      serviceId: booking.serviceId,
+      serviceName: booking.service?.name
+    });
+    setRatingModalOpen(true);
+  };
+
+  const hasUserReviewedBooking = (bookingId: string) => {
+    return Array.isArray(userReviews) && userReviews.some((review: any) => review.bookingId === bookingId);
   };
 
   // Time-based logic for bookings
@@ -399,20 +420,44 @@ export default function Booking() {
                           );
                         })()}
                       </div>
-                      {/* Cancel Button - Only show for pending or confirmed bookings */}
-                      {(booking.status === 'pending' || booking.status === 'confirmed') && (
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => handleCancelBooking(booking.id)}
-                          disabled={cancelBookingMutation.isPending}
-                          className="glass-effect border-destructive text-destructive hover:bg-destructive/20"
-                          data-testid={`button-cancel-booking-${booking.id}`}
-                        >
-                          <X className="w-4 h-4 mr-1" />
-                          Cancel
-                        </Button>
-                      )}
+                      {/* Action Buttons */}
+                      <div className="flex flex-col space-y-2">
+                        {/* Cancel Button - Only show for pending or confirmed bookings */}
+                        {(booking.status === 'pending' || booking.status === 'confirmed') && (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleCancelBooking(booking.id)}
+                            disabled={cancelBookingMutation.isPending}
+                            className="glass-effect border-destructive text-destructive hover:bg-destructive/20"
+                            data-testid={`button-cancel-booking-${booking.id}`}
+                          >
+                            <X className="w-4 h-4 mr-1" />
+                            Cancel
+                          </Button>
+                        )}
+
+                        {/* Rating Button - Only show for completed services that haven't been rated */}
+                        {booking.status === 'completed' && booking.paymentStatus === 'completed' && !hasUserReviewedBooking(booking.id) && (
+                          <Button
+                            size="sm"
+                            onClick={() => handleRateService(booking)}
+                            className="glass-button"
+                            data-testid={`button-rate-service-${booking.id}`}
+                          >
+                            <Star className="w-4 h-4 mr-1" />
+                            Rate Service
+                          </Button>
+                        )}
+
+                        {/* Already Rated Indicator */}
+                        {booking.status === 'completed' && hasUserReviewedBooking(booking.id) && (
+                          <div className="flex items-center text-xs text-green-400 font-medium">
+                            <Star className="w-4 h-4 mr-1 fill-current" />
+                            Rated
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
                   ))}
@@ -805,6 +850,18 @@ export default function Booking() {
       </section>
 
       <Footer />
+
+      {/* Rating Modal */}
+      {selectedBookingForRating && (
+        <RatingModal
+          isOpen={ratingModalOpen}
+          onClose={() => {
+            setRatingModalOpen(false);
+            setSelectedBookingForRating(null);
+          }}
+          booking={selectedBookingForRating}
+        />
+      )}
     </div>
   );
 }

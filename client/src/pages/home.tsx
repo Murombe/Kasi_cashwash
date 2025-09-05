@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import Navigation from "@/components/layout/Navigation";
 import Footer from "@/components/layout/Footer";
 import ServiceCard from "@/components/ServiceCard";
+import RatingModal from "@/components/RatingModal";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
@@ -17,6 +18,8 @@ export default function Home() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [cancelledBookingIds, setCancelledBookingIds] = useState<string[]>([]);
+  const [ratingModalOpen, setRatingModalOpen] = useState(false);
+  const [selectedBookingForRating, setSelectedBookingForRating] = useState<any>(null);
 
   const { data: services, isLoading: servicesLoading } = useQuery({
     queryKey: ["/api/services"],
@@ -24,6 +27,10 @@ export default function Home() {
 
   const { data: userBookings, isLoading: bookingsLoading } = useQuery({
     queryKey: ["/api/bookings"],
+  });
+
+  const { data: userReviews } = useQuery({
+    queryKey: ["/api/reviews"],
   });
 
   const cancelBookingMutation = useMutation({
@@ -66,6 +73,19 @@ export default function Home() {
     cancelBookingMutation.mutate(bookingId);
   };
 
+  const handleRateService = (booking: any) => {
+    setSelectedBookingForRating({
+      id: booking.id,
+      serviceId: booking.serviceId,
+      serviceName: booking.service?.name
+    });
+    setRatingModalOpen(true);
+  };
+
+  const hasUserReviewedBooking = (bookingId: string) => {
+    return Array.isArray(userReviews) && userReviews.some((review: any) => review.bookingId === bookingId);
+  };
+
   // Time-based logic for bookings
   const [currentTime, setCurrentTime] = useState(new Date());
 
@@ -99,7 +119,9 @@ export default function Home() {
     return null;
   };
 
-  const recentBookings = userBookings?.filter((booking: any) => booking.status !== 'cancelled' && !cancelledBookingIds.includes(booking.id)).slice(0, 3) || [];
+  const recentBookings = Array.isArray(userBookings)
+    ? userBookings.filter((booking: any) => booking.status !== 'cancelled' && !cancelledBookingIds.includes(booking.id)).slice(0, 3)
+    : [];
 
   return (
     <div className="min-h-screen">
@@ -144,7 +166,7 @@ export default function Home() {
                 <Calendar className="text-white" />
               </div>
               <div className="text-2xl font-bold text-gradient" data-testid="stat-user-bookings">
-                {userBookings?.length || 0}
+                {Array.isArray(userBookings) ? userBookings.length : 0}
               </div>
               <div className="text-sm text-muted-foreground">Total Bookings</div>
             </div>
@@ -271,21 +293,45 @@ export default function Home() {
                             </div>
                           );
                         })()}
-                        {/* Cancel Button - Only show for pending or confirmed bookings */}
-                        {(booking.status === 'pending' || booking.status === 'confirmed') &&
-                         !getBookingTimeStatus(booking) || getBookingTimeStatus(booking)?.type === 'countdown' && (
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => handleCancelBooking(booking.id)}
-                            disabled={cancelBookingMutation.isPending}
-                            className="glass-effect border-destructive text-destructive hover:bg-destructive/20 mt-2"
-                            data-testid={`button-cancel-booking-${booking.id}`}
-                          >
-                            <X className="w-4 h-4 mr-1" />
-                            Cancel
-                          </Button>
-                        )}
+                        {/* Action Buttons */}
+                        <div className="flex flex-col space-y-2">
+                          {/* Cancel Button - Only show for pending or confirmed bookings */}
+                          {(booking.status === 'pending' || booking.status === 'confirmed') &&
+                           !getBookingTimeStatus(booking) || getBookingTimeStatus(booking)?.type === 'countdown' && (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => handleCancelBooking(booking.id)}
+                              disabled={cancelBookingMutation.isPending}
+                              className="glass-effect border-destructive text-destructive hover:bg-destructive/20"
+                              data-testid={`button-cancel-booking-${booking.id}`}
+                            >
+                              <X className="w-4 h-4 mr-1" />
+                              Cancel
+                            </Button>
+                          )}
+
+                          {/* Rating Button - Only show for completed services that haven't been rated */}
+                          {booking.status === 'completed' && booking.paymentStatus === 'completed' && !hasUserReviewedBooking(booking.id) && (
+                            <Button
+                              size="sm"
+                              onClick={() => handleRateService(booking)}
+                              className="glass-button"
+                              data-testid={`button-rate-service-${booking.id}`}
+                            >
+                              <Star className="w-4 h-4 mr-1" />
+                              Rate Service
+                            </Button>
+                          )}
+
+                          {/* Already Rated Indicator */}
+                          {booking.status === 'completed' && hasUserReviewedBooking(booking.id) && (
+                            <div className="flex items-center text-xs text-green-400 font-medium">
+                              <Star className="w-4 h-4 mr-1 fill-current" />
+                              Rated
+                            </div>
+                          )}
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -327,7 +373,7 @@ export default function Home() {
                 </div>
               ))
             ) : (
-              services?.slice(0, 6).map((service: any) => (
+              Array.isArray(services) && services.slice(0, 6).map((service: any) => (
                 <ServiceCard key={service.id} service={service} />
               ))
             )}
@@ -375,6 +421,18 @@ export default function Home() {
       </section>
 
       <Footer />
+
+      {/* Rating Modal */}
+      {selectedBookingForRating && (
+        <RatingModal
+          isOpen={ratingModalOpen}
+          onClose={() => {
+            setRatingModalOpen(false);
+            setSelectedBookingForRating(null);
+          }}
+          booking={selectedBookingForRating}
+        />
+      )}
     </div>
   );
 }
